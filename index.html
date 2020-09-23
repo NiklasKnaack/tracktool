@@ -231,32 +231,6 @@
 
             function getPathSegmentPointsWithSamePosition( position ) {
 
-                /*
-                const path = pathHolder[ 0 ];
-
-                let result = 0;
-
-                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-            
-                    const pathSegment = path.segments[ i ];
-
-                    if ( pathSegment.startPoint.x === position.x && pathSegment.startPoint.y === position.y ) {
-
-                        result++;
-
-                    }
-
-                    if ( pathSegment.endPoint.x === position.x && pathSegment.endPoint.y === position.y ) {
-
-                        result++;
-
-                    }
-
-                }
-
-                return result;
-                */
-
                 const path = pathHolder[ 0 ];
 
                 const result = [];
@@ -300,15 +274,15 @@
                     currentPathSegment.endPosition = null;
                     currentPathSegment.sorted = false;
 
-                    const samePathSegmentPointsWithSamePosition = getPathSegmentPointsWithSamePosition( position );
+                    const pathSegmentPointsWithSamePosition = getPathSegmentPointsWithSamePosition( currentPathSegment.startPoint );
 
-                    if ( samePathSegmentPointsWithSamePosition.length > 1 ) {
+                    if ( pathSegmentPointsWithSamePosition.length > 1 ) {
 
-                        samePathSegmentPointsWithSamePosition.push( currentPathSegment.startPoint );
+                        pathSegmentPointsWithSamePosition.push( currentPathSegment.startPoint );
 
-                        for ( let i = 0, l = samePathSegmentPointsWithSamePosition.length; i < l; i++ ) {
+                        for ( let i = 0, l = pathSegmentPointsWithSamePosition.length; i < l; i++ ) {
 
-                            samePathSegmentPointsWithSamePosition[ i ].split = true;
+                            pathSegmentPointsWithSamePosition[ i ].split = true;
 
                         }
 
@@ -331,15 +305,15 @@
                     currentPathSegment.length = getDistance( currentPathSegment.startPoint, currentPathSegment.endPoint );
                     currentPathSegment.centerPoint = getPathSegmentCenter( currentPathSegment );
 
-                    const samePathSegmentPointsWithSamePosition = getPathSegmentPointsWithSamePosition( position );
+                    const pathSegmentPointsWithSamePosition = getPathSegmentPointsWithSamePosition( currentPathSegment.endPoint );
 
-                    if ( samePathSegmentPointsWithSamePosition.length > 1 ) {
+                    if ( pathSegmentPointsWithSamePosition.length > 2 ) {
 
-                        samePathSegmentPointsWithSamePosition.push( currentPathSegment.endPoint );
+                        pathSegmentPointsWithSamePosition.push( currentPathSegment.endPoint );
 
-                        for ( let i = 0, l = samePathSegmentPointsWithSamePosition.length; i < l; i++ ) {
+                        for ( let i = 0, l = pathSegmentPointsWithSamePosition.length; i < l; i++ ) {
 
-                            samePathSegmentPointsWithSamePosition[ i ].split = true;
+                            pathSegmentPointsWithSamePosition[ i ].split = true;
 
                         }
 
