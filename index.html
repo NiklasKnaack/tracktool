@@ -221,7 +221,7 @@
 
                 //---
                 
-                if ( animationFrame != null ) {
+                if ( animationFrame !== null ) {
                 
                     cancelAnimFrame( animationFrame );
                 
@@ -303,7 +303,7 @@
 
                     if ( DEBUG === true ) {
 
-                        addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString() );
+                        addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9 );
 
                     } 
                 
@@ -323,7 +323,7 @@
 
                     if ( DEBUG === true ) {
 
-                        addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString() );
+                        addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9 );
                         addDebugElement( currentPathSegment.centerPosition.x, currentPathSegment.centerPosition.y, currentPathSegment.index.toString(), 'black', -3, -5 );
 
                     } 
@@ -404,17 +404,18 @@
 
                 //---
 
-                for ( let i = pathSegmentsSorted.length - 1, l = -1; i > l; i -- ) {
+                for ( let i = 0, l = pathSegmentsSorted.length; i < l; i ++ ) {
 
                     const pathSegment = pathSegmentsSorted[ i ];
 
+                    pathSegment.sorted = true;
                     pathSegment.index = i;
 
                 }
 
                 //---
 
-                path.segments = pathSegmentsSorted;
+                path.segments = [ ...pathSegmentsSorted ];
 
                 //---
 
@@ -425,6 +426,7 @@
                 }
 
                 //console.log( path.segments );
+                //console.log( pathSegmentsSorted );
                 //console.log( pathHolder[ 0 ].segments );
 
                 //console.log( 'sortPath() done' );
@@ -569,8 +571,6 @@
 
                 path.segments.forEach( ( pathSegment, index ) => {
 
-                    pathSegment.sorted = false;
-
                     if ( index < path.segments.length - 1 ) {
 
                         addDebugElement( pathSegment.startPosition.x, pathSegment.startPosition.y, pathSegment.startPosition.x.toString() + ', ' + pathSegment.startPosition.y.toString(), 'white', 0, 9 );
@@ -664,22 +664,6 @@
 
 
 
-
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
             //---
 
             function mouseDownHandler( event ) {
@@ -692,14 +676,10 @@
 
                 } else if ( editorMode === EDITOR_MODE_ENUM.setStartPoint ) {
 
-                    //console.log( EDITOR_MODE_ENUM.setStartPoint );
-
                     addStartPointToPathSegment( mouseCursor.position );
 
 
                 } else if ( editorMode === EDITOR_MODE_ENUM.setEndPoint ) {
-
-                    //console.log( EDITOR_MODE_ENUM.setEndPoint );
 
                     addEndPointToPathSegment( mouseCursor.position );
 
@@ -891,49 +871,49 @@
             /*
             function drawBox( vector, width, height, r, g, b, a ) {
 
-            if ( vector.x + width / 2 < border.left || vector.x - width / 2 > border.right || vector.y + height / 2 < border.top || vector.y - height / 2 > border.bottom ) {
+                if ( vector.x + width / 2 < border.left || vector.x - width / 2 > border.right || vector.y + height / 2 < border.top || vector.y - height / 2 > border.bottom ) {
 
-                return;
-            
-            }
-            
-            for ( let y2d = vector.y - height / 2, y2dE = vector.y + height / 2; y2d < y2dE; y2d ++ ) {
-            
-                for ( let x2d = vector.x - width / 2, x2dE = vector.x + width / 2; x2d < x2dE; x2d ++ ) {
-                
-                if ( x2d > border.left && x2d < border.right && y2d > border.top && y2d < border.bottom ) {
-                
-                    setPixel( x2d | 0, y2d | 0, r, g, b, a );
+                    return;
                 
                 }
                 
-                }
+                for ( let y2d = vector.y - height / 2, y2dE = vector.y + height / 2; y2d < y2dE; y2d ++ ) {
+                
+                    for ( let x2d = vector.x - width / 2, x2dE = vector.x + width / 2; x2d < x2dE; x2d ++ ) {
+                    
+                        if ( x2d > border.left && x2d < border.right && y2d > border.top && y2d < border.bottom ) {
+                        
+                            setPixel( x2d | 0, y2d | 0, r, g, b, a );
+                        
+                        }
+                    
+                    }
 
-            }
+                }
 
             }
 
             function drawBoxOutline( vector, width, height, r, g, b, a ) {
 
-            if ( vector.x + width / 2 < border.left || vector.x - width / 2 > border.right || vector.y + height / 2 < border.top || vector.y - height / 2 > border.bottom ) {
+                if ( vector.x + width / 2 < border.left || vector.x - width / 2 > border.right || vector.y + height / 2 < border.top || vector.y - height / 2 > border.bottom ) {
 
-                return;
-            
-            }
+                    return;
+                
+                }
 
-            const topLeftX = vector.x - width / 2;
-            const topLeftY = vector.y - height / 2;
-            const topRightX = vector.x + width / 2;
-            const topRightY = vector.y - height / 2;
-            const bottomLeftX = vector.x - width / 2;
-            const bottomLeftY = vector.y + height / 2;
-            const bottomRightX = vector.x + width / 2;
-            const bottomRightY = vector.y + height / 2;
-            
-            drawLine( topLeftX | 0, topLeftY | 0, topRightX | 0, topRightY | 0, r, g, b, a );
-            drawLine( topRightX | 0, topRightY | 0, bottomRightX | 0, bottomRightY | 0, r, g, b, a );
-            drawLine( bottomRightX | 0, bottomRightY | 0, bottomLeftX | 0, bottomLeftY | 0, r, g, b, a );
-            drawLine( bottomLeftX | 0, bottomLeftY | 0, topLeftX | 0, topLeftY | 0, r, g, b, a );
+                const topLeftX = vector.x - width / 2;
+                const topLeftY = vector.y - height / 2;
+                const topRightX = vector.x + width / 2;
+                const topRightY = vector.y - height / 2;
+                const bottomLeftX = vector.x - width / 2;
+                const bottomLeftY = vector.y + height / 2;
+                const bottomRightX = vector.x + width / 2;
+                const bottomRightY = vector.y + height / 2;
+                
+                drawLine( topLeftX | 0, topLeftY | 0, topRightX | 0, topRightY | 0, r, g, b, a );
+                drawLine( topRightX | 0, topRightY | 0, bottomRightX | 0, bottomRightY | 0, r, g, b, a );
+                drawLine( bottomRightX | 0, bottomRightY | 0, bottomLeftX | 0, bottomLeftY | 0, r, g, b, a );
+                drawLine( bottomLeftX | 0, bottomLeftY | 0, topLeftX | 0, topLeftY | 0, r, g, b, a );
 
             }
             */
@@ -956,97 +936,95 @@
                 
                     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
 
-                    const pathSegment = path.segments[ i ];
+                        const pathSegment = path.segments[ i ];
 
-                    if ( pathSegment.startPosition !== null && pathSegment.endPosition !== null ) {
+                        if ( pathSegment.startPosition !== null && pathSegment.endPosition !== null ) {
 
-                        const distanceStartPosition = getDistance( mousePos, pathSegment.startPosition );
-                        const distanceEndPosition = getDistance( mousePos, pathSegment.endPosition );
+                            const distanceStartPosition = getDistance( mousePos, pathSegment.startPosition );
+                            const distanceEndPosition = getDistance( mousePos, pathSegment.endPosition );
 
-                        if ( distanceStartPosition <= SNAP_TO_DISTANCE ) {
+                            if ( distanceStartPosition <= SNAP_TO_DISTANCE ) {
 
-                        mouseCursor.position.x = pathSegment.startPosition.x;
-                        mouseCursor.position.y = pathSegment.startPosition.y;
-                        mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
-                        
-                        //console.log( 'startPosition: ', pathSegment.startPosition.x, pathSegment.startPosition.y, mousePos.x, mousePos.y );
-
-                        } else if ( distanceEndPosition <= SNAP_TO_DISTANCE ) {
-
-                        mouseCursor.position.x = pathSegment.endPosition.x;
-                        mouseCursor.position.y = pathSegment.endPosition.y;
-                        mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
-
-                        //console.log( 'endPosition: ', pathSegment.endPosition.x, pathSegment.endPosition.y, mousePos.x, mousePos.y );
-
-                        }
-
-                    }
-
-                }
-            
-                //---
-
-                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-            
-                    const pathSegment = path.segments[ i ];
-
-                    if ( pathSegment.startPosition !== null ) {
-
-                        if ( pathSegment.endPosition === null && i === l - 1 ) {
-
-                            drawLine( pathSegment.startPosition.x | 0, pathSegment.startPosition.y | 0, mouseCursor.position.x | 0, mouseCursor.position.y | 0, 80, 80, 80, 255 );
-
-                        }
-
-                        drawCircle( pathSegment.startPosition, 3, 255, 0, 0, 255 );
-
-                    }
-
-                    if ( pathSegment.endPosition !== null ) {
-                    
-                        if ( pathSegment.sorted === true ) {
-                        
-                            drawLine( pathSegment.startPosition.x | 0, pathSegment.startPosition.y | 0, pathSegment.endPosition.x | 0, pathSegment.endPosition.y | 0, 0, 200, 0, 255 );
-                        
-                        } else {
-                        
-                            drawLine( pathSegment.startPosition.x | 0, pathSegment.startPosition.y | 0, pathSegment.endPosition.x | 0, pathSegment.endPosition.y | 0, 200, 0, 0, 255 );
-                        
-                        }
-
-                        
-
-                        drawCircle( pathSegment.endPosition, 3, 255, 0, 0, 255 );
-
-                        drawCircle( pathSegment.centerPosition, 9, 200, 200, 200, 255 );
-                        drawCircleOutline( pathSegment.centerPosition, 9, 255, 0, 0, 255 );
+                                mouseCursor.position.x = pathSegment.startPosition.x;
+                                mouseCursor.position.y = pathSegment.startPosition.y;
+                                mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
                                 
-                        if ( pathSegment.startPoint !== null ) {
+                                //console.log( 'startPosition: ', pathSegment.startPosition.x, pathSegment.startPosition.y, mousePos.x, mousePos.y );
 
-                            drawCircle( pathSegment.startPoint, 5, 0, 255, 0, 255 );
-                            drawCircleOutline( pathSegment.startPoint, 9, 0, 255, 0, 255 );
+                            } else if ( distanceEndPosition <= SNAP_TO_DISTANCE ) {
 
-                        }
+                                mouseCursor.position.x = pathSegment.endPosition.x;
+                                mouseCursor.position.y = pathSegment.endPosition.y;
+                                mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
 
-                        if ( pathSegment.endPoint !== null ) {
+                                //console.log( 'endPosition: ', pathSegment.endPosition.x, pathSegment.endPosition.y, mousePos.x, mousePos.y );
 
-                            drawCircle( pathSegment.endPoint, 5, 0, 255, 0, 255 );
-                            drawCircleOutline( pathSegment.endPoint, 9, 0, 255, 0, 255 );
+                            }
 
                         }
 
                     }
+            
+                    //---
+
+                    for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+            
+                        const pathSegment = path.segments[ i ];
+
+                        if ( pathSegment.startPosition !== null ) {
+
+                            if ( pathSegment.endPosition === null && i === l - 1 ) {
+
+                                drawLine( pathSegment.startPosition.x | 0, pathSegment.startPosition.y | 0, mouseCursor.position.x | 0, mouseCursor.position.y | 0, 80, 80, 80, 255 );
+
+                            }
+
+                            drawCircle( pathSegment.startPosition, 3, 255, 0, 0, 255 );
+
+                        }
+
+                        if ( pathSegment.endPosition !== null ) {
+
+                            if ( pathSegment.sorted === true ) {
+                            
+                                drawLine( pathSegment.startPosition.x | 0, pathSegment.startPosition.y | 0, pathSegment.endPosition.x | 0, pathSegment.endPosition.y | 0, 0, 200, 0, 255 );
+                            
+                            } else {
+                            
+                                drawLine( pathSegment.startPosition.x | 0, pathSegment.startPosition.y | 0, pathSegment.endPosition.x | 0, pathSegment.endPosition.y | 0, 200, 0, 0, 255 );
+                            
+                            }
+
+                            drawCircle( pathSegment.endPosition, 3, 255, 0, 0, 255 );
+
+                            drawCircle( pathSegment.centerPosition, 9, 200, 200, 200, 255 );
+                            drawCircleOutline( pathSegment.centerPosition, 9, 255, 0, 0, 255 );
+                                    
+                            if ( pathSegment.startPoint !== null ) {
+
+                                drawCircle( pathSegment.startPoint, 5, 0, 255, 0, 255 );
+                                drawCircleOutline( pathSegment.startPoint, 9, 0, 255, 0, 255 );
+
+                            }
+
+                            if ( pathSegment.endPoint !== null ) {
+
+                                drawCircle( pathSegment.endPoint, 5, 0, 255, 0, 255 );
+                                drawCircleOutline( pathSegment.endPoint, 9, 0, 255, 0, 255 );
+
+                            }
+
+                        }
                     
-                    if ( pathSegment.splitPoints.length > 0 ) {
-                    
-                        pathSegment.splitPoints.forEach( ( splitPoint, index ) => {
+                        if ( pathSegment.splitPoints.length > 0 ) {
                         
-                            drawCircleOutline( splitPoint, 9, 255, 0, 0, 255 );
-                        
-                        } );
-                        
-                    }
+                            pathSegment.splitPoints.forEach( ( splitPoint, index ) => {
+                            
+                                drawCircleOutline( splitPoint, 9, 255, 0, 0, 255 );
+                            
+                            } );
+                            
+                        }
 
                     }
                 
@@ -1083,7 +1061,7 @@
 
                 context.putImageData( imageData, 0, 0 );
 
-                    //---
+                //---
 
                 animationFrame = requestAnimFrame( render );
 
