@@ -43,9 +43,8 @@
             const SNAP_TO_DISTANCE = 25;
 
             const EDITOR_MODE_ENUM = Object.freeze( {
-                drawPath: 'drawPath', 
-                setstartPosition: 'setstartPosition', 
-                setSplitPoint: 'setSplitPoint', 
+                drawPath: 'drawPath',
+                setstartPosition: 'setstartPosition',
                 setendPosition: 'setendPosition'
             } );
 
@@ -108,12 +107,6 @@
                 
                 }
                 
-                const _setSplitPoint = () => {
-                
-                    editorMode = EDITOR_MODE_ENUM.setSplitPoint;
-                
-                }
-                
                 const _setendPosition = () => {
                 
                     editorMode = EDITOR_MODE_ENUM.setendPosition;
@@ -154,7 +147,6 @@
                         
                     'Draw Path': _drawPath,
                     'Set Start Point': _setstartPosition,
-                    'Set Split Point': _setSplitPoint,
                     'Set End Point': _setendPosition,
                     'Sort Path': _sortPath,
                     'Clear All': _clearAll,
@@ -168,7 +160,6 @@
                 //gui.close();
                 gui.add( guiSetting, 'Draw Path' );
                 gui.add( guiSetting, 'Set Start Point' );
-                //gui.add( guiSetting, 'Set Split Point' );
                 gui.add( guiSetting, 'Set End Point' );
                 gui.add( guiSetting, 'Sort Path' );
                 gui.add( guiSetting, 'Clear All' );
