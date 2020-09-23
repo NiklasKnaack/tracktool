@@ -44,9 +44,9 @@
 
             const EDITOR_MODE_ENUM = Object.freeze( {
                 drawPath: 'drawPath', 
-                setStartPoint: 'setStartPoint', 
+                setstartPosition: 'setstartPosition', 
                 setSplitPoint: 'setSplitPoint', 
-                setEndPoint: 'setEndPoint'
+                setendPosition: 'setendPosition'
             } );
 
             let editorMode = EDITOR_MODE_ENUM.drawPath;
@@ -73,21 +73,17 @@
             let currentPathSegment = null;
 
             let pathHolder = [
-
                 { 
                     id: 0, 
                     segments: [
-
-                        { index: 0, startPosition: { x: 240, y: 438 }, endPosition: { x: 521, y: 363 }, centerPosition: { x: 380.5, y: 400.5 }, length: 290.8367239534925, startPoint: { x: 240, y: 438 }, splitPoints: [], endPoint: null },
-                        { index: 1, startPosition: { x: 521, y: 363 }, endPosition: { x: 980, y: 371 }, centerPosition: { x: 750.5, y: 367 }, length: 459.0697114818184, startPoint: null, splitPoints: [], endPoint: null },
-                        { index: 2, startPosition: { x: 980, y: 371 }, endPosition: { x: 1154, y: 219 }, centerPosition: { x: 1067, y: 295 }, length: 231.0411218809327, startPoint: null, splitPoints: [], endPoint: null },
-                        { index: 3, startPosition: { x: 1154, y: 219 }, endPosition: { x: 1143, y: 95 }, centerPosition: { x: 1148.5, y: 157 }, length: 124.4869471069156, startPoint: null, splitPoints: [], endPoint: null },
-                        { index: 4, startPosition: { x: 1143, y: 95 }, endPosition: { x: 536, y: 97 }, centerPosition: { x: 839.5, y: 96 }, length: 607.0032948839735, startPoint: null, splitPoints: [], endPoint: null },
-                        { index: 5, startPosition: { x: 536, y: 97 }, endPosition: { x: 158, y: 162 }, centerPosition: { x: 347, y: 129.5 }, length: 383.54791095767945, startPoint: null, splitPoints: [], endPoint: { x: 158, y: 162 } }
-
+                        { index: 0, startPoint: { x: 240, y: 438, split: false }, endPoint: { x: 521, y: 363, split: false }, centerPoint: { x: 380.5, y: 400.5 }, length: 290.8367239534925, startPosition: { x: 240, y: 438 }, endPosition: null },
+                        { index: 1, startPoint: { x: 521, y: 363, split: false }, endPoint: { x: 980, y: 371, split: false }, centerPoint: { x: 750.5, y: 367 }, length: 459.0697114818184, startPosition: null, endPosition: null },
+                        { index: 2, startPoint: { x: 980, y: 371, split: false }, endPoint: { x: 1154, y: 219, split: false }, centerPoint: { x: 1067, y: 295 }, length: 231.0411218809327, startPosition: null, endPosition: null },
+                        { index: 3, startPoint: { x: 1154, y: 219, split: false }, endPoint: { x: 1143, y: 95, split: false }, centerPoint: { x: 1148.5, y: 157 }, length: 124.4869471069156, startPosition: null, endPosition: null },
+                        { index: 4, startPoint: { x: 1143, y: 95, split: false }, endPoint: { x: 536, y: 97, split: false }, centerPoint: { x: 839.5, y: 96 }, length: 607.0032948839735, startPosition: null, endPosition: null },
+                        { index: 5, startPoint: { x: 536, y: 97, split: false }, endPoint: { x: 158, y: 162, split: false }, centerPoint: { x: 347, y: 129.5 }, length: 383.54791095767945, startPosition: null, endPosition: { x: 158, y: 162 } }
                     ] 
                 }
-
             ];
 
             if ( DEBUG === true ) {
@@ -106,9 +102,9 @@
                 
                 }
                 
-                const _setStartPoint = () => {
+                const _setstartPosition = () => {
                 
-                    editorMode = EDITOR_MODE_ENUM.setStartPoint;
+                    editorMode = EDITOR_MODE_ENUM.setstartPosition;
                 
                 }
                 
@@ -118,9 +114,9 @@
                 
                 }
                 
-                const _setEndPoint = () => {
+                const _setendPosition = () => {
                 
-                    editorMode = EDITOR_MODE_ENUM.setEndPoint;
+                    editorMode = EDITOR_MODE_ENUM.setendPosition;
                 
                 }
                 
@@ -157,9 +153,9 @@
                 const guiSetting = {
                         
                     'Draw Path': _drawPath,
-                    'Set Start Point': _setStartPoint,
+                    'Set Start Point': _setstartPosition,
                     'Set Split Point': _setSplitPoint,
-                    'Set End Point': _setEndPoint,
+                    'Set End Point': _setendPosition,
                     'Sort Path': _sortPath,
                     'Clear All': _clearAll,
                     'Log Path': _logPath,
@@ -232,16 +228,10 @@
             }
 
             //---
-            /*
-            function findPathSegmentNeighbors( pathSegmentInput ) {
 
-                const path = pathHolder[ 0 ];
+            function getPathSegmentPointsWithSamePosition( position ) {
 
-            }
-            */
-
-            function checkIfPathSegmentPointIsSplitPoint( position ) {
-
+                /*
                 const path = pathHolder[ 0 ];
 
                 let result = 0;
@@ -250,15 +240,40 @@
             
                     const pathSegment = path.segments[ i ];
 
-                    if ( pathSegment.startPosition.x === position.x && pathSegment.startPosition.y === position.y ) {
+                    if ( pathSegment.startPoint.x === position.x && pathSegment.startPoint.y === position.y ) {
 
                         result++;
 
                     }
 
-                    if ( pathSegment.endPosition.x === position.x && pathSegment.endPosition.y === position.y ) {
+                    if ( pathSegment.endPoint.x === position.x && pathSegment.endPoint.y === position.y ) {
 
                         result++;
+
+                    }
+
+                }
+
+                return result;
+                */
+
+                const path = pathHolder[ 0 ];
+
+                const result = [];
+
+                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+            
+                    const pathSegment = path.segments[ i ];
+
+                    if ( pathSegment.startPoint.x === position.x && pathSegment.startPoint.y === position.y ) {
+
+                        result.push( pathSegment.startPoint );
+
+                    }
+
+                    if ( pathSegment.endPoint.x === position.x && pathSegment.endPoint.y === position.y ) {
+
+                        result.push( pathSegment.endPoint );
 
                     }
 
@@ -271,77 +286,34 @@
             function addPathSegment( position ) {
 
                 const path = pathHolder[ 0 ];
-                /*
-                const _checkIfPointAlreadyExists = ( comparePosition, index ) => {
-
-                    let result = false;
-
-                    for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-            
-                        const pathSegment = path.segments[ i ];
-
-                        //console.log( pathSegment );
-                        
-                        //if ( pathSegment !== index ) {
-
-                            if ( pathSegment.startPosition.x === comparePosition.x && pathSegment.startPosition.y === comparePosition.y ) {
-                        
-                                //result = true;
-                                pathSegment.sorted = true;
-                                pathSegment.splitPoints.push( { x: pathSegment.startPosition.x, y: pathSegment.startPosition.y } );
-
-                                //console.log("FOUND S: ", pathSegment.startPosition.x, ' ',pathSegment.startPosition.y );
-                            
-                            }
-                            
-                            if ( pathSegment.endPosition.x === comparePosition.x && pathSegment.endPosition.y === comparePosition.y ) {
-                            
-                                //result = true;
-                                pathSegment.sorted = true;
-                                //pathSegment.splitPoints.push( { x: comparePosition.x, y: comparePosition.y } );
-                                pathSegment.splitPoints.push( { x: pathSegment.endPosition.x, y: pathSegment.endPosition.y } );
-
-                                //console.log("FOUND E: ", pathSegment.endPosition.x, ' ',pathSegment.endPosition.y );
-                            
-                            }
-
-                        //}
-
-                    }
-
-                    //console.log( '\n' );
-
-                    return result;
                 
-                }
-                */
                 if ( currentPathSegment === null ) {
             
                     currentPathSegment = {};
                     currentPathSegment.index = path.segments.length;
-                    currentPathSegment.startPosition = {};
-                    currentPathSegment.startPosition.x = position.x;
-                    currentPathSegment.startPosition.y = position.y;
-                    currentPathSegment.endPosition = null;
-                    currentPathSegment.startPoint = null;
-                    currentPathSegment.splitPoints = [];
+                    currentPathSegment.startPoint = {};
+                    currentPathSegment.startPoint.x = position.x;
+                    currentPathSegment.startPoint.y = position.y;
+                    currentPathSegment.startPoint.split = false;
                     currentPathSegment.endPoint = null;
+                    currentPathSegment.startPosition = null;
+                    currentPathSegment.endPosition = null;
                     currentPathSegment.sorted = false;
 
-                    //console.log( checkIfPathSegmentPointIsSplitPoint( currentPathSegment.startPosition ) );
+                    const samePathSegmentPointsWithSamePosition = getPathSegmentPointsWithSamePosition( position );
 
-                    if ( checkIfPathSegmentPointIsSplitPoint( position ) > 1 ) {
+                    if ( samePathSegmentPointsWithSamePosition.length > 1 ) {
 
-                        currentPathSegment.splitPoints.push( { x: position.x, y: position.y } );
+                        samePathSegmentPointsWithSamePosition.push( currentPathSegment.startPoint );
+
+                        for ( let i = 0, l = samePathSegmentPointsWithSamePosition.length; i < l; i++ ) {
+
+                            samePathSegmentPointsWithSamePosition[ i ].split = true;
+
+                        }
 
                     }
-                    
-                    //if ( _checkIfPointAlreadyExists( currentPathSegment.startPosition, currentPathSegment.index ) === true ) {
-                    
-                        //currentPathSegment.splitPoints.push( { x: position.x, y: position.y } );
-                    
-                    //}
-                    
+
                     path.segments.push( currentPathSegment );
 
                     if ( DEBUG === true ) {
@@ -352,30 +324,31 @@
                 
                 } else {
 
-                    currentPathSegment.endPosition = {};
-                    currentPathSegment.endPosition.x = position.x;
-                    currentPathSegment.endPosition.y = position.y;
-                    currentPathSegment.length = getDistance( currentPathSegment.startPosition, currentPathSegment.endPosition );
-                    currentPathSegment.centerPosition = getPathSegmentCenter( currentPathSegment );
+                    currentPathSegment.endPoint = {};
+                    currentPathSegment.endPoint.x = position.x;
+                    currentPathSegment.endPoint.y = position.y;
+                    currentPathSegment.endPoint.split = false;
+                    currentPathSegment.length = getDistance( currentPathSegment.startPoint, currentPathSegment.endPoint );
+                    currentPathSegment.centerPoint = getPathSegmentCenter( currentPathSegment );
 
-                    //console.log( checkIfPathSegmentPointIsSplitPoint( currentPathSegment.endPosition ) );
+                    const samePathSegmentPointsWithSamePosition = getPathSegmentPointsWithSamePosition( position );
 
-                    if ( checkIfPathSegmentPointIsSplitPoint( position ) > 1 ) {
+                    if ( samePathSegmentPointsWithSamePosition.length > 1 ) {
 
-                        currentPathSegment.splitPoints.push( { x: position.x, y: position.y } );
+                        samePathSegmentPointsWithSamePosition.push( currentPathSegment.endPoint );
+
+                        for ( let i = 0, l = samePathSegmentPointsWithSamePosition.length; i < l; i++ ) {
+
+                            samePathSegmentPointsWithSamePosition[ i ].split = true;
+
+                        }
 
                     }
-                    
-                    //if ( _checkIfPointAlreadyExists( currentPathSegment.endPosition ) === true ) {
-                    
-                        //currentPathSegment.splitPoints.push( { x: pathSegment.endPosition.x, y: pathSegment.endPosition.y } );
-                    
-                    //}
 
                     if ( DEBUG === true ) {
 
                         addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9 );
-                        addDebugElement( currentPathSegment.centerPosition.x, currentPathSegment.centerPosition.y, currentPathSegment.index.toString(), 'black', -3, -5 );
+                        addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.index.toString(), 'black', -3, -5 );
 
                     } 
 
@@ -402,10 +375,10 @@
 
                 //---
                 
-                const pathSegmentStartIndex = pathSegments.findIndex( pathSegment => pathSegment.startPoint !== null );
+                const pathSegmentStartIndex = pathSegments.findIndex( pathSegment => pathSegment.startPosition !== null );
                 const pathSegmentStart = pathSegments.splice( pathSegmentStartIndex, 1 )[ 0 ];
 
-                const pathSegmentEndIndex = pathSegments.findIndex( pathSegment => pathSegment.endPoint !== null );
+                const pathSegmentEndIndex = pathSegments.findIndex( pathSegment => pathSegment.endPosition !== null );
                 const pathSegmentEnd = pathSegments.splice( pathSegmentEndIndex, 1 )[ 0 ];
 
                 //console.log( pathSegmentStartIndex, pathSegmentEndIndex );
@@ -427,13 +400,13 @@
 
                         const pathSegment = path.segments[ i ];
 
-                        if ( _currentPathSegment.endPosition.x === pathSegment.startPosition.x && _currentPathSegment.endPosition.y === pathSegment.startPosition.y ) {
+                        if ( _currentPathSegment.endPoint.x === pathSegment.startPoint.x && _currentPathSegment.endPoint.y === pathSegment.startPoint.y ) {
 
                             _nextPathSegment = path.segments.splice( i, 1 )[ 0 ];
 
                         }
 
-                        if ( _currentPathSegment.endPosition.x === pathSegment.endPosition.x && _currentPathSegment.endPosition.y === pathSegment.endPosition.y ) {
+                        if ( _currentPathSegment.endPoint.x === pathSegment.endPoint.x && _currentPathSegment.endPoint.y === pathSegment.endPoint.y ) {
 
                             flipPathSegmentStartEnd( pathSegment );
 
@@ -488,36 +461,36 @@
 
             function flipPathSegmentStartEnd( pathSegment ) {
 
-                const startPosTemp = { x: pathSegment.startPosition.x, y: pathSegment.startPosition.y };
-                const endPosTemp = { x: pathSegment.endPosition.x, y: pathSegment.endPosition.y };
+                const startPosTemp = { x: pathSegment.startPoint.x, y: pathSegment.startPoint.y };
+                const endPosTemp = { x: pathSegment.endPoint.x, y: pathSegment.endPoint.y };
 
-                pathSegment.startPosition.x = endPosTemp.x;
-                pathSegment.startPosition.y = endPosTemp.y;
+                pathSegment.startPoint.x = endPosTemp.x;
+                pathSegment.startPoint.y = endPosTemp.y;
 
-                pathSegment.endPosition.x = startPosTemp.x;
-                pathSegment.endPosition.y = startPosTemp.y;
+                pathSegment.endPoint.x = startPosTemp.x;
+                pathSegment.endPoint.y = startPosTemp.y;
 
             }
 
             //---
 
-            function removeStartPointToPathSegment() {
+            function removestartPositionToPathSegment() {
 
                 const path = pathHolder[ 0 ];
 
-                const pathSegmentStart = path.segments.find( pathSegment => pathSegment.startPoint !== null );
+                const pathSegmentStart = path.segments.find( pathSegment => pathSegment.startPosition !== null );
 
                 if ( typeof pathSegmentStart !== 'undefined' ) {
 
-                    pathSegmentStart.startPoint = null;
+                    pathSegmentStart.startPosition = null;
 
                 }
 
             }
 
-            function addStartPointToPathSegment( position ) {
+            function addstartPositionToPathSegment( position ) {
 
-                removeStartPointToPathSegment();
+                removestartPositionToPathSegment();
 
                 //---
 
@@ -527,17 +500,17 @@
 
                     const pathSegment = path.segments[ i ];
 
-                    if ( pathSegment.startPosition.x === position.x && pathSegment.startPosition.y === position.y ) {
+                    if ( pathSegment.startPoint.x === position.x && pathSegment.startPoint.y === position.y ) {
 
-                        pathSegment.startPoint = { x: position.x, y: position.y };
+                        pathSegment.startPosition = { x: position.x, y: position.y };
 
                     }
 
-                    if ( pathSegment.endPosition.x === position.x && pathSegment.endPosition.y === position.y ) {
+                    if ( pathSegment.endPoint.x === position.x && pathSegment.endPoint.y === position.y ) {
 
                         flipPathSegmentStartEnd( pathSegment );
 
-                        pathSegment.startPoint = { x: position.x, y: position.y };
+                        pathSegment.startPosition = { x: position.x, y: position.y };
 
                     }
 
@@ -551,23 +524,23 @@
 
             }
 
-            function removeEndPointToPathSegment() {
+            function removeendPositionToPathSegment() {
 
                 const path = pathHolder[ 0 ];
 
-                const pathSegmentEnd = path.segments.find( pathSegment => pathSegment.endPoint !== null );
+                const pathSegmentEnd = path.segments.find( pathSegment => pathSegment.endPosition !== null );
 
                 if ( typeof pathSegmentEnd !== 'undefined' ) {
 
-                    pathSegmentEnd.endPoint = null;
+                    pathSegmentEnd.endPosition = null;
 
                 }
 
             }
 
-            function addEndPointToPathSegment( position ) {
+            function addendPositionToPathSegment( position ) {
 
-                removeEndPointToPathSegment();
+                removeendPositionToPathSegment();
 
                 //---
 
@@ -577,17 +550,17 @@
 
                     const pathSegment = path.segments[ i ];
 
-                    if ( pathSegment.startPosition.x === position.x && pathSegment.startPosition.y === position.y ) {
+                    if ( pathSegment.startPoint.x === position.x && pathSegment.startPoint.y === position.y ) {
 
-                        pathSegment.endPoint = { x: position.x, y: position.y };
+                        pathSegment.endPosition = { x: position.x, y: position.y };
 
                     }
 
-                    if ( pathSegment.endPosition.x === position.x && pathSegment.endPosition.y === position.y ) {
+                    if ( pathSegment.endPoint.x === position.x && pathSegment.endPoint.y === position.y ) {
 
                         flipPathSegmentStartEnd( pathSegment );
 
-                        pathSegment.endPoint = { x: position.x, y: position.y };
+                        pathSegment.endPosition = { x: position.x, y: position.y };
 
                     }
 
@@ -624,26 +597,26 @@
 
                     if ( index < path.segments.length - 1 ) {
 
-                        addDebugElement( pathSegment.startPosition.x, pathSegment.startPosition.y, pathSegment.startPosition.x.toString() + ', ' + pathSegment.startPosition.y.toString(), 'white', 0, 9 );
+                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.startPoint.x.toString() + ', ' + pathSegment.startPoint.y.toString(), 'white', 0, 9 );
 
                     } else {
 
-                        addDebugElement( pathSegment.startPosition.x, pathSegment.startPosition.y, pathSegment.startPosition.x.toString() + ', ' + pathSegment.startPosition.y.toString(), 'white', 0, 9 );
-                        addDebugElement( pathSegment.endPosition.x, pathSegment.endPosition.y, pathSegment.endPosition.x.toString() + ', ' + pathSegment.endPosition.y.toString(), 'white', 0, 9 );
+                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.startPoint.x.toString() + ', ' + pathSegment.startPoint.y.toString(), 'white', 0, 9 );
+                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, pathSegment.endPoint.x.toString() + ', ' + pathSegment.endPoint.y.toString(), 'white', 0, 9 );
 
                     }
 
-                    addDebugElement( pathSegment.centerPosition.x, pathSegment.centerPosition.y, pathSegment.index.toString(), 'black', -3, -5 );
+                    addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.index.toString(), 'black', -3, -5 );
 
-                    if ( pathSegment.startPoint !== null ) {
+                    if ( pathSegment.startPosition !== null ) {
 
-                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, 'START', 'white', -15, -25 );
+                        addDebugElement( pathSegment.startPosition.x, pathSegment.startPosition.y, 'START', 'white', -15, -25 );
 
                     }
 
-                    if ( pathSegment.endPoint !== null ) {
+                    if ( pathSegment.endPosition !== null ) {
 
-                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, 'END', 'white', -10, -25 );
+                        addDebugElement( pathSegment.endPosition.x, pathSegment.endPosition.y, 'END', 'white', -10, -25 );
 
                     }
 
@@ -695,8 +668,8 @@
 
             function getPathSegmentCenter( pathSegment ) {
 
-                const x = ( pathSegment.startPosition.x + pathSegment.endPosition.x ) / 2;
-                const y = ( pathSegment.startPosition.y + pathSegment.endPosition.y ) / 2;
+                const x = ( pathSegment.startPoint.x + pathSegment.endPoint.x ) / 2;
+                const y = ( pathSegment.startPoint.y + pathSegment.endPoint.y ) / 2;
             
                 return { x: x, y: y };
             
@@ -725,14 +698,14 @@
 
                     addPathSegment( mouseCursor.position );
 
-                } else if ( editorMode === EDITOR_MODE_ENUM.setStartPoint ) {
+                } else if ( editorMode === EDITOR_MODE_ENUM.setstartPosition ) {
 
-                    addStartPointToPathSegment( mouseCursor.position );
+                    addstartPositionToPathSegment( mouseCursor.position );
 
 
-                } else if ( editorMode === EDITOR_MODE_ENUM.setEndPoint ) {
+                } else if ( editorMode === EDITOR_MODE_ENUM.setendPosition ) {
 
-                    addEndPointToPathSegment( mouseCursor.position );
+                    addendPositionToPathSegment( mouseCursor.position );
 
                 }
 
@@ -989,26 +962,26 @@
 
                         const pathSegment = path.segments[ i ];
 
-                        if ( pathSegment.startPosition !== null && pathSegment.endPosition !== null ) {
+                        if ( pathSegment.startPoint !== null && pathSegment.endPoint !== null ) {
 
-                            const distanceStartPosition = getDistance( mousePos, pathSegment.startPosition );
-                            const distanceEndPosition = getDistance( mousePos, pathSegment.endPosition );
+                            const distancestartPoint = getDistance( mousePos, pathSegment.startPoint );
+                            const distanceendPoint = getDistance( mousePos, pathSegment.endPoint );
 
-                            if ( distanceStartPosition <= SNAP_TO_DISTANCE ) {
+                            if ( distancestartPoint <= SNAP_TO_DISTANCE ) {
 
-                                mouseCursor.position.x = pathSegment.startPosition.x;
-                                mouseCursor.position.y = pathSegment.startPosition.y;
+                                mouseCursor.position.x = pathSegment.startPoint.x;
+                                mouseCursor.position.y = pathSegment.startPoint.y;
                                 mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
                                 
-                                //console.log( 'startPosition: ', pathSegment.startPosition.x, pathSegment.startPosition.y, mousePos.x, mousePos.y );
+                                //console.log( 'startPoint: ', pathSegment.startPoint.x, pathSegment.startPoint.y, mousePos.x, mousePos.y );
 
-                            } else if ( distanceEndPosition <= SNAP_TO_DISTANCE ) {
+                            } else if ( distanceendPoint <= SNAP_TO_DISTANCE ) {
 
-                                mouseCursor.position.x = pathSegment.endPosition.x;
-                                mouseCursor.position.y = pathSegment.endPosition.y;
+                                mouseCursor.position.x = pathSegment.endPoint.x;
+                                mouseCursor.position.y = pathSegment.endPoint.y;
                                 mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
 
-                                //console.log( 'endPosition: ', pathSegment.endPosition.x, pathSegment.endPosition.y, mousePos.x, mousePos.y );
+                                //console.log( 'endPoint: ', pathSegment.endPoint.x, pathSegment.endPoint.y, mousePos.x, mousePos.y );
 
                             }
 
@@ -1022,51 +995,65 @@
             
                         const pathSegment = path.segments[ i ];
 
-                        if ( pathSegment.startPosition !== null ) {
+                        if ( pathSegment.startPoint !== null ) {
 
-                            if ( pathSegment.endPosition === null && i === l - 1 ) {
+                            if ( pathSegment.endPoint === null && i === l - 1 ) {
 
-                                drawLine( pathSegment.startPosition.x | 0, pathSegment.startPosition.y | 0, mouseCursor.position.x | 0, mouseCursor.position.y | 0, 80, 80, 80, 255 );
+                                drawLine( pathSegment.startPoint.x | 0, pathSegment.startPoint.y | 0, mouseCursor.position.x | 0, mouseCursor.position.y | 0, 80, 80, 80, 255 );
 
                             }
 
-                            drawCircle( pathSegment.startPosition, 3, 255, 0, 0, 255 );
+                            drawCircle( pathSegment.startPoint, 3, 255, 0, 0, 255 );
 
                         }
 
-                        if ( pathSegment.endPosition !== null ) {
+                        if ( pathSegment.endPoint !== null ) {
 
                             if ( pathSegment.sorted === true ) {
                             
-                                drawLine( pathSegment.startPosition.x | 0, pathSegment.startPosition.y | 0, pathSegment.endPosition.x | 0, pathSegment.endPosition.y | 0, 0, 200, 0, 255 );
+                                drawLine( pathSegment.startPoint.x | 0, pathSegment.startPoint.y | 0, pathSegment.endPoint.x | 0, pathSegment.endPoint.y | 0, 0, 200, 0, 255 );
                             
                             } else {
                             
-                                drawLine( pathSegment.startPosition.x | 0, pathSegment.startPosition.y | 0, pathSegment.endPosition.x | 0, pathSegment.endPosition.y | 0, 200, 0, 0, 255 );
+                                drawLine( pathSegment.startPoint.x | 0, pathSegment.startPoint.y | 0, pathSegment.endPoint.x | 0, pathSegment.endPoint.y | 0, 200, 0, 0, 255 );
                             
                             }
 
-                            drawCircle( pathSegment.endPosition, 3, 255, 0, 0, 255 );
+                            drawCircle( pathSegment.endPoint, 3, 255, 0, 0, 255 );
 
-                            drawCircle( pathSegment.centerPosition, 9, 200, 200, 200, 255 );
-                            drawCircleOutline( pathSegment.centerPosition, 9, 255, 0, 0, 255 );
-                                    
-                            if ( pathSegment.startPoint !== null ) {
+                            drawCircle( pathSegment.centerPoint, 9, 200, 200, 200, 255 );
+                            drawCircleOutline( pathSegment.centerPoint, 9, 255, 0, 0, 255 );
 
-                                drawCircle( pathSegment.startPoint, 5, 0, 255, 0, 255 );
-                                drawCircleOutline( pathSegment.startPoint, 9, 0, 255, 0, 255 );
+                            
+                            if ( pathSegment.startPoint.split === true ) {
+
+                                drawCircleOutline( pathSegment.startPoint, 9, 255, 0, 0, 255 );
 
                             }
 
-                            if ( pathSegment.endPoint !== null ) {
+                            if ( pathSegment.endPoint.split === true ) {
 
-                                drawCircle( pathSegment.endPoint, 5, 0, 255, 0, 255 );
-                                drawCircleOutline( pathSegment.endPoint, 9, 0, 255, 0, 255 );
+                                drawCircleOutline( pathSegment.endPoint, 9, 255, 0, 0, 255 );
+
+                            }
+                            
+                                    
+                            if ( pathSegment.startPosition !== null ) {
+
+                                drawCircle( pathSegment.startPosition, 5, 0, 255, 0, 255 );
+                                drawCircleOutline( pathSegment.startPosition, 9, 0, 255, 0, 255 );
+
+                            }
+
+                            if ( pathSegment.endPosition !== null ) {
+
+                                drawCircle( pathSegment.endPosition, 5, 0, 255, 0, 255 );
+                                drawCircleOutline( pathSegment.endPosition, 9, 0, 255, 0, 255 );
 
                             }
 
                         }
-                    
+                        /*
                         if ( pathSegment.splitPoints.length > 0 ) {
                         
                             pathSegment.splitPoints.forEach( ( splitPoint, index ) => {
@@ -1076,6 +1063,7 @@
                             } );
                             
                         }
+                        */
 
                     }
                 
