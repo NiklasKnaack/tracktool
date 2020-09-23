@@ -232,6 +232,41 @@
             }
 
             //---
+            /*
+            function findPathSegmentNeighbors( pathSegmentInput ) {
+
+                const path = pathHolder[ 0 ];
+
+            }
+            */
+
+            function checkIfPathSegmentPointIsSplitPoint( position ) {
+
+                const path = pathHolder[ 0 ];
+
+                let result = 0;
+
+                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+            
+                    const pathSegment = path.segments[ i ];
+
+                    if ( pathSegment.startPosition.x === position.x && pathSegment.startPosition.y === position.y ) {
+
+                        result++;
+
+                    }
+
+                    if ( pathSegment.endPosition.x === position.x && pathSegment.endPosition.y === position.y ) {
+
+                        result++;
+
+                    }
+
+                }
+
+                return result;
+
+            }
 
             function addPathSegment( position ) {
 
@@ -292,6 +327,14 @@
                     currentPathSegment.splitPoints = [];
                     currentPathSegment.endPoint = null;
                     currentPathSegment.sorted = false;
+
+                    //console.log( checkIfPathSegmentPointIsSplitPoint( currentPathSegment.startPosition ) );
+
+                    if ( checkIfPathSegmentPointIsSplitPoint( position ) > 1 ) {
+
+                        currentPathSegment.splitPoints.push( { x: position.x, y: position.y } );
+
+                    }
                     
                     //if ( _checkIfPointAlreadyExists( currentPathSegment.startPosition, currentPathSegment.index ) === true ) {
                     
@@ -314,6 +357,14 @@
                     currentPathSegment.endPosition.y = position.y;
                     currentPathSegment.length = getDistance( currentPathSegment.startPosition, currentPathSegment.endPosition );
                     currentPathSegment.centerPosition = getPathSegmentCenter( currentPathSegment );
+
+                    //console.log( checkIfPathSegmentPointIsSplitPoint( currentPathSegment.endPosition ) );
+
+                    if ( checkIfPathSegmentPointIsSplitPoint( position ) > 1 ) {
+
+                        currentPathSegment.splitPoints.push( { x: position.x, y: position.y } );
+
+                    }
                     
                     //if ( _checkIfPointAlreadyExists( currentPathSegment.endPosition ) === true ) {
                     
