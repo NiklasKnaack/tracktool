@@ -386,14 +386,7 @@
 
                         if ( _currentPathSegment.endPosition.x === pathSegment.endPosition.x && _currentPathSegment.endPosition.y === pathSegment.endPosition.y ) {
 
-                            const startPosTemp = { x: pathSegment.startPosition.x, y: pathSegment.startPosition.y };
-                            const endPosTemp = { x: pathSegment.endPosition.x, y: pathSegment.endPosition.y };
-
-                            pathSegment.startPosition.x = endPosTemp.x;
-                            pathSegment.startPosition.y = endPosTemp.y;
-
-                            pathSegment.endPosition.x = startPosTemp.x;
-                            pathSegment.endPosition.y = startPosTemp.y;
+                            flipPathSegmentStartEnd( pathSegment );
 
                             _nextPathSegment = path.segments.splice( i, 1 )[ 0 ];
 
@@ -440,9 +433,122 @@
 
             }
 
+            //---
 
+            function flipPathSegmentStartEnd( pathSegment ) {
 
+                const startPosTemp = { x: pathSegment.startPosition.x, y: pathSegment.startPosition.y };
+                const endPosTemp = { x: pathSegment.endPosition.x, y: pathSegment.endPosition.y };
 
+                pathSegment.startPosition.x = endPosTemp.x;
+                pathSegment.startPosition.y = endPosTemp.y;
+
+                pathSegment.endPosition.x = startPosTemp.x;
+                pathSegment.endPosition.y = startPosTemp.y;
+
+            }
+
+            //---
+
+            function removeStartPointToPathSegment() {
+
+                const path = pathHolder[ 0 ];
+
+                const pathSegmentStart = path.segments.find( pathSegment => pathSegment.startPoint !== null );
+
+                if ( typeof pathSegmentStart !== 'undefined' ) {
+
+                    pathSegmentStart.startPoint = null;
+
+                }
+
+            }
+
+            function addStartPointToPathSegment( position ) {
+
+                removeStartPointToPathSegment();
+
+                //---
+
+                const path = pathHolder[ 0 ];
+
+                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                    const pathSegment = path.segments[ i ];
+
+                    if ( pathSegment.startPosition.x === position.x && pathSegment.startPosition.y === position.y ) {
+
+                        pathSegment.startPoint = { x: position.x, y: position.y };
+
+                    }
+
+                    if ( pathSegment.endPosition.x === position.x && pathSegment.endPosition.y === position.y ) {
+
+                        flipPathSegmentStartEnd( pathSegment );
+
+                        pathSegment.startPoint = { x: position.x, y: position.y };
+
+                    }
+
+                }
+
+                if ( DEBUG === true ) {
+
+                    rebuildDebugElements();
+
+                }
+
+            }
+
+            function removeEndPointToPathSegment() {
+
+                const path = pathHolder[ 0 ];
+
+                const pathSegmentEnd = path.segments.find( pathSegment => pathSegment.endPoint !== null );
+
+                if ( typeof pathSegmentEnd !== 'undefined' ) {
+
+                    pathSegmentEnd.endPoint = null;
+
+                }
+
+            }
+
+            function addEndPointToPathSegment( position ) {
+
+                removeEndPointToPathSegment();
+
+                //---
+
+                const path = pathHolder[ 0 ];
+
+                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                    const pathSegment = path.segments[ i ];
+
+                    if ( pathSegment.startPosition.x === position.x && pathSegment.startPosition.y === position.y ) {
+
+                        pathSegment.endPoint = { x: position.x, y: position.y };
+
+                    }
+
+                    if ( pathSegment.endPosition.x === position.x && pathSegment.endPosition.y === position.y ) {
+
+                        flipPathSegmentStartEnd( pathSegment );
+
+                        pathSegment.endPoint = { x: position.x, y: position.y };
+
+                    }
+
+                }
+
+                if ( DEBUG === true ) {
+
+                    rebuildDebugElements();
+
+                }
+
+            }
 
 
 
@@ -563,119 +669,7 @@
 
 
 
-            function removeStartPointToPathSegment() {
-
-                const path = pathHolder[ 0 ];
-
-                const pathSegmentStart = path.segments.find( pathSegment => pathSegment.startPoint !== null );
-
-                if ( typeof pathSegmentStart !== 'undefined' ) {
-
-                    pathSegmentStart.startPoint = null;
-
-                }
-
-            }
-
-            function addStartPointToPathSegment( position ) {
-
-                removeStartPointToPathSegment();
-
-                //---
-
-                const path = pathHolder[ 0 ];
-
-                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-
-                    const pathSegment = path.segments[ i ];
-
-                    if ( pathSegment.startPosition.x === position.x && pathSegment.startPosition.y === position.y ) {
-
-                        pathSegment.startPoint = { x: position.x, y: position.y };
-
-                    }
-
-                    if ( pathSegment.endPosition.x === position.x && pathSegment.endPosition.y === position.y ) {
-
-                        const startPosTemp = { x: pathSegment.startPosition.x, y: pathSegment.startPosition.y };
-                        const endPosTemp = { x: pathSegment.endPosition.x, y: pathSegment.endPosition.y };
-
-                        pathSegment.startPosition.x = endPosTemp.x;
-                        pathSegment.startPosition.y = endPosTemp.y;
-
-                        pathSegment.endPosition.x = startPosTemp.x;
-                        pathSegment.endPosition.y = startPosTemp.y;
-
-                        pathSegment.startPoint = { x: position.x, y: position.y };
-
-                    }
-
-                }
-
-                if ( DEBUG === true ) {
-
-                    rebuildDebugElements();
-
-                }
-
-            }
-
-            function removeEndPointToPathSegment() {
-
-                const path = pathHolder[ 0 ];
-
-                const pathSegmentEnd = path.segments.find( pathSegment => pathSegment.endPoint !== null );
-
-                if ( typeof pathSegmentEnd !== 'undefined' ) {
-
-                    pathSegmentEnd.endPoint = null;
-
-                }
-
-            }
-
-            function addEndPointToPathSegment( position ) {
-
-                removeEndPointToPathSegment();
-
-                //---
-
-                const path = pathHolder[ 0 ];
-
-                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-
-                    const pathSegment = path.segments[ i ];
-
-                    if ( pathSegment.startPosition.x === position.x && pathSegment.startPosition.y === position.y ) {
-
-                        pathSegment.endPoint = { x: position.x, y: position.y };
-
-                    }
-
-                    if ( pathSegment.endPosition.x === position.x && pathSegment.endPosition.y === position.y ) {
-
-                        const startPosTemp = { x: pathSegment.startPosition.x, y: pathSegment.startPosition.y };
-                        const endPosTemp = { x: pathSegment.endPosition.x, y: pathSegment.endPosition.y };
-
-                        pathSegment.startPosition.x = endPosTemp.x;
-                        pathSegment.startPosition.y = endPosTemp.y;
-
-                        pathSegment.endPosition.x = startPosTemp.x;
-                        pathSegment.endPosition.y = startPosTemp.y;
-
-                        pathSegment.endPoint = { x: position.x, y: position.y };
-
-                    }
-
-                }
-
-                if ( DEBUG === true ) {
-
-                    rebuildDebugElements();
-
-                }
-
-            }
+            
 
 
 
