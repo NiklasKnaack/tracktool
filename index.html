@@ -75,12 +75,16 @@
                 { 
                     id: 0, 
                     segments: [
-                        { index: 0, startPoint: { x: 240, y: 438, split: false }, endPoint: { x: 521, y: 363, split: false }, centerPoint: { x: 380.5, y: 400.5 }, length: 290.8367239534925, startPosition: { x: 240, y: 438 }, endPosition: null },
+                        { index: 0, startPoint: { x: 240, y: 438, split: false }, endPoint: { x: 521, y: 363, split: true }, centerPoint: { x: 380.5, y: 400.5 }, length: 290.8367239534925, startPosition: { x: 240, y: 438 }, endPosition: null },
+                        //{ index: 0, startPoint: { x: 240, y: 438, split: false }, endPoint: { x: 521, y: 363, split: false }, centerPoint: { x: 380.5, y: 400.5 }, length: 290.8367239534925, startPosition: { x: 240, y: 438 }, endPosition: null },
                         { index: 1, startPoint: { x: 521, y: 363, split: false }, endPoint: { x: 980, y: 371, split: false }, centerPoint: { x: 750.5, y: 367 }, length: 459.0697114818184, startPosition: null, endPosition: null },
                         { index: 2, startPoint: { x: 980, y: 371, split: false }, endPoint: { x: 1154, y: 219, split: false }, centerPoint: { x: 1067, y: 295 }, length: 231.0411218809327, startPosition: null, endPosition: null },
                         { index: 3, startPoint: { x: 1154, y: 219, split: false }, endPoint: { x: 1143, y: 95, split: false }, centerPoint: { x: 1148.5, y: 157 }, length: 124.4869471069156, startPosition: null, endPosition: null },
                         { index: 4, startPoint: { x: 1143, y: 95, split: false }, endPoint: { x: 536, y: 97, split: false }, centerPoint: { x: 839.5, y: 96 }, length: 607.0032948839735, startPosition: null, endPosition: null },
-                        { index: 5, startPoint: { x: 536, y: 97, split: false }, endPoint: { x: 158, y: 162, split: false }, centerPoint: { x: 347, y: 129.5 }, length: 383.54791095767945, startPosition: null, endPosition: { x: 158, y: 162 } }
+                        { index: 5, startPoint: { x: 536, y: 97, split: false }, endPoint: { x: 158, y: 162, split: false }, centerPoint: { x: 347, y: 129.5 }, length: 383.54791095767945, startPosition: null, endPosition: { x: 158, y: 162 } },
+
+                        { index: 6, startPoint: { x: 521, y: 363, split: true }, endPoint: { x: 696, y: 670, split: false }, centerPoint: { x: 608.5, y: 516.5 }, length: 353.3751547576598, startPosition: null, endPosition: null },
+                        { index: 7, startPoint: { x: 696, y: 670, split: false }, endPoint: { x: 1120, y: 671, split: false }, centerPoint: { x: 908, y: 670.5 }, length: 424.00117924364315, startPosition: null, endPosition: null }
                     ] 
                 }
             ];
@@ -134,6 +138,12 @@
                     console.log( pathHolder[ 0 ].segments );
                 
                 }
+
+                const _testPath = () => {
+                    
+                    testPath();
+                
+                }
                 
                 const _linkTo = () => {
                 
@@ -151,6 +161,7 @@
                     'Sort Path': _sortPath,
                     'Clear All': _clearAll,
                     'Log Path': _logPath,
+                    'Test Path': _testPath,
                     '@niklaswebdev': _linkTo
                     
                 }
@@ -164,6 +175,7 @@
                 gui.add( guiSetting, 'Sort Path' );
                 gui.add( guiSetting, 'Clear All' );
                 gui.add( guiSetting, 'Log Path' );
+                gui.add( guiSetting, 'Test Path' );
                 gui.add( guiSetting, '@niklaswebdev' );
 
             }
@@ -217,6 +229,142 @@
                 animationFrame = requestAnimFrame( render );
 
             }
+
+            //---
+
+
+
+
+
+
+
+
+            function testPath() {
+
+                const pathSegments = [ ...pathHolder[ 0 ].segments ];
+
+                console.log( 'testPath()' );
+
+                //---
+
+                const pathes = [];
+                const pathesIndex = 0;
+
+                pathes[ pathesIndex ] = { segments: [], totalLength: 0, foundEnd: false }
+
+                //---
+
+                const pathSegmentStartIndex = pathSegments.findIndex( pathSegment => pathSegment.startPosition !== null );
+                const pathSegmentStart = pathSegments.splice( pathSegmentStartIndex, 1 )[ 0 ];
+
+                //---
+
+                recursive( pathSegments, pathes, pathesIndex, 0, pathSegmentStart, true );
+
+                //---
+
+                console.log( 'testDone()' );
+                //console.log( pathes );
+
+                for ( let i = 0, l = pathes.length; i < l; i ++ ) {
+
+                    const p = pathes[ i ];
+
+                    console.log( 'path ', i.toString(), '(foundEnd: ' + p.foundEnd + ', totalLength: ' + p.totalLength + '):' );
+
+                    for ( let j = 0, m = p.segments.length; j < m; j ++ ) {
+
+                        if ( p.foundEnd === true ) {
+
+                            p.segments[ j ].sorted = true;
+
+                        }
+
+                        console.log( p.segments[ j ] );
+
+
+                    }
+
+                }
+
+            }
+
+            function recursive( pathSegments, pathes, index, iteration, pathSegmentCurrent, resume = true ) {
+
+                pathes[ index ].segments.push( pathSegmentCurrent );
+                pathes[ index ].totalLength += pathSegmentCurrent.length;
+
+                iteration++;
+
+                //console.log( pathes[ index ].segments );
+
+                if ( resume === false ) {
+
+                    pathes[ index ].foundEnd = true;
+
+                    return;
+
+                }
+
+                const _nextPathSegments = [];
+                const _pathSegmentsLength = pathSegments.length;
+
+                for ( let i = _pathSegmentsLength - 1, l = -1; i > l; i -- ) {
+
+                    const pathSegment = pathSegments[ i ];
+
+                    
+                    if ( pathSegmentCurrent.endPoint.x === pathSegment.startPoint.x && pathSegmentCurrent.endPoint.y === pathSegment.startPoint.y ) {
+
+                        _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+
+                    }
+
+                    if ( pathSegmentCurrent.endPoint.x === pathSegment.endPoint.x && pathSegmentCurrent.endPoint.y === pathSegment.endPoint.y ) {
+
+                        flipPathSegmentStartEnd( pathSegment );
+
+                        _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+
+                    }
+                    
+                }
+
+                if ( _nextPathSegments.length > 0 ) {
+
+                    for ( let i = 0, l = _nextPathSegments.length; i < l; i ++ ) {
+
+                        const nextPathSegment = _nextPathSegments[ i ];
+
+                        if ( i > 0 ) {
+
+                            pathes[ index + i ] = { segments: [ ...pathes[ index ].segments ].splice( 0, iteration ), totalLength: pathes[ index ].totalLength, foundEnd: false };
+
+                        }
+
+                        if ( nextPathSegment.endPosition === null ) {
+
+                            recursive( pathSegments, pathes, index + i, iteration, nextPathSegment, true );
+
+                        } else {
+
+                            recursive( pathSegments, pathes, index + i, iteration, nextPathSegment, false );
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+
+
+
+
+
+
 
             //---
 
