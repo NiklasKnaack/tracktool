@@ -250,7 +250,7 @@
                 const pathes = [];
                 const pathesIndex = 0;
 
-                pathes[ pathesIndex ] = { segments: [], totalLength: 0, foundEnd: false }
+                pathes[ pathesIndex ] = { id: pathesIndex, segments: [], totalLength: 0, foundEnd: false }
 
                 //---
 
@@ -259,7 +259,7 @@
 
                 //---
 
-                recursive( pathSegments, pathes, pathesIndex, 0, pathSegmentStart, true );
+                recursive( pathSegments, [ ...pathSegments ], pathes, pathesIndex, 0, pathSegmentStart, true );
 
                 //---
 
@@ -280,8 +280,8 @@
 
                         }
 
-                        console.log( p.segments[ j ] );
-
+                        console.log( p.segments[ j ].index, ' - ', p.segments[ j ].length );
+                        //console.log( p.segments[ j ] );
 
                     }
 
@@ -289,7 +289,7 @@
 
             }
 
-            function recursive( pathSegments, pathes, index, iteration, pathSegmentCurrent, resume = true ) {
+            function recursive( pathSegments, pathSegmentsLookUp, pathes, index, iteration, pathSegmentCurrent, resume = true ) {
 
                 pathes[ index ].segments.push( pathSegmentCurrent );
                 pathes[ index ].totalLength += pathSegmentCurrent.length;
@@ -299,6 +299,9 @@
                 //console.log( pathes[ index ].segments );
 
                 if ( resume === false ) {
+                //if ( pathSegments.length === 0 ) {
+
+                    console.log( 'ENDE: ', pathSegments.length );
 
                     pathes[ index ].foundEnd = true;
 
@@ -309,10 +312,11 @@
                 const _nextPathSegments = [];
                 const _pathSegmentsLength = pathSegments.length;
 
+                //const testi = [ ...pathSegments ];
+
                 for ( let i = _pathSegmentsLength - 1, l = -1; i > l; i -- ) {
 
                     const pathSegment = pathSegments[ i ];
-
                     
                     if ( pathSegmentCurrent.endPoint.x === pathSegment.startPoint.x && pathSegmentCurrent.endPoint.y === pathSegment.startPoint.y ) {
 
@@ -329,8 +333,18 @@
                     }
                     
                 }
+                
+                /*
+                if ( pathSegmentCurrent.startPoint.split === true && iteration === 1 ) {
 
-                if ( _nextPathSegments.length > 0 ) {
+                    _nextPathSegments.push( pathSegmentCurrent );
+
+                }
+                */
+
+                console.log( pathes[ index ].id , ' -|- ', iteration, '--->> ', _nextPathSegments.length );
+
+                if ( _nextPathSegments.length > 0 /*&& resume === true*/ ) {
 
                     for ( let i = 0, l = _nextPathSegments.length; i < l; i ++ ) {
 
@@ -338,17 +352,32 @@
 
                         if ( i > 0 ) {
 
-                            pathes[ index + i ] = { segments: [ ...pathes[ index ].segments ].splice( 0, iteration ), totalLength: pathes[ index ].totalLength, foundEnd: false };
+                            pathes[ index + i ] = { id: index + i, segments: [ ...pathes[ index ].segments ].splice( 0, iteration ), totalLength: pathes[ index ].totalLength, foundEnd: false };
+                            //pathSegments = [ ...pathSegmentsLookUp ];
+                            console.log("--------------------->>> ", nextPathSegment.index);
+
+                        }
+                        //console.log("///---------------->>> ", nextPathSegment.index);
+                        if ( nextPathSegment.endPoint.split === true ) {
+                            //console.log("--------------------->>> ", nextPathSegment.index);
+                            //console.log("-------------------------------------------------");
+
+                            //pathSegments = [ ...pathSegmentsLookUp ].splice( iteration, pathSegmentsLookUp.length );
+                            //pathSegments = [ ...pathSegmentsLookUp ].splice( 0, iteration );
+                            //pathSegments.push( nextPathSegment );
 
                         }
 
                         if ( nextPathSegment.endPosition === null ) {
 
-                            recursive( pathSegments, pathes, index + i, iteration, nextPathSegment, true );
+                            recursive( pathSegments, pathSegmentsLookUp, pathes, index + i, iteration, nextPathSegment, true );
 
                         } else {
 
-                            recursive( pathSegments, pathes, index + i, iteration, nextPathSegment, false );
+                            //pathSegments = testi;
+                            //pathSegments.push( pathSegmentCurrent );
+
+                            recursive( pathSegments, pathSegmentsLookUp, pathes, index + i, iteration, nextPathSegment, false );
 
                         }
 
