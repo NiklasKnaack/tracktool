@@ -1,0 +1,426 @@
+(1)
+    [ pathSegments ]       = [ <0>,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ >0<,>1< ]
+    { pathSegmentCurrent } = >0<
+    [ next ] = [ <10>,<1> ]
+    [ path ] = [ >0< ]
+    { nextPathSegment } = >10<
+    [] = [ >0< ]
+    //root = true;
+    iteration = <0>++
+    [ split indices ] = [ >0< ]
+
+(2)
+    [ pathSegments ]       = [ 1,2,3,4,5,6,7,8,9,<10>,11,12 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 0,1 ]
+    { pathSegmentCurrent } = >10<
+    [ next ] = [ <11> ]
+    [ path ] = [ 0, >10< ]
+    { nextPathSegment } = >11<
+    [] = [ 0, >10< ]
+    //root = true;
+    iteration = 1++
+    [ split indices ] = [ 0 ]
+
+(3)
+    [ pathSegments ]       = [ 1,2,3,4,5,6,7,8,9,<11>,12 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 0,1 ]
+    { pathSegmentCurrent } = >11<
+    [ next ] = [ <12> ]
+    [ path ] = [ 0, 10, >11< ]
+    { nextPathSegment } = >12<
+    [] = [ 0, 10, >11< ]
+    //root = true;
+    iteration = 2++
+    [ split indices ] = [ 0 ]
+
+(4)
+    [ pathSegments ]       = [ 1,2,3,4,5,6,7,8,9,<12> ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ <0>,1 ]
+    { pathSegmentCurrent } = >12<
+    [ next ] = [ <null> ]
+    [ path ] = [ 0, 10, 11, >12< ] // <--- END
+    { nextPathSegment } = >0<
+    [] = [ 0, 10, 11, >12< ]
+    //root = <true>;
+    iteration = 0++
+    [ split indices ] = [ 0 ]
+
+(5)
+    [ pathSegments ]       = [ 1,2,3,4,5,6,7,8,9 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ <1> ]
+    { pathSegmentCurrent } = >0<
+    [ next ] = [ <1> ]
+    [ path ] = [ >0< ]
+    { nextPathSegment } = >1<
+    [] = [ >0< ]
+    //root = false;
+    iteration = 1++
+    [ split indices ] = [ 0 ]
+
+(6)
+    [ pathSegments ]       = [ <1>,2,3,4,5,6,7,8,9 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ <6>,2 ]
+    { pathSegmentCurrent } = >1<
+    [ next ] = [ <6>,2 ]
+    [ path ] = [ 0, >1< ]
+    { nextPathSegment } = >6<
+    [] = [ 0, >1< ]
+    //root = false;
+    iteration = <2>++
+    [ split indices ] = [ 0, 2 ]
+
+(7)
+    [ pathSegments ]       = [ 2,3,4,5,<6>,7,8,9 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 2 ]
+    { pathSegmentCurrent } = >6<
+    [ next ] = [ <7> ]
+    [ path ] = [ 0, 1, >6<  ]
+    { nextPathSegment } = >7<
+    [] = [ 0, 1, >6< ]
+    //root = false;
+    iteration = 3++
+    [ split indices ] = [ 0, 2 ]
+
+(8)
+    [ pathSegments ]       = [ 2,3,4,5,<7>,8,9 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 2, >8< ]
+    { pathSegmentCurrent } = >7<
+    [ next ] = [ <9>, <8> ]
+    [ path ] = [ 0, 1, 6, >7<  ]
+    { nextPathSegment } = >9<
+    [] = [ 0, 1, 6, >7< ]
+    //root = false;
+    iteration = <4>++
+    [ split indices ] = [ 0, 2, 4 ]
+
+(9)
+    [ pathSegments ]       = [ 2,3,4,5,8,<9> ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 2, 8 ]
+    { pathSegmentCurrent } = >9<
+    [ next ] = [ null ]
+    [ path ] = [ 0, 1, 6, 7, >9<  ] // <--- END
+    { nextPathSegment } = >0<
+    [] = [ 0, 1, 6, 7, >9< ]
+    //root = false;
+    iteration = 0++
+    [ split indices ] = [ 0, 2, 4 ]
+
+(10)
+    [ pathSegments ]       = [ 2,3,4,5,8 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 2, 8 ]
+    { pathSegmentCurrent } = >0<
+    [ next ] = [ >1< ]
+    [ path ] = [ >0<  ]
+    { nextPathSegment } = >0<
+    [] = [ <0>, <<1>>, 6, 7 ]
+    //root = false;
+    iteration = 1++
+    [ split indices ] = [ 0, 2 ]
+
+(11)
+    [ pathSegments ]       = [ 2,3,4,5,8 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 2, 8 ]
+    { pathSegmentCurrent } = >1<
+    [ next ] = [ >6< ]
+    [ path ] = [ 0, >1<  ]
+    { nextPathSegment } = >0<
+    [] = [ <1>, <<6>>, 7 ]
+    //root = false;
+    iteration = 2++
+    [ split indices ] = [ 0, 2 ]
+
+(11)
+    [ pathSegments ]       = [ 2,3,4,5,8 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 2, 8 ]
+    { pathSegmentCurrent } = >6<
+    [ next ] = [ >7< ]
+    [ path ] = [ 0, 1, >6< ]
+    { nextPathSegment } = >7<
+    [] = [ <6>, <<7>> ]
+    //root = false;
+    iteration = 3++
+    [ split indices ] = [ 0, 2 ]
+
+(12)
+    [ pathSegments ]       = [ 2,3,4,5,<8> ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 2, 8 ]
+    { pathSegmentCurrent } = >7<
+    [ next ] = [ >8< ]
+    [ path ] = [ 0, 1, 6, >7< ]
+    { nextPathSegment } = >8<
+    [] = [ <7> ]
+    //root = false;
+    iteration = 3++
+    [ split indices ] = [ 0, 2 ]
+
+(12)
+    [ pathSegments ]       = [ 2,3,4,5 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 2, 8 ]
+    { pathSegmentCurrent } = >8<
+    [ next ] = [ null ]
+    [ path ] = [ 0, 1, 6, 7, >8< ]
+    { nextPathSegment } = >8<
+    [] = []
+    //root = false;
+    iteration = 3++
+    [ split indices ] = [ 0, 2 ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(1)
+    [ pathSegments ]       = [ <0>,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ >0< ]
+    { pathSegmentCurrent } = >0<
+    [ next ] = [ <10>,1 ]
+    [ path ] = [ >0< ]
+    { nextPathSegment } = >10<
+    [] = []
+
+(2)
+    [ pathSegments ]       = [ 1,2,3,4,5,6,7,8,9,<10>,11,12 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 0 ]
+    { pathSegmentCurrent } = >10<
+    [ next ] = [ <11> ]
+    [ path ] = [ 0, >10< ]
+    { nextPathSegment } = >11<
+    [] = []
+
+(3)
+    [ pathSegments ]       = [ 1,2,3,4,5,6,7,8,9,<11>,12 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 0 ]
+    { pathSegmentCurrent } = >11<
+    [ next ] = [ <12> ]
+    [ path ] = [ 0, 10, >11< ]
+    { nextPathSegment } = >12<
+    [] = []
+
+(4)
+    [ pathSegments ]       = [ 1,2,3,4,5,6,7,8,9,<12> ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ 0 ]
+    { pathSegmentCurrent } = >12<
+    [ next ] = [ <null> ]
+    [ path ] = [ 0, 10, 11, >12< ] // <--- END
+    { nextPathSegment } = >0<
+    [] = []
+
+(5)
+    [ pathSegments ]       = [ 1,2,3,4,5,6,7,8,9 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = [ <0> ]
+    { pathSegmentCurrent } = >12<
+    [ next ] = [ <null> ]
+    [ path ] = [ >0< ]
+    { nextPathSegment } = >0<
+    [] = []
+
+(6)
+    [ pathSegments ]       = [ <1>,2,3,4,5,6,7,8,9 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >1<
+    [ next ] = [ <6>,2 ]
+    [ path ] = [ 0, >1< ]
+    { nextPathSegment } = >6<
+    [] = []
+
+(7)
+    [ pathSegments ]       = [ 2,3,4,5,<6>,7,8,9 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >6<
+    [ next ] = [ <7> ]
+    [ path ] = [ 0, 1, >6< ]
+    { nextPathSegment } = >7<
+    [] = []
+
+(8)
+    [ pathSegments ]       = [ 2,3,4,5,<7>,8,9 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >7<
+    [ next ] = [ <9>,8 ]
+    [ path ] = [ 0, 1, 6, >7< ]
+    { nextPathSegment } = >9<
+    [] = []
+
+(9)
+    [ pathSegments ]       = [ 2,3,4,5,8,<9> ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >9<
+    [ next ] = [ null ]
+    [ path ] = [ 0, 1, 6, 7, >9< ] // <--- END
+    { nextPathSegment } = >0<
+    [] = []
+
+(10)
+    [ pathSegments ]       = [ 2,3,4,5,8 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >0<
+    [ next ] = [ <1> ]
+    [ path ] = [ >0< ]
+    { nextPathSegment } = >1<
+    [] = []
+
+(11)
+    [ pathSegments ]       = [ 2,3,4,5,8 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >1<
+    [ next ] = [ <6> ]
+    [ path ] = [ 0, >1< ]
+    { nextPathSegment } = >6<
+    [] = []
+
+(12)
+    [ pathSegments ]       = [ 2,3,4,5,8 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >6<
+    [ next ] = [ <7> ]
+    [ path ] = [ 0, 1, >6< ]
+    { nextPathSegment } = >7<
+    [] = []
+
+(13)
+    [ pathSegments ]       = [ 2,3,4,5,8 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >6<
+    [ next ] = [ <8> ]
+    [ path ] = [ 0, 1, 6, >7< ]
+    { nextPathSegment } = >8<
+    [] = []
+
+(14)
+    [ pathSegments ]       = [ 2,3,4,5,<8> ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >8<
+    [ next ] = [ null ]
+    [ path ] = [ 0, 1, 6, 7, >8< ] // <--- END
+    { nextPathSegment } = >0<
+    [] = []
+
+(15)
+    [ pathSegments ]       = [ 2,3,4,5 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >0<
+    [ next ] = [ <1> ]
+    [ path ] = [ >0< ]
+    { nextPathSegment } = >1<
+    [] = []
+
+(16)
+    [ pathSegments ]       = [ 2,3,4,5 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >1<
+    [ next ] = [ <2> ]
+    [ path ] = [ 0, >1< ]
+    { nextPathSegment } = >2<
+    [] = []
+
+(17)
+    [ pathSegments ]       = [ <2>,3,4,5 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >2<
+    [ next ] = [ <5>,3 ]
+    [ path ] = [ 0, 1, >2< ]
+    { nextPathSegment } = >5<
+    [] = []
+
+(18)
+    [ pathSegments ]       = [ 3,4,<5> ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >5<
+    [ next ] = [ <5>,3 ]
+    [ path ] = [ 0, 1, 2, >5< ] // <--- END
+    { nextPathSegment } = >0<
+    [] = []
+
+(19)
+    [ pathSegments ]       = [ 3,4 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >0<
+    [ next ] = [ <1> ]
+    [ path ] = [ >0< ]
+    { nextPathSegment } = >1<
+    [] = []
+
+(20)
+    [ pathSegments ]       = [ 3,4 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >1<
+    [ next ] = [ <2> ]
+    [ path ] = [ 0, >1< ]
+    { nextPathSegment } = >2<
+    [] = []
+
+(21)
+    [ pathSegments ]       = [ 3,4 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >2<
+    [ next ] = [ <3> ]
+    [ path ] = [ 0, 1, >2< ]
+    { nextPathSegment } = >3<
+    [] = []
+
+(22)
+    [ pathSegments ]       = [ <3>,4 ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >3<
+    [ next ] = [ <4> ]
+    [ path ] = [ 0, 1, 2, >3< ]
+    { nextPathSegment } = >4<
+    [] = []
+
+(23)
+    [ pathSegments ]       = [ <4> ]
+    [ pathSegmentsLookUp ] = [ 0,1,2,3,4,5,6,7,8,9,10,11,12 ]
+    [] = []
+    { pathSegmentCurrent } = >4<
+    [ next ] = [ <null> ]
+    [ path ] = [ 0, 1, 2, 3, >4< ] // <--- END
+    { nextPathSegment } = null
+    [] = []
