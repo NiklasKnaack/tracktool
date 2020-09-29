@@ -97,7 +97,7 @@
                         { index: 7, startPoint: { x: 577, y: 492, split: false }, endPoint: { x: 577, y: 272, split: true }, centerPoint: { x: 577, y: 382 }, length: 220, startPosition: null, endPosition: null },
                         { index: 8, startPoint: { x: 742, y: 118, split: true }, endPoint: { x: 577, y: 272, split: false }, centerPoint: { x: 659.5, y: 195 }, length: 225.7011298155151, startPosition: null, endPosition: null },
                         { index: 9, startPoint: { x: 397, y: 117, split: true }, endPoint: { x: 577, y: 272, split: false }, centerPoint: { x: 487, y: 194.5 }, length: 237.53947040439405, startPosition: null, endPosition: { x: 397, y: 117 } },
-                        { index: 10, startPoint: { x: 519, y: 889, split: false }, endPoint: { x: 359, y: 734, split: false }, centerPoint: { x: 439, y: 811.5 }, length: 222.76669409945464, startPosition: { x: 519, y: 889 }, endPosition: null },
+                        { index: 10, startPoint: { x: 519, y: 889, split: false }, endPoint: { x: 359, y: 734, split: false }, centerPoint: { x: 439, y: 811.5 }, length: 222.76669409945464, startPosition: null, endPosition: null },
                         { index: 11, startPoint: { x: 359, y: 734, split: false }, endPoint: { x: 359, y: 577, split: false }, centerPoint: { x: 359, y: 655.5 }, length: 157, startPosition: null, endPosition: null },
                         { index: 12, startPoint: { x: 359, y: 577, split: false }, endPoint: { x: 239, y: 493, split: false }, centerPoint: { x: 299, y: 535 }, length: 146.47866738880444, startPosition: null, endPosition: null },
                     ] 
@@ -280,6 +280,462 @@
             }
 
             //---
+
+            function testPath() {
+
+                const pathSegments = [ ...pathHolder[ 0 ].segments ];
+                const pathSegmentsLookUp = [ ...pathSegments ];
+
+                //---
+
+                const pathes = [];
+                const pathesIndex = 0;
+
+                pathes[ pathesIndex ] = { id: pathesIndex, segments: [], totalLength: 0, foundEnd: false }
+
+                //---
+
+                const pathSegmentStart = pathSegments.find( pathSegment => pathSegment.startPosition !== null );
+                //const pathStartPosition = pathSegmentStart.startPosition;
+                //const pathSegmentStartIndex = pathSegments.findIndex( pathSegment => pathSegment.startPosition !== null );
+                //const pathSegmentStart = pathSegments.splice( pathSegmentStartIndex, 1 )[ 0 ];
+
+                const pathSegmentEnd = pathSegments.find( pathSegment => pathSegment.endPosition !== null );
+                //const pathEndPosition = pathSegmentEnd.endPosition;
+
+                //---
+
+                recursive( pathSegments, pathSegmentsLookUp, pathes, 0, pathesIndex, 0, pathSegmentStart, [], [], [], pathSegmentStart, pathSegmentEnd );
+
+                //---
+
+                console.log( 'testDone()' );
+                //console.log( pathes );
+
+                for ( let i = 0, l = pathes.length; i < l; i ++ ) {
+
+                    const p = pathes[ i ];
+
+                    console.log( 'path ', i.toString(), '(foundEnd: ' + p.foundEnd + ', totalLength: ' + p.totalLength + '):' );
+
+                    for ( let j = 0, m = p.segments.length; j < m; j ++ ) {
+
+                        if ( p.foundEnd === true ) {
+
+                            p.segments[ j ].sorted = true;
+
+                        }
+
+                        console.log( p.segments[ j ].index, ' - ', p.segments[ j ].length );
+                        //console.log( p.segments[ j ] );
+
+                    }
+
+                }
+
+            }
+
+            function recursive( pathSegments, pathSegmentsLookUp, pathes, pathCurrentIndex, index, iteration, pathSegmentCurrent, splitpointsIndices, pathSegmentsSave, pathSegmentsSavecurrent, pathSegmentStart, pathSegmentEnd ) {
+                console.log('-------------------------recursive-------------------------');
+                pathSegmentsSavecurrent.push( pathSegmentCurrent );
+
+                let output_pathSegmentsSavecurrent0 = '[pathSegmentsSavecurrent]: [';
+                for ( let i = 0, l = pathSegmentsSavecurrent.length; i < l; i ++ ) {
+                    output_pathSegmentsSavecurrent0 += i === l - 1 ? pathSegmentsSavecurrent[ i ].index : pathSegmentsSavecurrent[ i ].index + ', ';
+                }
+                output_pathSegmentsSavecurrent0 += ']';
+                console.log( output_pathSegmentsSavecurrent0 );
+
+
+
+                pathes[ index ].segments.push( pathSegmentCurrent );
+                pathes[ index ].totalLength += pathSegmentCurrent.length;
+
+                if ( pathSegmentCurrent.startPoint.x === pathSegmentEnd.endPosition.x && pathSegmentCurrent.startPoint.y === pathSegmentEnd.endPosition.y ||
+                     pathSegmentCurrent.endPoint.x === pathSegmentEnd.endPosition.x && pathSegmentCurrent.endPoint.y === pathSegmentEnd.endPosition.y ) {
+
+                    pathes[ index ].foundEnd = true;
+
+                }
+
+                //if ( index === 0 && pathSegmentCurrent.index !==  ) {
+
+                    //console.log( '--> ', pathSegmentCurrent );
+
+                //}
+
+                //iteration++;
+
+                //---
+
+                const _nextPathSegments = [];
+                const _pathSegmentsLength = pathSegments.length;
+
+                for ( let i = _pathSegmentsLength - 1, l = -1; i > l; i -- ) {
+
+                    const pathSegment = pathSegments[ i ];
+
+                    if ( pathSegmentCurrent.index !== pathSegment.index ) {
+
+                        if ( pathSegmentCurrent.endPoint.x === pathSegment.startPoint.x && pathSegmentCurrent.endPoint.y === pathSegment.startPoint.y ) {
+
+                            //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+                            //_nextPathSegments.push( { segment: pathSegments.sclice( i, 1 )[ 0 ], index: i } );
+
+                            const nPS = pathSegments.splice( i, 1 )[ 0 ];
+
+                            _nextPathSegments.push( nPS );
+                            pathSegmentsSave.push( nPS );
+
+                        }
+
+                        if ( pathSegmentCurrent.endPoint.x === pathSegment.endPoint.x && pathSegmentCurrent.endPoint.y === pathSegment.endPoint.y ) {
+
+                            flipPathSegmentStartEnd( pathSegment );
+
+                            //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+
+                            const nPS = pathSegments.splice( i, 1 )[ 0 ];
+
+                            _nextPathSegments.push( nPS );
+                            pathSegmentsSave.push( nPS );
+
+                        }
+
+                        if ( pathSegmentCurrent.startPoint.x === pathSegment.startPoint.x && pathSegmentCurrent.startPoint.y === pathSegment.startPoint.y ) {
+
+                            //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+
+                            const nPS = pathSegments.splice( i, 1 )[ 0 ];
+
+                            _nextPathSegments.push( nPS );
+                            pathSegmentsSave.push( nPS );
+
+                        }
+
+                        if ( pathSegmentCurrent.startPoint.x === pathSegment.endPoint.x && pathSegmentCurrent.startPoint.y === pathSegment.endPoint.y ) {
+
+                            flipPathSegmentStartEnd( pathSegment );
+
+                            //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+
+                            const nPS = pathSegments.splice( i, 1 )[ 0 ];
+
+                            _nextPathSegments.push( nPS );
+                            pathSegmentsSave.push( nPS );
+
+                        }
+
+                    }
+                      
+                }
+
+                //---
+
+
+
+                //---
+
+                //console.log( _nextPathSegments );
+
+                //---
+
+                if ( _nextPathSegments.length > 1 ) {
+
+                    splitpointsIndices.push( { index: pathCurrentIndex, count: _nextPathSegments.length - 1 } );
+
+                }
+
+                if ( _nextPathSegments.length > 0 /*&& pathes[ index ].foundEnd === false*/ ) {
+
+                    //let nextPathSegment = _nextPathSegments[ 0 ];
+
+                    if ( pathCurrentIndex === 0 && _nextPathSegments.length > 1 ) {
+
+                        let followPathSegmentIndex = -1;
+
+                        for ( let i = _nextPathSegments.length - 1, l = -1; i > l; i -- ) {
+
+                            const _nPS = _nextPathSegments[ i ];
+
+                            if ( _nPS.startPoint !== null && pathSegmentCurrent.startPosition !== null ) {
+
+                                if ( _nPS.startPoint.x !== pathSegmentCurrent.startPosition.x && _nPS.startPoint.y !== pathSegmentCurrent.startPosition.y &&
+                                     _nPS.endPoint.x !== pathSegmentCurrent.startPosition.x && _nPS.endPoint.y !== pathSegmentCurrent.startPosition.y ) {
+
+                                    followPathSegmentIndex = i;
+
+                                    break;
+
+                                }
+
+                            }
+
+                        }
+
+                        if ( followPathSegmentIndex > -1 ) {
+
+                            nextPathSegment = _nextPathSegments.splice( followPathSegmentIndex, 1 )[ 0 ];
+
+                        } else {
+
+                            nextPathSegment = _nextPathSegments.shift();
+
+                        }
+
+                        //console.log("sdgdfgsdfgsdfgkjdfhb8e7ortzg9eirhwerighidfughreiubfhrt8o7hv8o725h48o7vrt8gg8o7h4w9p8gjsfgilh249p5gjrtp98zu54ohbjrt54p9z");
+
+                        //splitpoints = [ ...splitpoints, ..._nextPathSegments ];
+
+                    } else {
+
+                        nextPathSegment = _nextPathSegments.shift();
+
+                        //splitpoints = [ ...splitpoints, ..._nextPathSegments ];
+
+                    }
+
+                    //splitpoints = [ ...splitpoints, ..._nextPathSegments ];
+
+                    //console.log( 'nextPathSegment ---> ', nextPathSegment );
+                    //console.log( 'splitpoints ---> ', splitpoints );
+                    //console.log( 'splitpointsIndices ---> ', splitpointsIndices );
+                    //console.log( 'pathSegmentsSave ---> ', pathSegmentsSave );
+
+                    /*
+                    if ( nextPathSegment.startPoint.x !== pathSegmentStart.startPoint.x && nextPathSegment.startPoint.y !== pathSegmentStart.startPoint.y &&
+                         nextPathSegment.endPoint.x !== pathSegmentStart.endPoint.x && nextPathSegment.endPoint.y !== pathSegmentStart.endPoint.y ) {
+
+                            console.log( '---> ', pathSegmentCurrent ); 
+
+                            pathes[ index ].segments.push( pathSegmentCurrent );
+
+                            pathSegmentCurrent.sorted = true;
+
+                            //setTimeout(function(){ alert("Hello"); }, 3000);
+
+                    }
+                    */
+
+                    pathCurrentIndex++;
+
+                    //setTimeout( () => {
+                        
+                        recursive( pathSegments, pathSegmentsLookUp, pathes, pathCurrentIndex, index, iteration, nextPathSegment, splitpointsIndices, pathSegmentsSave, pathSegmentsSavecurrent, pathSegmentStart, pathSegmentEnd )
+                    
+                    //}, 250 );
+                    
+
+
+
+                    /*
+                    if ( pathSegmentCurrent.startPosition !== null ) {
+
+                        //if ( pathSegmentCurrent.startPosition.x !== nextPathSegment.startPoint.x && pathSegmentCurrent.startPosition.y !== nextPathSegment.startPoint.y ) {
+
+                            
+
+                        //}
+
+                    } else {
+
+                        pathes[ index ].segments.push( pathSegmentCurrent );
+
+                    }
+                    */
+
+                    //recursive(  );
+
+                } else {
+                    console.log( '-----------------------------------------------------------------------------------------------------' );
+                    //console.log( '//---> ', pathSegmentsSavecurrent );
+
+                    let output_pathSegmentsSavecurrent = '[pathSegmentsSavecurrent]: [';
+                    for ( let i = 0, l = pathSegmentsSavecurrent.length; i < l; i ++ ) {
+                        output_pathSegmentsSavecurrent += i === l - 1 ? pathSegmentsSavecurrent[ i ].index : pathSegmentsSavecurrent[ i ].index + ', ';
+                    }
+                    output_pathSegmentsSavecurrent += ']';
+                    console.log( output_pathSegmentsSavecurrent );
+                    //console.log( '//---> ', pathSegmentsSave );
+                    //console.log( '//---> ', pathSegments );
+                    //if ( splitpoints.length > 0 ) {
+
+                    let deadEndPathSegments = [];
+
+                    //const deadEndPathSegments = pathSegmentsSavecurrent.splice( 0, splitpointsIndices[ splitpointsIndices.length - 1 ].index + 1 );
+
+
+
+                    // Wenn es Duplikate gibt, dann gibt es eine Wiederholung, was bedeutet, dass dieser Part übersprungen werden kann.
+                    const valueArr = pathSegmentsSavecurrent.map( ( item ) => { return item.index } );
+                    const foundDuplicate = valueArr.some( ( item, idx ) => { return valueArr.indexOf( item ) != idx } );
+
+                    console.log( 'foundDuplicate ---->: ', foundDuplicate );
+
+
+
+
+
+                    
+                    if ( splitpointsIndices.length > 0 ) {
+
+                        deadEndPathSegments = pathSegmentsSavecurrent.splice( splitpointsIndices[ splitpointsIndices.length - 1 ].index + 1, pathSegmentsSavecurrent.length );
+
+                    }
+                    
+
+                    //console.log( splitpointsIndices[ splitpointsIndices.length - 1 ].index, pathSegmentsSavecurrent.length );
+                    //console.log( '//---> ', deadEndPathSegments );
+                    //splitpointsIndices.push( { index: pathCurrentIndex, count: _nextPathSegments.length - 1 } );
+
+                    let output_deadEndPathSegments = '[deadEndPathSegments]: [';
+                    for ( let i = 0, l = deadEndPathSegments.length; i < l; i ++ ) {
+                        output_deadEndPathSegments += i === l - 1 ? deadEndPathSegments[ i ].index : deadEndPathSegments[ i ].index + ', ';
+                    }
+                    output_deadEndPathSegments += ']';
+                    console.log( output_deadEndPathSegments );
+                    
+                    //das splitpointsIndices scheint nicht korrekt zu sein, bzw. wird nicht korrekt zurückgesetzt.
+                    let output_splitpointsIndices = '[splitpointsIndices]: [';
+                    for ( let i = 0, l = splitpointsIndices.length; i < l; i ++ ) {
+                        output_splitpointsIndices += i === l - 1 ? splitpointsIndices[ i ].index : splitpointsIndices[ i ].index + ', ';
+                    }
+                    output_splitpointsIndices += ']';
+                    console.log( output_splitpointsIndices );
+
+                    /*
+                    console.log("sdfsdfdsfsdf ---->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> KILLER : ", splitpointsIndices[ splitpointsIndices.length - 1 ].count);
+                    splitpointsIndices[ splitpointsIndices.length - 1 ].count--;
+                    
+                    if ( splitpointsIndices[ splitpointsIndices.length - 1 ].count === 0 ) {
+
+                        splitpointsIndices.pop();
+
+                    }
+                    */
+
+                    if ( deadEndPathSegments.length > 0 ) {
+
+                        splitpointsIndices.pop();
+
+                    }
+
+                    for ( let i = 0, l = deadEndPathSegments.length; i < l; i ++ ) {
+
+                        const deadEndPathSegment = deadEndPathSegments[ i ];
+
+                        //pathSegmentsSave.splice( pathSegmentsSave.findIndex( pS => pS.index === deadEndPathSegment.index ), 1 );
+                        //pathSegmentsLookUp.splice( pathSegmentsSave.findIndex( pS => pS.index === deadEndPathSegment.index ), 1 );
+
+                        //console.log( 'ÄÄÄÄÄ: ',  );
+
+                        for ( let j = pathSegmentsLookUp.length - 1, m = -1; j > m; j -- ) {
+
+                            const pS = pathSegmentsLookUp[ j ];
+
+                            if ( pS.index === deadEndPathSegment.index ) {
+
+                                pathSegmentsLookUp.splice( j, 1 );
+
+                            }
+
+                        }
+
+                    }
+
+                    let output_pathSegmentsSave = '[pathSegmentsSave]: [';
+                    for ( let i = 0, l = pathSegmentsSave.length; i < l; i ++ ) {
+                        output_pathSegmentsSave += i === l - 1 ? pathSegmentsSave[ i ].index : pathSegmentsSave[ i ].index + ', ';
+                    }
+                    output_pathSegmentsSave += ']';
+                    console.log( output_pathSegmentsSave );
+
+                    //console.log( '//---> ', pathSegmentsSave );
+
+                    pathSegments = [ ...pathSegmentsLookUp ];
+                    //console.log( '//---> ', pathSegmentsLookUp );
+
+                    let output_pathSegments = '[pathSegments]: [';
+                    for ( let i = 0, l = pathSegments.length; i < l; i ++ ) {
+                        output_pathSegments += i === l - 1 ? pathSegments[ i ].index : pathSegments[ i ].index + ', ';
+                    }
+                    output_pathSegments += ']';
+                    console.log( output_pathSegments );
+
+                    let output_pathSegmentsLookUp = '[pathSegmentsLookUp]: [';
+                    for ( let i = 0, l = pathSegmentsLookUp.length; i < l; i ++ ) {
+                        output_pathSegmentsLookUp += i === l - 1 ? pathSegmentsLookUp[ i ].index : pathSegmentsLookUp[ i ].index + ', ';
+                    }
+                    output_pathSegmentsLookUp += ']';
+                    console.log( output_pathSegmentsLookUp );
+
+
+                    // if ( splitpointsIndices.length === 1 ) {
+
+                    //     if ( splitpointsIndices[ 0 ].index === 0 ) {
+
+                    //         console.log('---> CUT <---');
+
+                    //         //index--;
+
+                    //     }
+
+                    // }
+
+
+                    pathSegmentsSave = [];
+                    pathSegmentsSavecurrent = [];
+                    splitpointsIndices = [];
+                    //splitpoints = [];
+
+                    nextPathSegment = pathSegments[ 0 ];
+
+                    
+
+                    pathCurrentIndex = 0;
+
+
+
+
+                    if ( foundDuplicate === true ) {
+
+                        pathes[ index ] = { id: index, segments: [], totalLength: 0, foundEnd: false };
+
+                    } else {
+
+                        index++;
+
+                        pathes[ index ] = { id: index, segments: [], totalLength: 0, foundEnd: false };
+
+                    }
+
+                    // index++;
+
+                    // pathes[ index ] = { id: index, segments: [], totalLength: 0, foundEnd: false };
+
+                    //splitpointsIndices
+
+                    // if ( foundDuplicate === false && pathSegments.length > 3 ) {
+
+                    //     recursive( pathSegments, pathSegmentsLookUp, pathes, pathCurrentIndex, index, iteration, nextPathSegment, splitpointsIndices, pathSegmentsSave, pathSegmentsSavecurrent, pathSegmentStart, pathSegmentEnd )
+                    
+                    // }
+
+                    iteration++;
+
+                    if ( iteration < 11 ) 
+                        recursive( pathSegments, pathSegmentsLookUp, pathes, pathCurrentIndex, index, iteration, nextPathSegment, splitpointsIndices, pathSegmentsSave, pathSegmentsSavecurrent, pathSegmentStart, pathSegmentEnd )
+                    
+
+
+                }
+
+
+
+
+                
+            }
+
             /*
             function testPath() {
 
@@ -559,6 +1015,17 @@
             */
 
             
+
+
+
+
+
+
+
+
+
+
+            /*
             function testPath() {
 
                 const pathSegments = [ ...pathHolder[ 0 ].segments ];
@@ -728,6 +1195,7 @@
                 }
 
             }
+            */
             
 
 
