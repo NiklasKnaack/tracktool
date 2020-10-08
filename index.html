@@ -295,6 +295,13 @@
 
             function testPath() {
 
+                
+
+            }
+
+            /*
+            function testPath() {
+
                 const pathSegments = [ ...pathHolder[ 0 ].segments ];
                 const pathSegmentsLookUp = [ ...pathSegments ];
 
@@ -458,7 +465,7 @@
 
                 }
 
-                if ( _nextPathSegments.length > 0 /*&& pathes[ index ].foundEnd === false*/ ) {
+                if ( _nextPathSegments.length > 0 ) {
 
                     //let nextPathSegment = _nextPathSegments[ 0 ];
 
@@ -514,20 +521,20 @@
                     //console.log( 'splitpointsIndices ---> ', splitpointsIndices );
                     //console.log( 'pathSegmentsSave ---> ', pathSegmentsSave );
 
-                    /*
-                    if ( nextPathSegment.p0.x !== pathSegmentStart.p0.x && nextPathSegment.p0.y !== pathSegmentStart.p0.y &&
-                         nextPathSegment.p1.x !== pathSegmentStart.p1.x && nextPathSegment.p1.y !== pathSegmentStart.p1.y ) {
+                    
+                    // if ( nextPathSegment.p0.x !== pathSegmentStart.p0.x && nextPathSegment.p0.y !== pathSegmentStart.p0.y &&
+                    //      nextPathSegment.p1.x !== pathSegmentStart.p1.x && nextPathSegment.p1.y !== pathSegmentStart.p1.y ) {
 
-                            console.log( '---> ', pathSegmentCurrent ); 
+                    //         console.log( '---> ', pathSegmentCurrent ); 
 
-                            pathes[ index ].segments.push( pathSegmentCurrent );
+                    //         pathes[ index ].segments.push( pathSegmentCurrent );
 
-                            pathSegmentCurrent.sorted = true;
+                    //         pathSegmentCurrent.sorted = true;
 
-                            //setTimeout(function(){ alert("Hello"); }, 3000);
+                    //         //setTimeout(function(){ alert("Hello"); }, 3000);
 
-                    }
-                    */
+                    // }
+
 
                     pathCurrentIndex++;
 
@@ -540,21 +547,21 @@
 
 
 
-                    /*
-                    if ( pathSegmentCurrent.startPosition !== null ) {
+                    
+                    // if ( pathSegmentCurrent.startPosition !== null ) {
 
-                        //if ( pathSegmentCurrent.startPosition.x !== nextPathSegment.p0.x && pathSegmentCurrent.startPosition.y !== nextPathSegment.p0.y ) {
+                    //     //if ( pathSegmentCurrent.startPosition.x !== nextPathSegment.p0.x && pathSegmentCurrent.startPosition.y !== nextPathSegment.p0.y ) {
 
                             
 
-                        //}
+                    //     //}
 
-                    } else {
+                    // } else {
 
-                        pathes[ index ].segments.push( pathSegmentCurrent );
+                    //     pathes[ index ].segments.push( pathSegmentCurrent );
 
-                    }
-                    */
+                    // }
+                    
 
                     //recursive(  );
 
@@ -615,16 +622,16 @@
                     output_splitpointsIndices += ']';
                     console.log( output_splitpointsIndices );
 
-                    /*
-                    console.log("sdfsdfdsfsdf ---->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> KILLER : ", splitpointsIndices[ splitpointsIndices.length - 1 ].count);
-                    splitpointsIndices[ splitpointsIndices.length - 1 ].count--;
                     
-                    if ( splitpointsIndices[ splitpointsIndices.length - 1 ].count === 0 ) {
+                    // console.log("sdfsdfdsfsdf ---->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> KILLER : ", splitpointsIndices[ splitpointsIndices.length - 1 ].count);
+                    // splitpointsIndices[ splitpointsIndices.length - 1 ].count--;
+                    
+                    // if ( splitpointsIndices[ splitpointsIndices.length - 1 ].count === 0 ) {
 
-                        splitpointsIndices.pop();
+                    //     splitpointsIndices.pop();
 
-                    }
-                    */
+                    // }
+                    
 
                     if ( deadEndPathSegments.length > 0 ) {
 
@@ -747,6 +754,7 @@
 
                 
             }
+            */
 
             /*
             function testPath() {
