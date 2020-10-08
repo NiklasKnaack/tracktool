@@ -45,7 +45,8 @@
             const EDITOR_MODE_ENUM = Object.freeze( {
                 drawPath: 'drawPath',
                 setstartPosition: 'setstartPosition',
-                setendPosition: 'setendPosition'
+                setendPosition: 'setendPosition',
+                getPathSegment: 'getPathSegment'
             } );
 
             let editorMode = EDITOR_MODE_ENUM.drawPath;
@@ -70,6 +71,8 @@
             const mouseCursor = { diameter: 9, color: { r: 255, g: 255, b: 255, a: 255 }, position: { x: 0, y: 0 } };
 
             let currentPathSegment = null;
+
+            let tempPathSegments = [];
 
             let pathHolder = [
                 { 
@@ -131,11 +134,11 @@
                     editorMode = EDITOR_MODE_ENUM.setendPosition;
                 
                 }
-                
-                const _sortPath = () => {
 
-                    sortPath( pathHolder[ 0 ] );
-                
+                const _getPathSegment = () => {
+
+                    editorMode = EDITOR_MODE_ENUM.getPathSegment;
+
                 }
                 
                 const _clearAll = () => {
@@ -146,6 +149,12 @@
 
                     removeDebugElements();
                 
+                }
+
+                const _sortPath = () => {
+
+                    sortPath( pathHolder[ 0 ] );
+
                 }
 
                 const _logPath = () => {
@@ -207,6 +216,7 @@
                     'Draw Path': _drawPath,
                     'Set Start Point': _setstartPosition,
                     'Set End Point': _setendPosition,
+                    'Get Pathsegment': _getPathSegment,
                     'Sort Path': _sortPath,
                     'Clear All': _clearAll,
                     'Log Path': _logPath,
@@ -216,16 +226,28 @@
                 }
 
                 const gui = new dat.GUI();
-                
+
+                const folderEdit = gui.addFolder( 'Edit' );
+
+                folderEdit.open();
+                folderEdit.add( guiSetting, 'Draw Path' );
+                folderEdit.add( guiSetting, 'Set Start Point' );
+                folderEdit.add( guiSetting, 'Set End Point' );
+                folderEdit.add( guiSetting, 'Get Pathsegment' );
+                folderEdit.add( guiSetting, 'Clear All' );
+
+                const folderAnalyze = gui.addFolder( 'Analyze' );
+
+                folderAnalyze.open();
+                //folderAnalyze.add( guiSetting, 'Sort Path' );
+                folderAnalyze.add( guiSetting, 'Log Path' );
+                folderAnalyze.add( guiSetting, 'Test Path' );
+
+                const folderContact = gui.addFolder( 'Contact' );
+
+                folderContact.add( guiSetting, '@niklaswebdev' );
+
                 //gui.close();
-                gui.add( guiSetting, 'Draw Path' );
-                gui.add( guiSetting, 'Set Start Point' );
-                gui.add( guiSetting, 'Set End Point' );
-                gui.add( guiSetting, 'Sort Path' );
-                gui.add( guiSetting, 'Clear All' );
-                gui.add( guiSetting, 'Log Path' );
-                gui.add( guiSetting, 'Test Path' );
-                gui.add( guiSetting, '@niklaswebdev' );
 
             }
 
@@ -1272,6 +1294,8 @@
 
                         addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9 );
 
+                        addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
+
                     } 
                 
                 } else {
@@ -1302,6 +1326,8 @@
                         addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9 );
                         addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.index.toString(), 'black', -3, -5 );
 
+                        addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
+
                     } 
 
                     currentPathSegment = null;
@@ -1315,7 +1341,7 @@
             }
 
             //---
-
+            /*
             function sortPath( path ) {
 
                 //console.log( 'sortPath()' );
@@ -1408,7 +1434,7 @@
                 //console.log( 'sortPath() done' );
 
             }
-
+            */
             //---
 
             function flipPathSegmentStartEnd( pathSegment ) {
@@ -1567,10 +1593,15 @@
 
                         addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.startPoint.x.toString() + ', ' + pathSegment.startPoint.y.toString(), 'white', 0, 9 );
 
+                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
+
                     } else {
 
                         addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.startPoint.x.toString() + ', ' + pathSegment.startPoint.y.toString(), 'white', 0, 9 );
                         addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, pathSegment.endPoint.x.toString() + ', ' + pathSegment.endPoint.y.toString(), 'white', 0, 9 );
+
+                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
+                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
 
                     }
 
@@ -1643,13 +1674,46 @@
             
             }
 
+            function signedDistanceToLine( p, p0X, p0Y, p1X, p1Y ) {
+
+                const p0p1X = p0X - p1X;
+                const p0p1Y = p0Y - p1Y;
+
+                const l2 = p0p1X * p0p1X + p0p1Y * p0p1Y;
+
+                const pp0X = p.x - p0X;
+                const pp0Y = p.y - p0Y;
+
+                if ( l2 === 0 ) {
+
+                    return pp0X * pp0X + pp0Y * pp0Y;
+
+                }
+
+                const p1p0X = p1X - p0X;
+                const p1p0Y = p1Y - p0Y;
+
+                const t = clamp( ( pp0X * p1p0X + pp0Y * p1p0Y ) / l2, 0, 1 );
+
+                const ptX = p0X + t * p1p0X;
+                const ptY = p0Y + t * p1p0Y;
+
+                const pX = p.x - ptX;
+                const pY = p.y - ptY;
+
+                return Math.sqrt( pX * pX + pY * pY );
+
+            }
+
             //---
 
+            function clamp( val, min, max ) {
 
+                return Math.min( Math.max( min, val ), max );
 
+            }
 
-
-
+            //---
 
 
 
@@ -1670,10 +1734,13 @@
 
                     addstartPositionToPathSegment( mouseCursor.position );
 
-
                 } else if ( editorMode === EDITOR_MODE_ENUM.setendPosition ) {
 
                     addendPositionToPathSegment( mouseCursor.position );
+
+                } else if ( editorMode === EDITOR_MODE_ENUM.getPathSegment ) {
+
+                    //addendPositionToPathSegment( mouseCursor.position );
 
                 }
 
@@ -1692,6 +1759,55 @@
             function mouseMoveHandler( event ) {
 
                 mousePos = getMousePos( canvas, event );
+
+                if ( editorMode === EDITOR_MODE_ENUM.getPathSegment ) {
+
+                    tempPathSegments = [];
+
+                    //---
+
+                    let distanceTotal = Infinity;
+                    let indexSave = -1;
+
+                    pathHolder.forEach( ( path, index ) => {
+                
+                        for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                            const pathSegment = path.segments[ i ];
+
+                            const distanceToPathSegment = signedDistanceToLine( mousePos, pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.endPoint.x, pathSegment.endPoint.y );
+
+                            if ( distanceToPathSegment < distanceTotal ) {
+
+                                distanceTotal = distanceToPathSegment;
+
+                                indexSave = i;
+
+                            }
+
+                        }
+
+                    } );
+                    
+                    if ( indexSave > -1 && distanceTotal <= SNAP_TO_DISTANCE ) {
+
+                        const pathSegment = pathHolder[ 0 ].segments[ indexSave ];
+
+                        console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
+                        console.log( 'PATH ID: ', pathSegment.index );
+                        console.log( 'startPoint: ', pathSegment.startPoint );
+                        console.log( 'endPoint: ', pathSegment.endPoint );
+                        console.log( 'startPosition: ', pathSegment.startPosition );
+                        console.log( 'endPosition: ', pathSegment.endPosition );
+                        console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
+
+                        tempPathSegments.push( { type: 'line', startPoint: { x: pathSegment.startPoint.x, y: pathSegment.startPoint.y }, endPoint: { x: pathSegment.endPoint.x, y: pathSegment.endPoint.y } } );
+                        tempPathSegments.push( { type: 'circ', position: { x: pathSegment.startPoint.x, y: pathSegment.startPoint.y }, diameter: 20, color: { r: 0, g: 0, b: 255, a: 255 }  } );
+                        tempPathSegments.push( { type: 'circ', position: { x: pathSegment.endPoint.x, y: pathSegment.endPoint.y }, diameter: 20, color: { r: 0, g: 255, b: 255, a: 255 }  } );
+
+                    }
+
+                }
 
             }
 
@@ -2044,6 +2160,26 @@
                 //---
 
                 //drawBox( rectangle.position, rectangle.dimensions.width, rectangle.dimensions.height, 15, 15, 15, 255 );
+
+                //---
+
+                for ( let i = 0, l = tempPathSegments.length; i < l; i ++ ) {
+            
+                    const tempPathSegment = tempPathSegments[ i ];
+
+                    if ( tempPathSegment.type === 'line' ) {
+
+                        drawLine( tempPathSegment.startPoint.x | 0, tempPathSegment.startPoint.y | 0, tempPathSegment.endPoint.x | 0, tempPathSegment.endPoint.y | 0, 0, 200, 0, 255 );
+
+                    } else if ( tempPathSegment.type === 'circ' ) {
+
+                        drawCircleOutline( tempPathSegment.position, tempPathSegment.diameter, tempPathSegment.color.r, tempPathSegment.color.g, tempPathSegment.color.b, tempPathSegment.color.a );
+
+                    }
+
+                    
+
+                }
 
             }
 
