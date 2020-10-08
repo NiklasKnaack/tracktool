@@ -1292,9 +1292,9 @@
 
                     if ( DEBUG === true ) {
 
-                        addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9 );
+                        addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9, null );
 
-                        addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
+                        addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, currentPathSegment.index );
 
                     } 
                 
@@ -1323,10 +1323,10 @@
 
                     if ( DEBUG === true ) {
 
-                        addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9 );
-                        addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.index.toString(), 'black', -3, -5 );
+                        addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9, null );
+                        addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.index.toString(), 'black', -3, -5, null );
 
-                        addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
+                        addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, currentPathSegment.index );
 
                     } 
 
@@ -1589,33 +1589,33 @@
 
                     if ( index < path.segments.length - 1 ) {
 
-                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.startPoint.x.toString() + ', ' + pathSegment.startPoint.y.toString(), 'white', 0, 9 );
-                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, pathSegment.endPoint.x.toString() + ', ' + pathSegment.endPoint.y.toString(), 'white', 0, 9 );
+                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.startPoint.x.toString() + ', ' + pathSegment.startPoint.y.toString(), 'white', 0, 9, null );
+                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, pathSegment.endPoint.x.toString() + ', ' + pathSegment.endPoint.y.toString(), 'white', 0, 9, null );
 
-                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
-                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
+                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
+                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
 
                     } else {
 
-                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.startPoint.x.toString() + ', ' + pathSegment.startPoint.y.toString(), 'white', 0, 9 );
-                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, pathSegment.endPoint.x.toString() + ', ' + pathSegment.endPoint.y.toString(), 'white', 0, 9 );
+                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.startPoint.x.toString() + ', ' + pathSegment.startPoint.y.toString(), 'white', 0, 9, null );
+                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, pathSegment.endPoint.x.toString() + ', ' + pathSegment.endPoint.y.toString(), 'white', 0, 9, null );
 
-                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
-                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
+                        addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
+                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
 
                     }
 
-                    addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.index.toString(), 'black', -3, -5 );
+                    addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.index.toString(), 'black', -3, -5, null );
 
                     if ( pathSegment.startPosition !== null ) {
 
-                        addDebugElement( pathSegment.startPosition.x, pathSegment.startPosition.y, 'START', 'white', -15, -25 );
+                        addDebugElement( pathSegment.startPosition.x, pathSegment.startPosition.y, 'START', 'white', -15, -25, null );
 
                     }
 
                     if ( pathSegment.endPosition !== null ) {
 
-                        addDebugElement( pathSegment.endPosition.x, pathSegment.endPosition.y, 'END', 'white', -10, -25 );
+                        addDebugElement( pathSegment.endPosition.x, pathSegment.endPosition.y, 'END', 'white', -10, -25, null );
 
                     }
 
@@ -1635,7 +1635,7 @@
 
             }
 
-            function addDebugElement( x, y, message, color = 'white', offsetX = 0, offsetY = 0 ) {
+            function addDebugElement( x, y, message, color = 'white', offsetX = 0, offsetY = 0, className = null ) {
 
                 const debugElement = document.createElement( 'div' );
 
@@ -1645,6 +1645,16 @@
                 debugElement.style.color = color;
                 debugElement.style.fontSize = '8pt';
                 debugElement.style.pointerEvents = 'none';
+
+                if ( className === null ) {
+
+                    debugElement.className = 'debug-' + ( new Date().getTime() + debugElements.length ).toString();
+
+                } else {
+
+                    debugElement.className = 'debug-' + className.toString();
+
+                }
 
                 debugElement.innerHTML = message;
 
