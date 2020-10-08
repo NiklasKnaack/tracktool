@@ -98,8 +98,8 @@
                         { index: 5, startPoint: { x: 774, y: 482, split: true }, endPoint: { x: 684, y: 407, split: false }, centerPoint: { x: 729, y: 444.5 }, length: 117.15374513859982, startPosition: null, endPosition: null },
                         { index: 6, startPoint: { x: 671, y: 570, split: true }, endPoint: { x: 577, y: 492, split: false }, centerPoint: { x: 624, y: 531 }, length: 122.14745187681976, startPosition: null, endPosition: null },
                         { index: 7, startPoint: { x: 577, y: 492, split: false }, endPoint: { x: 577, y: 272, split: true }, centerPoint: { x: 577, y: 382 }, length: 220, startPosition: null, endPosition: null },
-                        { index: 8, startPoint: { x: 742, y: 118, split: true }, endPoint: { x: 577, y: 272, split: false }, centerPoint: { x: 659.5, y: 195 }, length: 225.7011298155151, startPosition: null, endPosition: null },
-                        { index: 9, startPoint: { x: 397, y: 117, split: true }, endPoint: { x: 577, y: 272, split: false }, centerPoint: { x: 487, y: 194.5 }, length: 237.53947040439405, startPosition: null, endPosition: { x: 397, y: 117 } },
+                        { index: 8, startPoint: { x: 742, y: 118, split: false }, endPoint: { x: 577, y: 272, split: true }, centerPoint: { x: 659.5, y: 195 }, length: 225.7011298155151, startPosition: null, endPosition: null },
+                        { index: 9, startPoint: { x: 397, y: 117, split: false }, endPoint: { x: 577, y: 272, split: true }, centerPoint: { x: 487, y: 194.5 }, length: 237.53947040439405, startPosition: null, endPosition: { x: 397, y: 117 } },
                         { index: 10, startPoint: { x: 519, y: 889, split: false }, endPoint: { x: 359, y: 734, split: false }, centerPoint: { x: 439, y: 811.5 }, length: 222.76669409945464, startPosition: null, endPosition: null },
                         { index: 11, startPoint: { x: 359, y: 734, split: false }, endPoint: { x: 359, y: 577, split: false }, centerPoint: { x: 359, y: 655.5 }, length: 157, startPosition: null, endPosition: null },
                         { index: 12, startPoint: { x: 359, y: 577, split: false }, endPoint: { x: 239, y: 493, split: false }, centerPoint: { x: 299, y: 535 }, length: 146.47866738880444, startPosition: null, endPosition: null },
@@ -1450,8 +1450,6 @@
                 pathSegment.endPoint.y = startPointTemp.y;
                 pathSegment.endPoint.split = startPointTemp.split;
 
-                //const 
-
             }
 
             //---
@@ -1594,6 +1592,7 @@
                         addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, pathSegment.startPoint.x.toString() + ', ' + pathSegment.startPoint.y.toString(), 'white', 0, 9 );
 
                         addDebugElement( pathSegment.startPoint.x, pathSegment.startPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
+                        addDebugElement( pathSegment.endPoint.x, pathSegment.endPoint.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40 );
 
                     } else {
 
