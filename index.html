@@ -156,15 +156,7 @@
                 
                 }
 
-                const _sortPath = () => {
-
-                    sortPath( pathHolder[ 0 ] );
-
-                }
-
                 const _logPath = () => {
-                
-                    //console.log( pathHolder[ 0 ].segments );
 
                     const pathIndex = 0;
 
@@ -248,9 +240,9 @@
 
                 }
 
-                const _testPath = () => {
+                const _findPath = () => {
                     
-                    testPath();
+                    findPath();
                 
                 }
                 
@@ -267,11 +259,10 @@
                     'Draw Path': _drawPath,
                     'Set Start Point': _setstartPosition,
                     'Set End Point': _setendPosition,
-                    'Sort Path': _sortPath,
                     'Clear All': _clearAll,
                     'Get PathSegment': _getPathSegment,
                     'Log Path': _logPath,
-                    'Test Path': _testPath,
+                    'Find Path': _findPath,
                     '@niklaswebdev': _linkTo
                     
                 }
@@ -289,10 +280,9 @@
                 const folderAnalyze = gui.addFolder( 'Analyze' );
 
                 folderAnalyze.open();
-                //folderAnalyze.add( guiSetting, 'Sort Path' );
                 folderAnalyze.add( guiSetting, 'Get PathSegment' );
                 folderAnalyze.add( guiSetting, 'Log Path' );
-                folderAnalyze.add( guiSetting, 'Test Path' );
+                folderAnalyze.add( guiSetting, 'Find Path' );
 
                 const folderContact = gui.addFolder( 'Contact' );
 
@@ -410,7 +400,7 @@
 
             }
 
-            function testPath() {
+            function findPath() {
 
                 tempPathSegments = [];
 
@@ -429,9 +419,7 @@
 
                 path.openSet.push( path.currentPoint );
 
-                let iteration = 0;
-
-                while ( path.openSet.length > 0 && iteration < 999 ) {
+                while ( path.openSet.length > 0 ) {
 
                     console.log( '______________________________________' );
 
@@ -529,746 +517,13 @@
 
                             path.currentPoint = path.openSet.find( element => element.fCost === Math.min( ...path.openSet.map( nextPoint => nextPoint.fCost ) ) );
 
-
-
-                            
-
                         }
-
-                    }
-
-                    
-
-
-                    /*
-                    for ( let i = 1, l = path.openSet.length; i < l; i ++ ) {
-
-                        const nextPoint = path.openSet[ i ];
-
-                        nextPoint.parentPoint = path.currentPoint;
-                        nextPoint.gCost = getDistance( nextPoint, nextPoint.parentPoint );
-                        nextPoint.hCost = getDistance( nextPoint, path.endPoint );
-
-                        if ( nextPoint.fCost < path.currentPoint.fCost || nextPoint.fCost == path.currentPoint.fCost && nextPoint.hCost < path.currentPoint.hCost ) {
-                            
-                            path.currentPoint = nextPoint;
-                            //console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y );
-
-                        }
-
-                    }
-                    console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y );
-                    console.log( 'path.openSet.length: ', path.openSet.length );
-
-                    path.openSet.splice( path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y ), 1 );
-
-                    console.log( 'path.openSet.length: ', path.openSet.length );
-
-                    path.closedSet.push( path.currentPoint );
-
-                    const nextPathSegments = getNextPathSegmentsByPoint( path.currentPoint, path.segments );
-
-                    if ( nextPathSegments.length > 0 ) {
-
-                        const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( path.currentPoint, nextPathSegments );
-
-                        console.log( nextPoints );
-
-                        for ( let i = 0, l = nextPoints.length; i < l; i ++ ) {
-
-                            const nextPoint = nextPoints[ i ];
-
-                            nextPoint.parentPoint = path.currentPoint;
-                            nextPoint.gCost = getDistance( nextPoint, nextPoint.parentPoint );
-                            nextPoint.hCost = getDistance( nextPoint, path.endPoint );
-
-                            console.log( nextPoint.gCost, nextPoint.hCost, nextPoint.fCost );
-
- 
-                            const isInClosedSet = typeof path.closedSet.find( ( point ) => point.x === nextPoint.x && point.y === nextPoint.y ) === 'undefined' ? false : true;
-
-                            if ( nextPoint.walkable === false || isInClosedSet === true ) {
-
-                                return;
-
-                            }
-
-                            const newMovementCost = path.currentPoint.gCost + getDistance( path.currentPoint, nextPoint );
-
-                            //path.openSet.push( nextPoint );
-
-                            const isInOpenSet = typeof path.openSet.find( ( point ) => point.x === nextPoint.x && point.y === nextPoint.y ) === 'undefined' ? false : true;
-
-
-                            if ( newMovementCost < nextPoint.gCost || isInOpenSet === false ) {
-
-                                nextPoint.gCost = newMovementCost;
-                                nextPoint.hCost = nextPoint.hCost;
-                                nextPoint.parentPoint = path.currentNode;
-
-                                if ( isInOpenSet === false ) {
-
-                                    path.openSet.push( nextPoint );
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-                    */
-
-
-
-
-
-
-
-
-
-                    console.log( iteration );
-                    iteration++;
-
-                }
-
-
-                /*
-                const nextPathSegments = getNextPathSegmentsByPoint( path.currentPoint, path.segments );
-
-                if ( nextPathSegments.length > 0 ) {
-
-                    const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( path.currentPoint, nextPathSegments );
-
-                    console.log( nextPoints );
-
-                    for ( let i = 0, l = nextPoints.length; i < l; i ++ ) {
-
-                        const nextPoint = nextPoints[ i ];
-
-                        nextPoint.parentPoint = path.currentPoint;
-                        nextPoint.gCost = getDistance( nextPoint, nextPoint.parentPoint );
-                        nextPoint.hCost = getDistance( nextPoint, path.endPoint );
-
-                        console.log( nextPoint.gCost, nextPoint.hCost, nextPoint.fCost );
-
-                        //path.openSet.push( nextPoint );
-
-                    }
-
-                }
-
-                //path.closedSet.push( path.currentPoint );
-                */
-
-                /*
-                const point = {
-
-                    x: position.x,
-                    y: position.y,
-                    walkable: walkable,
-                    distToEnd: distToEnd,
-                    hCost: hCost,
-                    gCost: gCost,
-                    get fCost() {
-
-                        return this.hCost + this.gCost;
-
-                    },
-                    parentPoint: parentPoint
-
-                };
-                */
-
-                /*
-                id: 0,
-                    startPoint: { x: 519, y: 889, distToEnd: 0 },
-                    endPoint: { x: 397, y: 117, distToEnd: 0 },
-                    currentPoint: null,
-                    openSet: [],
-                    closedSet: [],
-                    segments: [
-                        */
-
-                /*
-                const pathSegments = [ ...pathHolder[ 0 ].segments ];
-
-                const startPoint = pathHolder[ 0 ].startPoint;
-                const endPoint = pathHolder[ 0 ].endPoint;
-
-                //---
-
-                const currentPoint = startPoint;
-
-                //---
-
-                const nextPathSegments = getNextPathSegmentsByPoint( currentPoint, pathSegments );
-
-                console.log( nextPathSegments );
-
-
-
-
-
-                //const nextPathSegment = nextPathSegments[ i ];
-
-                if ( nextPathSegments.length > 0 ) {
-
-                    const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( currentPoint, nextPathSegments );
-
-                    console.log( nextPoints );
-
-                }
-                */
-
-
-
-
-
-
-
-                const test = () => {
-
-                    const nextTiles = [];
-
-                    for ( let i = pathSegments.length - 1, l = -1; i > l; i -- ) {
-
-                        const pathSegment = pathSegments[ i ];
-
-                        //if ( pathSegmentCurrent.index !== pathSegment.index ) {
-
-                            if ( pathSegmentCurrent.p1.x === pathSegment.p0.x && pathSegmentCurrent.p1.y === pathSegment.p0.y ) {
-
-                                //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-                                //_nextPathSegments.push( { segment: pathSegments.sclice( i, 1 )[ 0 ], index: i } );
-
-                                const nPS = pathSegments.splice( i, 1 )[ 0 ];
-
-                                //_nextPathSegments.push( nPS );
-                                //pathSegmentsSave.push( nPS );
-
-                                nextTiles.push( nPS );
-
-                            }
-
-                            if ( pathSegmentCurrent.p1.x === pathSegment.p1.x && pathSegmentCurrent.p1.y === pathSegment.p1.y ) {
-
-                                //flipPathSegmentStartEnd( pathSegment );
-
-                                //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                                const nPS = pathSegments.splice( i, 1 )[ 0 ];
-
-                                //_nextPathSegments.push( nPS );
-                                //pathSegmentsSave.push( nPS );
-
-                                nextTiles.push( nPS );
-
-                            }
-
-                            if ( pathSegmentCurrent.p0.x === pathSegment.p0.x && pathSegmentCurrent.p0.y === pathSegment.p0.y ) {
-
-                                //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                                const nPS = pathSegments.splice( i, 1 )[ 0 ];
-
-                                //_nextPathSegments.push( nPS );
-                                //pathSegmentsSave.push( nPS );
-
-                                nextTiles.push( nPS );
-
-                            }
-
-                            if ( pathSegmentCurrent.p0.x === pathSegment.p1.x && pathSegmentCurrent.p0.y === pathSegment.p1.y ) {
-
-                                //flipPathSegmentStartEnd( pathSegment );
-
-                                //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                                const nPS = pathSegments.splice( i, 1 )[ 0 ];
-
-                                //_nextPathSegments.push( nPS );
-                                //pathSegmentsSave.push( nPS );
-
-                                nextTiles.push( nPS );
-
-                            }
-
-                        //}
-                        
-                    }
-
-                    console.log( nextTiles );
-
-                };
-
-                //test();
-
-            }
-
-            /*
-            function testPath() {
-
-                const pathSegments = [ ...pathHolder[ 0 ].segments ];
-                const pathSegmentsLookUp = [ ...pathSegments ];
-
-                //---
-
-                const pathes = [];
-                const pathesIndex = 0;
-
-                pathes[ pathesIndex ] = { id: pathesIndex, segments: [], totalLength: 0, foundEnd: false }
-
-                //---
-
-                const pathSegmentStart = pathSegments.find( pathSegment => pathSegment.startPosition !== null );
-                //const pathStartPosition = pathSegmentStart.startPosition;
-                //const pathSegmentStartIndex = pathSegments.findIndex( pathSegment => pathSegment.startPosition !== null );
-                //const pathSegmentStart = pathSegments.splice( pathSegmentStartIndex, 1 )[ 0 ];
-
-                const pathSegmentEnd = pathSegments.find( pathSegment => pathSegment.endPosition !== null );
-                //const pathEndPosition = pathSegmentEnd.endPosition;
-
-                //---
-
-                recursive( pathSegments, pathSegmentsLookUp, pathes, 0, pathesIndex, 0, pathSegmentStart, [], [], [], pathSegmentStart, pathSegmentEnd );
-
-                //---
-
-                console.log( 'testDone()' );
-                //console.log( pathes );
-
-                for ( let i = 0, l = pathes.length; i < l; i ++ ) {
-
-                    const p = pathes[ i ];
-
-                    console.log( 'path ', i.toString(), '(foundEnd: ' + p.foundEnd + ', totalLength: ' + p.totalLength + '):' );
-
-                    for ( let j = 0, m = p.segments.length; j < m; j ++ ) {
-
-                        if ( p.foundEnd === true ) {
-
-                            p.segments[ j ].sorted = true;
-
-                        }
-
-                        console.log( p.segments[ j ].index, ' - ', p.segments[ j ].length );
-                        //console.log( p.segments[ j ] );
 
                     }
 
                 }
 
             }
-
-            function recursive( pathSegments, pathSegmentsLookUp, pathes, pathCurrentIndex, index, iteration, pathSegmentCurrent, splitpointsIndices, pathSegmentsSave, pathSegmentsSavecurrent, pathSegmentStart, pathSegmentEnd ) {
-                console.log('-------------------------recursive-------------------------');
-                pathSegmentsSavecurrent.push( pathSegmentCurrent );
-
-                let output_pathSegmentsSavecurrent0 = '[pathSegmentsSavecurrent]: [';
-                for ( let i = 0, l = pathSegmentsSavecurrent.length; i < l; i ++ ) {
-                    output_pathSegmentsSavecurrent0 += i === l - 1 ? pathSegmentsSavecurrent[ i ].index : pathSegmentsSavecurrent[ i ].index + ', ';
-                }
-                output_pathSegmentsSavecurrent0 += ']';
-                console.log( output_pathSegmentsSavecurrent0 );
-
-
-
-                pathes[ index ].segments.push( pathSegmentCurrent );
-                pathes[ index ].totalLength += pathSegmentCurrent.length;
-
-                if ( pathSegmentCurrent.p0.x === pathSegmentEnd.endPosition.x && pathSegmentCurrent.p0.y === pathSegmentEnd.endPosition.y ||
-                     pathSegmentCurrent.p1.x === pathSegmentEnd.endPosition.x && pathSegmentCurrent.p1.y === pathSegmentEnd.endPosition.y ) {
-
-                    pathes[ index ].foundEnd = true;
-
-                }
-
-                //if ( index === 0 && pathSegmentCurrent.index !==  ) {
-
-                    //console.log( '--> ', pathSegmentCurrent );
-
-                //}
-
-                //iteration++;
-
-                //---
-
-                const _nextPathSegments = [];
-                const _pathSegmentsLength = pathSegments.length;
-
-                for ( let i = _pathSegmentsLength - 1, l = -1; i > l; i -- ) {
-
-                    const pathSegment = pathSegments[ i ];
-
-                    if ( pathSegmentCurrent.index !== pathSegment.index ) {
-
-                        if ( pathSegmentCurrent.p1.x === pathSegment.p0.x && pathSegmentCurrent.p1.y === pathSegment.p0.y ) {
-
-                            //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-                            //_nextPathSegments.push( { segment: pathSegments.sclice( i, 1 )[ 0 ], index: i } );
-
-                            const nPS = pathSegments.splice( i, 1 )[ 0 ];
-
-                            _nextPathSegments.push( nPS );
-                            pathSegmentsSave.push( nPS );
-
-                        }
-
-                        if ( pathSegmentCurrent.p1.x === pathSegment.p1.x && pathSegmentCurrent.p1.y === pathSegment.p1.y ) {
-
-                            //flipPathSegmentStartEnd( pathSegment );
-
-                            //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                            const nPS = pathSegments.splice( i, 1 )[ 0 ];
-
-                            _nextPathSegments.push( nPS );
-                            pathSegmentsSave.push( nPS );
-
-                        }
-
-                        if ( pathSegmentCurrent.p0.x === pathSegment.p0.x && pathSegmentCurrent.p0.y === pathSegment.p0.y ) {
-
-                            //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                            const nPS = pathSegments.splice( i, 1 )[ 0 ];
-
-                            _nextPathSegments.push( nPS );
-                            pathSegmentsSave.push( nPS );
-
-                        }
-
-                        if ( pathSegmentCurrent.p0.x === pathSegment.p1.x && pathSegmentCurrent.p0.y === pathSegment.p1.y ) {
-
-                            //flipPathSegmentStartEnd( pathSegment );
-
-                            //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                            const nPS = pathSegments.splice( i, 1 )[ 0 ];
-
-                            _nextPathSegments.push( nPS );
-                            pathSegmentsSave.push( nPS );
-
-                        }
-
-                    }
-                      
-                }
-
-                //---
-
-
-
-                //---
-
-                //console.log( _nextPathSegments );
-
-                //---
-
-                if ( _nextPathSegments.length > 1 ) {
-
-                    splitpointsIndices.push( { index: pathCurrentIndex, count: _nextPathSegments.length - 1 } );
-
-                }
-
-                if ( _nextPathSegments.length > 0 ) {
-
-                    //let nextPathSegment = _nextPathSegments[ 0 ];
-
-                    if ( pathCurrentIndex === 0 && _nextPathSegments.length > 1 ) {
-
-                        let followPathSegmentIndex = -1;
-
-                        for ( let i = _nextPathSegments.length - 1, l = -1; i > l; i -- ) {
-
-                            const _nPS = _nextPathSegments[ i ];
-
-                            if ( _nPS.p0 !== null && pathSegmentCurrent.startPosition !== null ) {
-
-                                if ( _nPS.p0.x !== pathSegmentCurrent.startPosition.x && _nPS.p0.y !== pathSegmentCurrent.startPosition.y &&
-                                     _nPS.p1.x !== pathSegmentCurrent.startPosition.x && _nPS.p1.y !== pathSegmentCurrent.startPosition.y ) {
-
-                                    followPathSegmentIndex = i;
-
-                                    break;
-
-                                }
-
-                            }
-
-                        }
-
-                        if ( followPathSegmentIndex > -1 ) {
-
-                            nextPathSegment = _nextPathSegments.splice( followPathSegmentIndex, 1 )[ 0 ];
-
-                        } else {
-
-                            nextPathSegment = _nextPathSegments.shift();
-
-                        }
-
-                        //console.log("sdgdfgsdfgsdfgkjdfhb8e7ortzg9eirhwerighidfughreiubfhrt8o7hv8o725h48o7vrt8gg8o7h4w9p8gjsfgilh249p5gjrtp98zu54ohbjrt54p9z");
-
-                        //splitpoints = [ ...splitpoints, ..._nextPathSegments ];
-
-                    } else {
-
-                        nextPathSegment = _nextPathSegments.shift();
-
-                        //splitpoints = [ ...splitpoints, ..._nextPathSegments ];
-
-                    }
-
-                    //splitpoints = [ ...splitpoints, ..._nextPathSegments ];
-
-                    //console.log( 'nextPathSegment ---> ', nextPathSegment );
-                    //console.log( 'splitpoints ---> ', splitpoints );
-                    //console.log( 'splitpointsIndices ---> ', splitpointsIndices );
-                    //console.log( 'pathSegmentsSave ---> ', pathSegmentsSave );
-
-                    
-                    // if ( nextPathSegment.p0.x !== pathSegmentStart.p0.x && nextPathSegment.p0.y !== pathSegmentStart.p0.y &&
-                    //      nextPathSegment.p1.x !== pathSegmentStart.p1.x && nextPathSegment.p1.y !== pathSegmentStart.p1.y ) {
-
-                    //         console.log( '---> ', pathSegmentCurrent ); 
-
-                    //         pathes[ index ].segments.push( pathSegmentCurrent );
-
-                    //         pathSegmentCurrent.sorted = true;
-
-                    //         //setTimeout(function(){ alert("Hello"); }, 3000);
-
-                    // }
-
-
-                    pathCurrentIndex++;
-
-                    //setTimeout( () => {
-                        
-                        recursive( pathSegments, pathSegmentsLookUp, pathes, pathCurrentIndex, index, iteration, nextPathSegment, splitpointsIndices, pathSegmentsSave, pathSegmentsSavecurrent, pathSegmentStart, pathSegmentEnd )
-                    
-                    //}, 250 );
-                    
-
-
-
-                    
-                    // if ( pathSegmentCurrent.startPosition !== null ) {
-
-                    //     //if ( pathSegmentCurrent.startPosition.x !== nextPathSegment.p0.x && pathSegmentCurrent.startPosition.y !== nextPathSegment.p0.y ) {
-
-                            
-
-                    //     //}
-
-                    // } else {
-
-                    //     pathes[ index ].segments.push( pathSegmentCurrent );
-
-                    // }
-                    
-
-                    //recursive(  );
-
-                } else {
-                    console.log( '-----------------------------------------------------------------------------------------------------' );
-                    //console.log( '//---> ', pathSegmentsSavecurrent );
-
-                    let output_pathSegmentsSavecurrent = '[pathSegmentsSavecurrent]: [';
-                    for ( let i = 0, l = pathSegmentsSavecurrent.length; i < l; i ++ ) {
-                        output_pathSegmentsSavecurrent += i === l - 1 ? pathSegmentsSavecurrent[ i ].index : pathSegmentsSavecurrent[ i ].index + ', ';
-                    }
-                    output_pathSegmentsSavecurrent += ']';
-                    console.log( output_pathSegmentsSavecurrent );
-                    //console.log( '//---> ', pathSegmentsSave );
-                    //console.log( '//---> ', pathSegments );
-                    //if ( splitpoints.length > 0 ) {
-
-                    let deadEndPathSegments = [];
-
-                    //const deadEndPathSegments = pathSegmentsSavecurrent.splice( 0, splitpointsIndices[ splitpointsIndices.length - 1 ].index + 1 );
-
-
-
-                    // Wenn es Duplikate gibt, dann gibt es eine Wiederholung, was bedeutet, dass dieser Part übersprungen werden kann.
-                    const valueArr = pathSegmentsSavecurrent.map( ( item ) => { return item.index } );
-                    const foundDuplicate = valueArr.some( ( item, idx ) => { return valueArr.indexOf( item ) != idx } );
-
-                    console.log( 'foundDuplicate ---->: ', foundDuplicate );
-
-
-
-
-
-                    
-                    if ( splitpointsIndices.length > 0 ) {
-
-                        deadEndPathSegments = pathSegmentsSavecurrent.splice( splitpointsIndices[ splitpointsIndices.length - 1 ].index + 1, pathSegmentsSavecurrent.length );
-
-                    }
-                    
-
-                    //console.log( splitpointsIndices[ splitpointsIndices.length - 1 ].index, pathSegmentsSavecurrent.length );
-                    //console.log( '//---> ', deadEndPathSegments );
-                    //splitpointsIndices.push( { index: pathCurrentIndex, count: _nextPathSegments.length - 1 } );
-
-                    let output_deadEndPathSegments = '[deadEndPathSegments]: [';
-                    for ( let i = 0, l = deadEndPathSegments.length; i < l; i ++ ) {
-                        output_deadEndPathSegments += i === l - 1 ? deadEndPathSegments[ i ].index : deadEndPathSegments[ i ].index + ', ';
-                    }
-                    output_deadEndPathSegments += ']';
-                    console.log( output_deadEndPathSegments );
-                    
-                    //das splitpointsIndices scheint nicht korrekt zu sein, bzw. wird nicht korrekt zurückgesetzt.
-                    let output_splitpointsIndices = '[splitpointsIndices]: [';
-                    for ( let i = 0, l = splitpointsIndices.length; i < l; i ++ ) {
-                        output_splitpointsIndices += i === l - 1 ? splitpointsIndices[ i ].index : splitpointsIndices[ i ].index + ', ';
-                    }
-                    output_splitpointsIndices += ']';
-                    console.log( output_splitpointsIndices );
-
-                    
-                    // console.log("sdfsdfdsfsdf ---->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> KILLER : ", splitpointsIndices[ splitpointsIndices.length - 1 ].count);
-                    // splitpointsIndices[ splitpointsIndices.length - 1 ].count--;
-                    
-                    // if ( splitpointsIndices[ splitpointsIndices.length - 1 ].count === 0 ) {
-
-                    //     splitpointsIndices.pop();
-
-                    // }
-                    
-
-                    if ( deadEndPathSegments.length > 0 ) {
-
-                        splitpointsIndices.pop();
-
-                    }
-
-                    for ( let i = 0, l = deadEndPathSegments.length; i < l; i ++ ) {
-
-                        const deadEndPathSegment = deadEndPathSegments[ i ];
-
-                        //pathSegmentsSave.splice( pathSegmentsSave.findIndex( pS => pS.index === deadEndPathSegment.index ), 1 );
-                        //pathSegmentsLookUp.splice( pathSegmentsSave.findIndex( pS => pS.index === deadEndPathSegment.index ), 1 );
-
-                        //console.log( 'ÄÄÄÄÄ: ',  );
-
-                        for ( let j = pathSegmentsLookUp.length - 1, m = -1; j > m; j -- ) {
-
-                            const pS = pathSegmentsLookUp[ j ];
-
-                            if ( pS.index === deadEndPathSegment.index ) {
-
-                                pathSegmentsLookUp.splice( j, 1 );
-
-                            }
-
-                        }
-
-                    }
-
-                    let output_pathSegmentsSave = '[pathSegmentsSave]: [';
-                    for ( let i = 0, l = pathSegmentsSave.length; i < l; i ++ ) {
-                        output_pathSegmentsSave += i === l - 1 ? pathSegmentsSave[ i ].index : pathSegmentsSave[ i ].index + ', ';
-                    }
-                    output_pathSegmentsSave += ']';
-                    console.log( output_pathSegmentsSave );
-
-                    //console.log( '//---> ', pathSegmentsSave );
-
-                    pathSegments = [ ...pathSegmentsLookUp ];
-                    //console.log( '//---> ', pathSegmentsLookUp );
-
-                    let output_pathSegments = '[pathSegments]: [';
-                    for ( let i = 0, l = pathSegments.length; i < l; i ++ ) {
-                        output_pathSegments += i === l - 1 ? pathSegments[ i ].index : pathSegments[ i ].index + ', ';
-                    }
-                    output_pathSegments += ']';
-                    console.log( output_pathSegments );
-
-                    let output_pathSegmentsLookUp = '[pathSegmentsLookUp]: [';
-                    for ( let i = 0, l = pathSegmentsLookUp.length; i < l; i ++ ) {
-                        output_pathSegmentsLookUp += i === l - 1 ? pathSegmentsLookUp[ i ].index : pathSegmentsLookUp[ i ].index + ', ';
-                    }
-                    output_pathSegmentsLookUp += ']';
-                    console.log( output_pathSegmentsLookUp );
-
-
-                    // if ( splitpointsIndices.length === 1 ) {
-
-                    //     if ( splitpointsIndices[ 0 ].index === 0 ) {
-
-                    //         console.log('---> CUT <---');
-
-                    //         //index--;
-
-                    //     }
-
-                    // }
-
-
-                    pathSegmentsSave = [];
-                    pathSegmentsSavecurrent = [];
-                    splitpointsIndices = [];
-                    //splitpoints = [];
-
-                    nextPathSegment = pathSegments[ 0 ];
-
-                    
-
-                    pathCurrentIndex = 0;
-
-
-
-
-                    if ( foundDuplicate === true ) {
-
-                        pathes[ index ] = { id: index, segments: [], totalLength: 0, foundEnd: false };
-
-                    } else {
-
-                        index++;
-
-                        pathes[ index ] = { id: index, segments: [], totalLength: 0, foundEnd: false };
-
-                    }
-
-                    // index++;
-
-                    // pathes[ index ] = { id: index, segments: [], totalLength: 0, foundEnd: false };
-
-                    //splitpointsIndices
-
-                    // if ( foundDuplicate === false && pathSegments.length > 3 ) {
-
-                    //     recursive( pathSegments, pathSegmentsLookUp, pathes, pathCurrentIndex, index, iteration, nextPathSegment, splitpointsIndices, pathSegmentsSave, pathSegmentsSavecurrent, pathSegmentStart, pathSegmentEnd )
-                    
-                    // }
-
-                    iteration++;
-
-                    if ( iteration < 11 ) 
-                        recursive( pathSegments, pathSegmentsLookUp, pathes, pathCurrentIndex, index, iteration, nextPathSegment, splitpointsIndices, pathSegmentsSave, pathSegmentsSavecurrent, pathSegmentStart, pathSegmentEnd )
-                    
-
-
-                }
-
-
-
-
-                
-            }
-            */
-
-
-
-
-
-
-
 
             //---
 
@@ -1359,7 +614,7 @@
 
                         addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9, null );
 
-                        addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, currentPathSegment.index );
+                        //addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, currentPathSegment.index );
 
                     } 
                 
@@ -1388,7 +643,7 @@
                         addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9, null );
                         addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.index.toString(), 'black', -3, -5, null );
 
-                        addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, currentPathSegment.index );
+                        //addDebugElement( position.x, position.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, currentPathSegment.index );
 
                     } 
 
@@ -1403,239 +658,6 @@
             }
 
             //---
-            /*
-            function sortPath( path ) {
-
-                //console.log( 'sortPath()' );
-
-                const pathSegmentsSorted = [];
-                const pathSegments = path.segments;
-
-                //console.log( pathSegments );
-
-                //---
-                
-                const pathSegmentStartIndex = pathSegments.findIndex( pathSegment => pathSegment.startPosition !== null );
-                const pathSegmentStart = pathSegments.splice( pathSegmentStartIndex, 1 )[ 0 ];
-
-                const pathSegmentEndIndex = pathSegments.findIndex( pathSegment => pathSegment.endPosition !== null );
-                const pathSegmentEnd = pathSegments.splice( pathSegmentEndIndex, 1 )[ 0 ];
-
-                //console.log( pathSegmentStartIndex, pathSegmentEndIndex );
-                //console.log( pathSegmentStart, pathSegmentEnd );
-
-                //---
-
-                pathSegmentsSorted.push( pathSegmentStart );
-
-                //---
-
-                let _currentPathSegment = pathSegmentStart;
-                let _nextPathSegment = null;
-                let _pathSegmentsLength = path.segments.length;
-
-                for ( let j = 0; j < _pathSegmentsLength; j++ ) {
-
-                    for ( let i = path.segments.length - 1, l = -1; i > l; i -- ) {
-
-                        const pathSegment = path.segments[ i ];
-
-                        if ( _currentPathSegment.p1.x === pathSegment.p0.x && _currentPathSegment.p1.y === pathSegment.p0.y ) {
-
-                            _nextPathSegment = path.segments.splice( i, 1 )[ 0 ];
-
-                        }
-
-                        if ( _currentPathSegment.p1.x === pathSegment.p1.x && _currentPathSegment.p1.y === pathSegment.p1.y ) {
-
-                            flipPathSegmentStartEnd( pathSegment );
-
-                            _nextPathSegment = path.segments.splice( i, 1 )[ 0 ];
-
-                        }
-
-                    }
-
-                    pathSegmentsSorted.push( _nextPathSegment );
-
-                    _currentPathSegment = _nextPathSegment;
-
-                }
-
-                //---
-
-                pathSegmentsSorted.push( pathSegmentEnd );
-
-                //---
-
-                for ( let i = 0, l = pathSegmentsSorted.length; i < l; i ++ ) {
-
-                    const pathSegment = pathSegmentsSorted[ i ];
-
-                    pathSegment.sorted = true;
-                    pathSegment.index = i;
-
-                }
-
-                //---
-
-                path.segments = [ ...pathSegmentsSorted ];
-
-                //---
-
-                if ( DEBUG === true ) {
-
-                    rebuildDebugElements();
-
-                }
-
-                //console.log( path.segments );
-                //console.log( pathSegmentsSorted );
-                //console.log( pathHolder[ 0 ].segments );
-
-                //console.log( 'sortPath() done' );
-
-            }
-            */
-            //---
-
-            /*
-            function flipPathSegmentStartEnd( pathSegment ) {
-
-                const p0Temp = { x: pathSegment.p0.x, y: pathSegment.p0.y, split: pathSegment.p0.split };
-                const p1Temp = { x: pathSegment.p1.x, y: pathSegment.p1.y, split: pathSegment.p0.split };
-
-                pathSegment.p0.x = p1Temp.x;
-                pathSegment.p0.y = p1Temp.y;
-                pathSegment.p0.split = p1Temp.split;
-
-                pathSegment.p1.x = p0Temp.x;
-                pathSegment.p1.y = p0Temp.y;
-                pathSegment.p1.split = p0Temp.split;
-
-            }
-            */
-
-            //---
-
-
-
-
-
-
-            /*
-            function removeStartPositionToPathSegment() {
-
-                const path = pathHolder[ 0 ];
-
-                const pathSegmentsStart = path.segments.filter( pathSegment => pathSegment.startPosition !== null );
-
-                if ( pathSegmentsStart.length > 0 ) {
-
-                    for ( let i = 0, l = pathSegmentsStart.length; i < l; i ++ ) {
-
-                        const pathSegmentStart = pathSegmentsStart[ i ];
-
-                        pathSegmentStart.startPosition = null;
-
-                    }
-
-                }
-
-            }
-
-            function addStartPositionToPathSegment( position ) {
-
-                removeStartPositionToPathSegment();
-
-                //---
-
-                const path = pathHolder[ 0 ];
-
-                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-
-                    const pathSegment = path.segments[ i ];
-
-                    if ( pathSegment.p0.x === position.x && pathSegment.p0.y === position.y ) {
-
-                        pathSegment.startPosition = { x: position.x, y: position.y };
-
-                    }
-
-                    if ( pathSegment.p1.x === position.x && pathSegment.p1.y === position.y ) {
-
-                        //flipPathSegmentStartEnd( pathSegment );
-
-                        pathSegment.startPosition = { x: position.x, y: position.y };
-
-                    }
-
-                }
-
-                if ( DEBUG === true ) {
-
-                    rebuildDebugElements();
-
-                }
-
-            }
-
-            function removeEndPositionToPathSegment() {
-
-                const path = pathHolder[ 0 ];
-
-                const pathSegmentsEnd = path.segments.filter( pathSegment => pathSegment.endPosition !== null );
-
-                if ( pathSegmentsEnd.length > 0 ) {
-
-                    for ( let i = 0, l = pathSegmentsEnd.length; i < l; i ++ ) {
-
-                        const pathSegmentEnd = pathSegmentsEnd[ i ];
-
-                        pathSegmentEnd.endPosition = null;
-
-                    }
-
-                }
-
-            }
-
-            function addEndPositionToPathSegment( position ) {
-
-                removeEndPositionToPathSegment();
-
-                //---
-
-                const path = pathHolder[ 0 ];
-
-                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-
-                    const pathSegment = path.segments[ i ];
-
-                    if ( pathSegment.p0.x === position.x && pathSegment.p0.y === position.y ) {
-
-                        pathSegment.endPosition = { x: position.x, y: position.y };
-
-                    }
-
-                    if ( pathSegment.p1.x === position.x && pathSegment.p1.y === position.y ) {
-
-                        //flipPathSegmentStartEnd( pathSegment );
-
-                        pathSegment.endPosition = { x: position.x, y: position.y };
-
-                    }
-
-                }
-
-                if ( DEBUG === true ) {
-
-                    rebuildDebugElements();
-
-                }
-
-            }
-            */
 
             function addStartPointToPath( pathIndex, position ) {
 
@@ -1667,15 +689,6 @@
 
             }
 
-
-
-
-
-
-
-
-
-
             //---
 
             function rebuildDebugElements() {
@@ -1705,16 +718,16 @@
                         addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toString() + ', ' + pathSegment.p0.y.toString(), 'white', 0, 9, null );
                         addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toString() + ', ' + pathSegment.p1.y.toString(), 'white', 0, 9, null );
 
-                        addDebugElement( pathSegment.p0.x, pathSegment.p0.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
-                        addDebugElement( pathSegment.p1.x, pathSegment.p1.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
+                        //addDebugElement( pathSegment.p0.x, pathSegment.p0.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
+                        //addDebugElement( pathSegment.p1.x, pathSegment.p1.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
 
                     } else {
 
                         addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toString() + ', ' + pathSegment.p0.y.toString(), 'white', 0, 9, null );
                         addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toString() + ', ' + pathSegment.p1.y.toString(), 'white', 0, 9, null );
 
-                        addDebugElement( pathSegment.p0.x, pathSegment.p0.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
-                        addDebugElement( pathSegment.p1.x, pathSegment.p1.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
+                        //addDebugElement( pathSegment.p0.x, pathSegment.p0.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
+                        //addDebugElement( pathSegment.p1.x, pathSegment.p1.y, 'G:999<br/>H:999<br/>F:999', 'white', -40, -40, pathSegment.index );
 
                     }
 
@@ -2248,17 +1261,6 @@
  
 
                         }
-                        /*
-                        if ( pathSegment.splitPoints.length > 0 ) {
-                        
-                            pathSegment.splitPoints.forEach( ( splitPoint, index ) => {
-                            
-                                drawCircleOutline( splitPoint, 9, 255, 0, 0, 255 );
-                            
-                            } );
-                            
-                        }
-                        */
 
                     }
                 
@@ -2288,18 +1290,9 @@
 
                     }
 
-                    
-
                 }
 
             }
-
-
-
-
-
-
-
 
             //---
 
