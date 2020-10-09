@@ -1971,16 +1971,16 @@
 
                         const pathSegment = pathHolder[ 0 ].segments[ indexSave ];
 
-                        console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
-                        console.log( 'PATH ID: ', pathSegment.index );
-                        console.log( 'p0: ', pathSegment.p0 );
-                        console.log( 'p1: ', pathSegment.p1 );
-                        console.log( 'startPosition: ', pathSegment.startPosition );
-                        console.log( 'endPosition: ', pathSegment.endPosition );
-                        console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
+                        // console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
+                        // console.log( 'PATH ID: ', pathSegment.index );
+                        // console.log( 'p0: ', pathSegment.p0 );
+                        // console.log( 'p1: ', pathSegment.p1 );
+                        // console.log( 'startPosition: ', pathSegment.startPosition );
+                        // console.log( 'endPosition: ', pathSegment.endPosition );
+                        // console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
 
                         tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y } } );
-                        tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 20, color: { r: 0, g: 0, b: 255, a: 255 }  } );
+                        tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 20, color: { r: 255, g: 0, b: 255, a: 255 }  } );
                         tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 20, color: { r: 0, g: 255, b: 255, a: 255 }  } );
 
                     }
