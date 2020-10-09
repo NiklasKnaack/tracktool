@@ -77,22 +77,27 @@
             let pathHolder = [
                 { 
                     id: 0,
-                    startPoint: { x: 519, y: 889 },
-                    endPoint: { x: 397, y: 117 },
+                    startPoint: { x: 434, y: 872, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null },
+                    endPoint: { x: 325, y: 142, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null },
+                    currentPoint: { x: 434, y: 872, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null },
+                    openSet: [
+                    ],
+                    closedSet: [
+                    ],
                     segments: [
-                        { index: 0,  p0: { x: 519, y: 889, split: false, distToEnd: 0 }, p1: { x: 668, y: 750, split: false, distToEnd: 0 }, centerPoint: { x: 593.5, y: 819.5 }, length: 203.7694775966214,  startPosition: { x: 519, y: 889 }, endPosition: null               },
-                        { index: 1,  p0: { x: 668, y: 750, split: false, distToEnd: 0 }, p1: { x: 671, y: 570, split: true,  distToEnd: 0 }, centerPoint: { x: 669.5, y: 660 },   length: 180.02499826412998, startPosition: null,               endPosition: null               },
-                        { index: 2,  p0: { x: 671, y: 570, split: true,  distToEnd: 0 }, p1: { x: 774, y: 482, split: true,  distToEnd: 0 }, centerPoint: { x: 722.5, y: 526 },   length: 135.47324459095236, startPosition: null,               endPosition: null               },
-                        { index: 3,  p0: { x: 774, y: 482, split: true,  distToEnd: 0 }, p1: { x: 864, y: 403, split: false, distToEnd: 0 }, centerPoint: { x: 819, y: 442.5 },   length: 119.75391434103521, startPosition: null,               endPosition: null               },
-                        { index: 4,  p0: { x: 864, y: 403, split: false, distToEnd: 0 }, p1: { x: 862, y: 249, split: false, distToEnd: 0 }, centerPoint: { x: 863, y: 326 },     length: 154.01298646542764, startPosition: null,               endPosition: null               },
-                        { index: 5,  p0: { x: 774, y: 482, split: true,  distToEnd: 0 }, p1: { x: 684, y: 407, split: false, distToEnd: 0 }, centerPoint: { x: 729, y: 444.5 },   length: 117.15374513859982, startPosition: null,               endPosition: null               },
-                        { index: 6,  p0: { x: 671, y: 570, split: true,  distToEnd: 0 }, p1: { x: 577, y: 492, split: false, distToEnd: 0 }, centerPoint: { x: 624, y: 531 },     length: 122.14745187681976, startPosition: null,               endPosition: null               },
-                        { index: 7,  p0: { x: 577, y: 492, split: false, distToEnd: 0 }, p1: { x: 577, y: 272, split: true,  distToEnd: 0 }, centerPoint: { x: 577, y: 382 },     length: 220,                startPosition: null,               endPosition: null               },
-                        { index: 8,  p0: { x: 742, y: 118, split: false, distToEnd: 0 }, p1: { x: 577, y: 272, split: true,  distToEnd: 0 }, centerPoint: { x: 659.5, y: 195 },   length: 225.7011298155151,  startPosition: null,               endPosition: null               },
-                        { index: 9,  p0: { x: 397, y: 117, split: false, distToEnd: 0 }, p1: { x: 577, y: 272, split: true,  distToEnd: 0 }, centerPoint: { x: 487, y: 194.5 },   length: 237.53947040439405, startPosition: null,               endPosition: { x: 397, y: 117 } },
-                        { index: 10, p0: { x: 519, y: 889, split: false, distToEnd: 0 }, p1: { x: 359, y: 734, split: false, distToEnd: 0 }, centerPoint: { x: 439, y: 811.5 },   length: 222.76669409945464, startPosition: null,               endPosition: null               },
-                        { index: 11, p0: { x: 359, y: 734, split: false, distToEnd: 0 }, p1: { x: 359, y: 577, split: false, distToEnd: 0 }, centerPoint: { x: 359, y: 655.5 },   length: 157,                startPosition: null,               endPosition: null               },
-                        { index: 12, p0: { x: 359, y: 577, split: false, distToEnd: 0 }, p1: { x: 239, y: 493, split: false, distToEnd: 0 }, centerPoint: { x: 299, y: 535 },     length: 146.47866738880444, startPosition: null,               endPosition: null               },
+                        { index: 0, p0: { x: 434, y: 872, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 580, y: 749, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 507, y: 810.5 }, length: 190.90573590125572 },
+                        { index: 1, p0: { x: 580, y: 749, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 581, y: 585, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 580.5, y: 667 }, length: 164.00304875214974 },
+                        { index: 2, p0: { x: 581, y: 585, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 678, y: 496, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 629.5, y: 540.5 }, length: 131.64345787011217 },
+                        { index: 3, p0: { x: 678, y: 496, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 751, y: 430, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 714.5, y: 463 }, length: 98.41239759298622 },
+                        { index: 4, p0: { x: 751, y: 430, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 750, y: 260, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 750.5, y: 345 }, length: 170.00294115102832 },
+                        { index: 5, p0: { x: 678, y: 496, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 575, y: 384, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 626.5, y: 440 }, length: 152.16109883935513 },
+                        { index: 6, p0: { x: 581, y: 585, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 478, y: 466, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 529.5, y: 525.5 }, length: 157.3848785620779 },
+                        { index: 7, p0: { x: 478, y: 466, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 482, y: 248, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 480, y: 357 }, length: 218.03669415949233 },
+                        { index: 8, p0: { x: 632, y: 117, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 482, y: 248, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 557, y: 182.5 }, length: 199.15069670980316 },
+                        { index: 9, p0: { x: 325, y: 142, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 482, y: 248, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 403.5, y: 195 }, length: 189.4333655932872 },
+                        { index: 10, p0: { x: 434, y: 872, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 264, y: 763, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 349, y: 817.5 }, length: 201.94306128213466 },
+                        { index: 11, p0: { x: 264, y: 763, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 267, y: 595, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 265.5, y: 679 }, length: 168.02678357928536 },
+                        { index: 12, p0: { x: 267, y: 595, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, p1: { x: 119, y: 453, walkable: true, distToEnd: 0, hCost: 0, gCost: 0, get fCost() { return this.gCost + this.hCost; } , parentPoint: null }, centerPoint: { x: 193, y: 524 }, length: 205.10485123467947 },
                     ] 
                 }
             ];
@@ -133,9 +138,19 @@
                 
                 const _clearAll = () => {
 
+                    const pathIndex = 0;
+
                     currentPathSegment = null;
-                    pathSegments = [];
-                    pathHolder[ 0 ] = { id: 0, segments: pathSegments };
+                    //pathSegments = [];
+                    pathHolder[ pathIndex ] = { 
+                        id: pathIndex,
+                        startPoint: null,
+                        endPoint: null,
+                        currentPoint: null,
+                        openSet: [],
+                        closedSet: [],
+                        segments: [] 
+                    }
 
                     removeDebugElements();
                 
@@ -151,40 +166,86 @@
                 
                     //console.log( pathHolder[ 0 ].segments );
 
+                    const pathIndex = 0;
+
+                    const path = pathHolder[ pathIndex ];
+
                     let output = '';
 
-                    const segments = pathHolder[ 0 ].segments;
+                    output += 'id: ' + pathIndex + ',\n';
+                    output += 'startPoint: ' + '{ x: ' + path.startPoint.x + ', y: ' + path.startPoint.y + ', walkable: ' + path.startPoint.walkable + ', distToEnd: ' + path.startPoint.distToEnd + ', hCost: ' + path.startPoint.hCost + ', gCost: ' + path.startPoint.gCost + ', get fCost() { return this.gCost + this.hCost; } ' + ', parentPoint: ' + path.startPoint.parentPoint + ' },' + '\n';
+                    output += 'endPoint: ' + '{ x: ' + path.endPoint.x + ', y: ' + path.endPoint.y + ', walkable: ' + path.endPoint.walkable + ', distToEnd: ' + path.endPoint.distToEnd + ', hCost: ' + path.endPoint.hCost + ', gCost: ' + path.endPoint.gCost + ', get fCost() { return this.gCost + this.hCost; } ' + ', parentPoint: ' + path.endPoint.parentPoint + ' },' + '\n';
+                    output += 'currentPoint: ' + '{ x: ' + path.currentPoint.x + ', y: ' + path.currentPoint.y + ', walkable: ' + path.currentPoint.walkable + ', distToEnd: ' + path.currentPoint.distToEnd + ', hCost: ' + path.currentPoint.hCost + ', gCost: ' + path.currentPoint.gCost + ', get fCost() { return this.gCost + this.hCost; } ' + ', parentPoint: ' + path.currentPoint.parentPoint + ' },' + '\n';
+                    output += 'openSet: [' + '\n';
 
-                    for ( let i = 0, l = segments.length; i < l; i ++ ) {
+                    for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
 
-                        const segment = segments[ i ];
+                        const point = path.openSet[ i ];
 
-                        let startPosition = 'null';
-                        let endPosition = 'null';
+                        output += '    { x: ' + point.x + ', y: ' + point.y + ', walkable: ' + point.walkable + ', distToEnd: ' + point.distToEnd + ', hCost: ' + point.hCost + ', gCost: ' + point.gCost + ', get fCost() { return this.gCost + this.hCost; } ' + ', parentPoint: ' + point.parentPoint + ' }';
 
-                        if ( segment.startPosition !== null ) {
+                        if ( i < l ) {
 
-                            startPosition = '{ x: ' + segment.startPosition.x + ', y: ' + segment.startPosition.y + ' }';
+                            output += ',\n';
+
+                        } else {
+
+                            output += '\n';
 
                         }
-
-                        if ( segment.endPosition !== null ) {
-
-                            endPosition = '{ x: ' + segment.endPosition.x + ', y: ' + segment.endPosition.y + ' }';
-
-                        }
-
-                        const line = '{ index: ' + segment.index + ', p0: { x: ' + segment.p0.x + ', y: ' + segment.p0.y + ', split: ' + segment.p0.split + ' }, p1: { x: ' + segment.p1.x + ', y: ' + segment.p1.y + ', split: ' + segment.p1.split + ' }, centerPoint: { x: ' + segment.centerPoint.x + ', y: ' + segment.centerPoint.y + ' }, length: ' + segment.length + ', startPosition: ' + startPosition + ', endPosition: ' + endPosition + ' },';
-
-                        output += line + '\n';
-
 
                     }
+
+                    output += '],' + '\n';
+                    output += 'closedSet: [' + '\n';
+
+                    for ( let i = 0, l = path.closedSet.length; i < l; i ++ ) {
+
+                        const point = path.closedSet[ i ];
+
+                        output += '    { x: ' + point.x + ', y: ' + point.y + ', walkable: ' + point.walkable + ', distToEnd: ' + point.distToEnd + ', hCost: ' + point.hCost + ', gCost: ' + point.gCost + ', get fCost() { return this.gCost + this.hCost; } ' + ', parentPoint: ' + point.parentPoint + ' }';
+
+                        if ( i < l ) {
+
+                            output += ',\n';
+
+                        } else {
+
+                            output += '\n';
+
+                        }
+
+                    }
+
+                    output += '],' + '\n';
+                    output += 'segments: [' + '\n';
+
+                    for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                        const pathSegment = path.segments[ i ];
+
+                        console.log(pathSegment);
+
+                        output += '    { index: ' + pathSegment.index + ', p0: ' + '{ x: ' + pathSegment.p0.x + ', y: ' + pathSegment.p0.y + ', walkable: ' + pathSegment.p0.walkable + ', distToEnd: ' + pathSegment.p0.distToEnd + ', hCost: ' + pathSegment.p0.hCost + ', gCost: ' + pathSegment.p0.gCost + ', get fCost() { return this.gCost + this.hCost; } ' + ', parentPoint: ' + pathSegment.p0.parentPoint + ' }' + ', p1: ' + '{ x: ' + pathSegment.p1.x + ', y: ' + pathSegment.p1.y + ', walkable: ' + pathSegment.p1.walkable + ', distToEnd: ' + pathSegment.p1.distToEnd + ', hCost: ' + pathSegment.p1.hCost + ', gCost: ' + pathSegment.p1.gCost + ', get fCost() { return this.gCost + this.hCost; } ' + ', parentPoint: ' + pathSegment.p1.parentPoint + ' }' + ', centerPoint: ' + '{ x: ' + pathSegment.centerPoint.x + ', y: ' + pathSegment.centerPoint.y + ' }' + ', length: ' + pathSegment.length + ' }';
+
+                        if ( i < l ) {
+
+                            output += ',\n';
+
+                        } else {
+
+                            output += '\n';
+
+                        }
+
+                    }
+
+                    output += ']' + '\n';
 
                     console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
                     console.log( output );
                     console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
-                
+
                 }
 
                 const _testPath = () => {
@@ -351,6 +412,285 @@
 
             function testPath() {
 
+                tempPathSegments = [];
+
+                //---
+
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
+
+                path.openSet = [];
+                path.closedSet = [];
+
+                path.currentPoint = path.startPoint;
+                path.currentPoint.gCost = 0;
+                path.currentPoint.hCost = getDistance( path.currentPoint, path.endPoint );
+
+                path.openSet.push( path.currentPoint );
+
+                let iteration = 0;
+
+                while ( path.openSet.length > 0 && iteration < 999 ) {
+
+                    console.log( '______________________________________' );
+
+                    
+
+                    
+
+                    console.log( path.currentPoint.x, path.currentPoint.y );
+
+                    if ( path.currentPoint.x === path.endPoint.x && path.currentPoint.y === path.endPoint.y ) {
+
+                        console.log( 'FOUND END' );
+
+                        const pathToEnd = [];
+
+                        let currentPoint = path.currentPoint;
+
+                        while ( currentPoint !== null ) {
+
+                            pathToEnd.push( currentPoint );
+
+                            currentPoint = currentPoint.parentPoint;
+
+                        }
+
+                        pathToEnd.reverse();
+
+                        for ( let i = 0, l = pathToEnd.length - 1; i < l; i ++ ) {
+
+                            const point0 = pathToEnd[ i ];
+                            const point1 = pathToEnd[ i + 1 ];
+
+                            tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y } } );
+
+                        }
+
+                        //tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y } } );
+                        //tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 20, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                        //tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 20, color: { r: 0, g: 255, b: 255, a: 255 }  } );
+
+                        return;
+
+                    } else {
+
+                        const nextPathSegments = getNextPathSegmentsByPoint( path.currentPoint, path.segments );
+
+                        if ( nextPathSegments.length > 0 ) {
+
+                            const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( path.currentPoint, nextPathSegments );
+
+                            //console.log( nextPoints );
+
+                            for ( let i = 0, l = nextPoints.length; i < l; i ++ ) {
+
+                                const nextPoint = nextPoints[ i ];
+
+                                nextPoint.parentPoint = path.currentPoint;
+                                nextPoint.gCost = getDistance( nextPoint, nextPoint.parentPoint );
+                                nextPoint.hCost = getDistance( nextPoint, path.endPoint );
+
+                                //console.log( nextPoint.x, nextPoint.y, nextPoint.gCost, nextPoint.hCost, nextPoint.fCost );
+
+                                const isInClosedSet = typeof path.closedSet.find( ( point ) => point.x === nextPoint.x && point.y === nextPoint.y ) === 'undefined' ? false : true;
+
+                                if ( isInClosedSet === false ) {
+
+                                    path.openSet.push( nextPoint );
+
+                                }
+                                
+
+                            }
+
+                            path.openSet.splice( path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y ), 1 );
+
+                            path.closedSet.push( path.currentPoint );
+
+                            //console.log( path.openSet );
+                            //console.log( path.closedSet );
+
+                            /*
+                            for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
+
+                                const nextPoint = nextPoints[ i ];
+
+                                console.log( nextPoint.x, nextPoint.y, nextPoint.fCost );
+
+
+                            }
+                            */
+                            
+                            //console.log( Math.min( ...path.openSet.map( nextPoint => nextPoint.fCost ) ) );
+
+                            //console.log( path.openSet.find( element => element.fCost === Math.min( ...path.openSet.map( nextPoint => nextPoint.fCost ) ) ) );
+
+                            path.currentPoint = path.openSet.find( element => element.fCost === Math.min( ...path.openSet.map( nextPoint => nextPoint.fCost ) ) );
+
+
+
+                            
+
+                        }
+
+                    }
+
+                    
+
+
+                    /*
+                    for ( let i = 1, l = path.openSet.length; i < l; i ++ ) {
+
+                        const nextPoint = path.openSet[ i ];
+
+                        nextPoint.parentPoint = path.currentPoint;
+                        nextPoint.gCost = getDistance( nextPoint, nextPoint.parentPoint );
+                        nextPoint.hCost = getDistance( nextPoint, path.endPoint );
+
+                        if ( nextPoint.fCost < path.currentPoint.fCost || nextPoint.fCost == path.currentPoint.fCost && nextPoint.hCost < path.currentPoint.hCost ) {
+                            
+                            path.currentPoint = nextPoint;
+                            //console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y );
+
+                        }
+
+                    }
+                    console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y );
+                    console.log( 'path.openSet.length: ', path.openSet.length );
+
+                    path.openSet.splice( path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y ), 1 );
+
+                    console.log( 'path.openSet.length: ', path.openSet.length );
+
+                    path.closedSet.push( path.currentPoint );
+
+                    const nextPathSegments = getNextPathSegmentsByPoint( path.currentPoint, path.segments );
+
+                    if ( nextPathSegments.length > 0 ) {
+
+                        const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( path.currentPoint, nextPathSegments );
+
+                        console.log( nextPoints );
+
+                        for ( let i = 0, l = nextPoints.length; i < l; i ++ ) {
+
+                            const nextPoint = nextPoints[ i ];
+
+                            nextPoint.parentPoint = path.currentPoint;
+                            nextPoint.gCost = getDistance( nextPoint, nextPoint.parentPoint );
+                            nextPoint.hCost = getDistance( nextPoint, path.endPoint );
+
+                            console.log( nextPoint.gCost, nextPoint.hCost, nextPoint.fCost );
+
+ 
+                            const isInClosedSet = typeof path.closedSet.find( ( point ) => point.x === nextPoint.x && point.y === nextPoint.y ) === 'undefined' ? false : true;
+
+                            if ( nextPoint.walkable === false || isInClosedSet === true ) {
+
+                                return;
+
+                            }
+
+                            const newMovementCost = path.currentPoint.gCost + getDistance( path.currentPoint, nextPoint );
+
+                            //path.openSet.push( nextPoint );
+
+                            const isInOpenSet = typeof path.openSet.find( ( point ) => point.x === nextPoint.x && point.y === nextPoint.y ) === 'undefined' ? false : true;
+
+
+                            if ( newMovementCost < nextPoint.gCost || isInOpenSet === false ) {
+
+                                nextPoint.gCost = newMovementCost;
+                                nextPoint.hCost = nextPoint.hCost;
+                                nextPoint.parentPoint = path.currentNode;
+
+                                if ( isInOpenSet === false ) {
+
+                                    path.openSet.push( nextPoint );
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+                    */
+
+
+
+
+
+
+
+
+
+                    console.log( iteration );
+                    iteration++;
+
+                }
+
+
+                /*
+                const nextPathSegments = getNextPathSegmentsByPoint( path.currentPoint, path.segments );
+
+                if ( nextPathSegments.length > 0 ) {
+
+                    const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( path.currentPoint, nextPathSegments );
+
+                    console.log( nextPoints );
+
+                    for ( let i = 0, l = nextPoints.length; i < l; i ++ ) {
+
+                        const nextPoint = nextPoints[ i ];
+
+                        nextPoint.parentPoint = path.currentPoint;
+                        nextPoint.gCost = getDistance( nextPoint, nextPoint.parentPoint );
+                        nextPoint.hCost = getDistance( nextPoint, path.endPoint );
+
+                        console.log( nextPoint.gCost, nextPoint.hCost, nextPoint.fCost );
+
+                        //path.openSet.push( nextPoint );
+
+                    }
+
+                }
+
+                //path.closedSet.push( path.currentPoint );
+                */
+
+                /*
+                const point = {
+
+                    x: position.x,
+                    y: position.y,
+                    walkable: walkable,
+                    distToEnd: distToEnd,
+                    hCost: hCost,
+                    gCost: gCost,
+                    get fCost() {
+
+                        return this.hCost + this.gCost;
+
+                    },
+                    parentPoint: parentPoint
+
+                };
+                */
+
+                /*
+                id: 0,
+                    startPoint: { x: 519, y: 889, distToEnd: 0 },
+                    endPoint: { x: 397, y: 117, distToEnd: 0 },
+                    currentPoint: null,
+                    openSet: [],
+                    closedSet: [],
+                    segments: [
+                        */
+
+                /*
                 const pathSegments = [ ...pathHolder[ 0 ].segments ];
 
                 const startPoint = pathHolder[ 0 ].startPoint;
@@ -379,6 +719,7 @@
                     console.log( nextPoints );
 
                 }
+                */
 
 
 
@@ -922,468 +1263,6 @@
             }
             */
 
-            /*
-            function testPath() {
-
-                const pathSegments = [ ...pathHolder[ 0 ].segments ];
-
-                console.log( 'testPath()' );
-
-                //---
-
-                for ( let i = 0, l = pathSegments.length; i < l; i ++ ) {
-
-                    const pathSegment = pathSegments[ i ];
-
-                    pathSegment.sorted = false;
-
-                }
-
-                //---
-
-                const pathes = [];
-                const pathesIndex = 0;
-
-                pathes[ pathesIndex ] = { id: pathesIndex, segments: [], totalLength: 0, foundEnd: false }
-
-                //---
-
-                const pathSegmentStartIndex = pathSegments.findIndex( pathSegment => pathSegment.startPosition !== null );
-                const pathSegmentStart = pathSegments.splice( pathSegmentStartIndex, 1 )[ 0 ];
-
-                //---
-
-                recursive( pathSegments, [ ...pathSegments ], pathes, pathesIndex, 0, pathSegmentStart, [], [ pathSegmentStart ], true );
-
-                //---
-
-                console.log( 'testDone()' );
-                //console.log( pathes );
-
-                for ( let i = 0, l = pathes.length; i < l; i ++ ) {
-
-                    const p = pathes[ i ];
-
-                    console.log( 'path ', i.toString(), '(foundEnd: ' + p.foundEnd + ', totalLength: ' + p.totalLength + '):' );
-
-                    for ( let j = 0, m = p.segments.length; j < m; j ++ ) {
-
-                        if ( p.foundEnd === true ) {
-
-                            p.segments[ j ].sorted = true;
-
-                        }
-
-                        console.log( p.segments[ j ].index, ' - ', p.segments[ j ].length );
-                        //console.log( p.segments[ j ] );
-
-                    }
-
-                }
-
-            }
-
-            function recursive( pathSegments, pathSegmentsLookUp, pathes, index, iteration, pathSegmentCurrent, splitpoints, pathSegmentsSave, resume = true ) {
-
-                console.log( 'current: ', pathSegmentCurrent.index );
-
-                pathes[ index ].segments.push( pathSegmentCurrent );
-                pathes[ index ].totalLength += pathSegmentCurrent.length;
-
-                iteration++;
-
-                pathSegmentsSave.push( pathSegmentCurrent );
-
-                //console.log( pathes[ index ].segments );
-
-                if ( resume === false ) {
-                //if ( pathSegments.length === 0 ) {
-
-                    console.log( 'ENDE: ', pathSegments.length );
-
-                    pathes[ index ].foundEnd = true;
-
-                    return;
-
-                }
-
-                const _nextPathSegments = [];
-                const _pathSegmentsLength = pathSegments.length;
-
-                //const testi = [ ...pathSegments ];
-
-                for ( let i = _pathSegmentsLength - 1, l = -1; i > l; i -- ) {
-
-                    const pathSegment = pathSegments[ i ];
-                    
-                    if ( pathSegmentCurrent.p1.x === pathSegment.p0.x && pathSegmentCurrent.p1.y === pathSegment.p0.y ) {
-
-                        _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                    }
-
-                    if ( pathSegmentCurrent.p1.x === pathSegment.p1.x && pathSegmentCurrent.p1.y === pathSegment.p1.y ) {
-
-                        flipPathSegmentStartEnd( pathSegment );
-
-                        _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                    }
-                    
-                    // if ( pathSegmentCurrent.p0.x === pathSegment.p0.x && pathSegmentCurrent.p0.y === pathSegment.p0.y ) {
-
-                    //     _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                    // }
-
-                    // if ( pathSegmentCurrent.p0.x === pathSegment.p1.x && pathSegmentCurrent.p0.y === pathSegment.p1.y ) {
-
-                    //     flipPathSegmentStartEnd( pathSegment );
-
-                    //     _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                    // }
-                    
-                    
-                }
-
-                // if ( pathSegmentCurrent.p0.split === true && iteration === 1 ) {
-
-                //     _nextPathSegments.push( pathSegmentCurrent );
-
-                // }
-
-                console.log( pathes[ index ].id , ' -|- ', iteration, '--->> ', _nextPathSegments.length );
-                
-                //if ( _nextPathSegments.length === 0 ) {
-
-
-
-                //}
-                
-
-                //
-
-                if ( _nextPathSegments.length > 0 ) {
-
-                    const nextPathSegment = _nextPathSegments[ 0 ];
-
-                    //pathSegmentsSave.push( nextPathSegment );
-
-                    if ( _nextPathSegments.length > 1 ) {
-
-                        //pathSegmentsSave = [];
-                        //pathSegmentsSave.push( nextPathSegment );
-
-                        for ( let i = 1, l = _nextPathSegments.length; i < l; i ++ ) {
-
-                            splitpoints.push( _nextPathSegments[ i ] );
-                            
-                            // const nPS = _nextPathSegments[ i ];
-
-                            // const nextPathSegmentCopy = {};
-
-                            // nextPathSegmentCopy.index = nPS.index;
-                            // nextPathSegmentCopy.p0 = nPS.p0;
-                            // nextPathSegmentCopy.p1 = nPS.p1;
-                            // nextPathSegmentCopy.centerPoint = nPS.centerPoint;
-                            // nextPathSegmentCopy.length = nPS.length;
-                            // nextPathSegmentCopy.startPosition = nPS.startPosition;
-                            // nextPathSegmentCopy.endPosition = nPS.endPosition;
-
-                            // splitpoints.push( nextPathSegmentCopy );
-
-                        }
-
-                    } 
-                    
-                    // if ( _nextPathSegments.length === 0 ) {
-
-                    //     if ( splitpoints.length > 0 ) {
-
-                    //         pathSegmentsSave = [];
-                    //         pathSegmentsSave.push( nextPathSegment );
-                    //         console.log("DLRGDLRGDLRGDLRGDLRG", pathSegmentsSave);
-
-                    //     }
-
-                    // }
-
-                    recursive( pathSegments, pathSegmentsLookUp, pathes, index + 0, iteration, nextPathSegment, splitpoints, pathSegmentsSave, true );
-
-                    // for ( let i = 0, l = _nextPathSegments.length; i < l; i ++ ) {
-
-                    //     const nextPathSegment = _nextPathSegments[ i ];
-
-                    //     if ( i > 0 ) {
-
-                    //         pathes[ index + i ] = { id: index + i, segments: [ ...pathes[ index ].segments ].splice( 0, iteration ), totalLength: pathes[ index ].totalLength, foundEnd: false };
-                    //         //pathSegments = [ ...pathSegmentsLookUp ];
-                    //         console.log("--------------------->>> ", nextPathSegment.index);
-
-                    //     }
-                    //     //console.log("///---------------->>> ", nextPathSegment.index);
-                    //     if ( nextPathSegment.p1.split === true ) {
-                    //         //console.log("--------------------->>> ", nextPathSegment.index);
-                    //         //console.log("-------------------------------------------------");
-
-                    //         //pathSegments = [ ...pathSegmentsLookUp ].splice( iteration, pathSegmentsLookUp.length );
-                    //         //pathSegments = [ ...pathSegmentsLookUp ].splice( 0, iteration );
-                    //         //pathSegments.push( nextPathSegment );
-
-                    //     }
-
-                    //     if ( nextPathSegment.endPosition === null ) {
-
-                    //         recursive( pathSegments, pathSegmentsLookUp, pathes, index + i, iteration, nextPathSegment, splitpoints, true );
-
-                    //     } else {
-
-                    //         //pathSegments = testi;
-                    //         //pathSegments.push( pathSegmentCurrent );
-
-                    //         recursive( pathSegments, pathSegmentsLookUp, pathes, index + i, iteration, nextPathSegment, splitpoints, false );
-
-                    //     }
-
-                    // }
-
-                } else {
-
-                    // if ( _nextPathSegments.length === 0 ) {
-
-                    //     if ( splitpoints.length > 0 ) {
-
-                    //         pathSegmentsSave = [];
-                    //         pathSegmentsSave.push( nextPathSegment );
-                    //         console.log("DLRGDLRGDLRGDLRGDLRG", pathSegmentsSave);
-
-                    //     }
-
-                    // }
-
-                    if ( splitpoints.length > 0 ) {
-
-                        console.log( 'splitpoints.length: ', splitpoints.length );
-
-                        const splitpoint = splitpoints.shift();
-
-                        //pathSegmentsSave.push( splitpoint );
-
-                        console.log( 'splitpoint: ', splitpoint );
-                        
-
-                        //pathSegmentsSave
-
-                        let restoredPathSegments = null;
-
-                        if ( pathSegmentsSave.length > 0 ) {
-
-                            console.log("___________________________________________________SDFSDFSDFDSFSDFSDF ", pathSegmentsSave);
-
-                            restoredPathSegments = [ ...pathSegments, ...pathSegmentsSave.splice( 0, pathSegmentsSave.length - iteration ) ];
-
-                        } else {
-
-                            restoredPathSegments = [ ...pathSegments ];
-
-                        }
-
-                        pathSegmentsSave = [];
-
-                        recursive( restoredPathSegments, pathSegmentsLookUp, pathes, index + 0, iteration, splitpoint, splitpoints, pathSegmentsSave, true );
-
-                    }
-
-                }
-
-            }
-            */
-
-            
-
-
-
-
-
-
-
-
-
-
-            /*
-            function testPath() {
-
-                const pathSegments = [ ...pathHolder[ 0 ].segments ];
-
-                console.log( 'testPath()' );
-
-                //---
-
-                for ( let i = 0, l = pathSegments.length; i < l; i ++ ) {
-
-                    const pathSegment = pathSegments[ i ];
-
-                    pathSegment.sorted = false;
-
-                }
-
-                //---
-
-                const pathes = [];
-                const pathesIndex = 0;
-
-                pathes[ pathesIndex ] = { id: pathesIndex, segments: [], totalLength: 0, foundEnd: false }
-
-                //---
-
-                const pathSegmentStartIndex = pathSegments.findIndex( pathSegment => pathSegment.startPosition !== null );
-                const pathSegmentStart = pathSegments.splice( pathSegmentStartIndex, 1 )[ 0 ];
-
-                //---
-
-                recursive( pathSegments, [ ...pathSegments ], pathes, pathesIndex, 0, pathSegmentStart, true );
-
-                //---
-
-                console.log( 'testDone()' );
-                //console.log( pathes );
-
-                for ( let i = 0, l = pathes.length; i < l; i ++ ) {
-
-                    const p = pathes[ i ];
-
-                    console.log( 'path ', i.toString(), '(foundEnd: ' + p.foundEnd + ', totalLength: ' + p.totalLength + '):' );
-
-                    for ( let j = 0, m = p.segments.length; j < m; j ++ ) {
-
-                        if ( p.foundEnd === true ) {
-
-                            p.segments[ j ].sorted = true;
-
-                        }
-
-                        console.log( p.segments[ j ].index, ' - ', p.segments[ j ].length );
-                        //console.log( p.segments[ j ] );
-
-                    }
-
-                }
-
-            }
-
-            function recursive( pathSegments, pathSegmentsLookUp, pathes, index, iteration, pathSegmentCurrent, resume = true ) {
-
-                pathes[ index ].segments.push( pathSegmentCurrent );
-                pathes[ index ].totalLength += pathSegmentCurrent.length;
-
-                iteration++;
-
-                //console.log( pathes[ index ].segments );
-
-                if ( resume === false ) {
-                //if ( pathSegments.length === 0 ) {
-
-                    console.log( 'ENDE: ', pathSegments.length );
-
-                    pathes[ index ].foundEnd = true;
-
-                    return;
-
-                }
-
-                const _nextPathSegments = [];
-                const _pathSegmentsLength = pathSegments.length;
-
-                //const testi = [ ...pathSegments ];
-
-                for ( let i = _pathSegmentsLength - 1, l = -1; i > l; i -- ) {
-
-                    const pathSegment = pathSegments[ i ];
-                    
-                    if ( pathSegmentCurrent.p1.x === pathSegment.p0.x && pathSegmentCurrent.p1.y === pathSegment.p0.y ) {
-
-                        _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                    }
-
-                    if ( pathSegmentCurrent.p1.x === pathSegment.p1.x && pathSegmentCurrent.p1.y === pathSegment.p1.y ) {
-
-                        flipPathSegmentStartEnd( pathSegment );
-
-                        _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                    }
-
-                    if ( pathSegmentCurrent.p0.x === pathSegment.p0.x && pathSegmentCurrent.p0.y === pathSegment.p0.y ) {
-
-                        _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                    }
-
-                    if ( pathSegmentCurrent.p0.x === pathSegment.p1.x && pathSegmentCurrent.p0.y === pathSegment.p1.y ) {
-
-                        flipPathSegmentStartEnd( pathSegment );
-
-                        _nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
-
-                    }
-                    
-                }
-                
-                // if ( pathSegmentCurrent.p0.split === true && iteration === 1 ) {
-
-                //     _nextPathSegments.push( pathSegmentCurrent );
-
-                // }
-                
-                console.log( pathes[ index ].id , ' -|- ', iteration, '--->> ', _nextPathSegments.length );
-
-                if ( _nextPathSegments.length > 0 ) {
-
-                    for ( let i = 0, l = _nextPathSegments.length; i < l; i ++ ) {
-
-                        const nextPathSegment = _nextPathSegments[ i ];
-
-                        if ( i > 0 ) {
-
-                            pathes[ index + i ] = { id: index + i, segments: [ ...pathes[ index ].segments ].splice( 0, iteration ), totalLength: pathes[ index ].totalLength, foundEnd: false };
-                            //pathSegments = [ ...pathSegmentsLookUp ];
-                            console.log("--------------------->>> ", nextPathSegment.index);
-
-                        }
-                        //console.log("///---------------->>> ", nextPathSegment.index);
-                        if ( nextPathSegment.p1.split === true ) {
-                            //console.log("--------------------->>> ", nextPathSegment.index);
-                            //console.log("-------------------------------------------------");
-
-                            //pathSegments = [ ...pathSegmentsLookUp ].splice( iteration, pathSegmentsLookUp.length );
-                            //pathSegments = [ ...pathSegmentsLookUp ].splice( 0, iteration );
-                            //pathSegments.push( nextPathSegment );
-
-                        }
-
-                        if ( nextPathSegment.endPosition === null ) {
-
-                            recursive( pathSegments, pathSegmentsLookUp, pathes, index + i, iteration, nextPathSegment, true );
-
-                        } else {
-
-                            //pathSegments = testi;
-                            //pathSegments.push( pathSegmentCurrent );
-
-                            recursive( pathSegments, pathSegmentsLookUp, pathes, index + i, iteration, nextPathSegment, false );
-
-                        }
-
-                    }
-
-                }
-
-            }
-            */
-            
-
 
 
 
@@ -1393,9 +1272,11 @@
 
             //---
 
-            function getPathSegmentPointsWithSamePosition( position ) {
+            function getPathSegmentPointsByPosition( position ) {
 
-                const path = pathHolder[ 0 ];
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
 
                 const result = [];
 
@@ -1421,6 +1302,29 @@
 
             }
 
+            function getPathSegementPoint( position, walkable = true, distToEnd = 0, gCost = 0, hCost = 0, parentPoint = null ) {
+
+                const point = {
+
+                    x: position.x,
+                    y: position.y,
+                    walkable: walkable,
+                    distToEnd: distToEnd,
+                    gCost: gCost,
+                    hCost: hCost,
+                    get fCost() {
+
+                        return this.gCost + this.hCost;
+
+                    },
+                    parentPoint: parentPoint
+
+                };
+
+                return point;
+
+            }
+
             function addPathSegment( position ) {
 
                 const path = pathHolder[ 0 ];
@@ -1429,29 +1333,25 @@
             
                     currentPathSegment = {};
                     currentPathSegment.index = path.segments.length;
-                    currentPathSegment.p0 = {};
-                    currentPathSegment.p0.x = position.x;
-                    currentPathSegment.p0.y = position.y;
-                    currentPathSegment.p0.split = false;
-                    currentPathSegment.p0.distToEnd = 0;
+                    currentPathSegment.p0 = getPathSegementPoint( position );
                     currentPathSegment.p1 = null;
-                    currentPathSegment.startPosition = null;
-                    currentPathSegment.endPosition = null;
-                    currentPathSegment.sorted = false;
+                    //currentPathSegment.startPosition = null;
+                    //currentPathSegment.endPosition = null;
+                    //currentPathSegment.sorted = false;
 
-                    const pathSegmentPointsWithSamePosition = getPathSegmentPointsWithSamePosition( currentPathSegment.p0 );
+                    // const pathSegmentPointsWithSamePosition = getPathSegmentPointsByPosition( currentPathSegment.p0 );
 
-                    if ( pathSegmentPointsWithSamePosition.length > 1 ) {
+                    // if ( pathSegmentPointsWithSamePosition.length > 1 ) {
 
-                        pathSegmentPointsWithSamePosition.push( currentPathSegment.p0 );
+                        // pathSegmentPointsWithSamePosition.push( currentPathSegment.p0 );
+                        
+                        // for ( let i = 0, l = pathSegmentPointsWithSamePosition.length; i < l; i++ ) {
 
-                        for ( let i = 0, l = pathSegmentPointsWithSamePosition.length; i < l; i++ ) {
+                        //     pathSegmentPointsWithSamePosition[ i ].split = true;
 
-                            pathSegmentPointsWithSamePosition[ i ].split = true;
+                        // }
 
-                        }
-
-                    }
+                    // }
 
                     path.segments.push( currentPathSegment );
 
@@ -1465,27 +1365,23 @@
                 
                 } else {
 
-                    currentPathSegment.p1 = {};
-                    currentPathSegment.p1.x = position.x;
-                    currentPathSegment.p1.y = position.y;
-                    currentPathSegment.p1.split = false;
-                    currentPathSegment.p1.distToEnd = 0;
+                    currentPathSegment.p1 = getPathSegementPoint( position );
                     currentPathSegment.length = getDistance( currentPathSegment.p0, currentPathSegment.p1 );
                     currentPathSegment.centerPoint = getPathSegmentCenter( currentPathSegment );
 
-                    const pathSegmentPointsWithSamePosition = getPathSegmentPointsWithSamePosition( currentPathSegment.p1 );
+                    // const pathSegmentPointsWithSamePosition = getPathSegmentPointsByPosition( currentPathSegment.p1 );
 
-                    if ( pathSegmentPointsWithSamePosition.length > 2 ) {
+                    // if ( pathSegmentPointsWithSamePosition.length > 2 ) {
 
-                        pathSegmentPointsWithSamePosition.push( currentPathSegment.p1 );
+                        // pathSegmentPointsWithSamePosition.push( currentPathSegment.p1 );
 
-                        for ( let i = 0, l = pathSegmentPointsWithSamePosition.length; i < l; i++ ) {
+                        // for ( let i = 0, l = pathSegmentPointsWithSamePosition.length; i < l; i++ ) {
 
-                            pathSegmentPointsWithSamePosition[ i ].split = true;
+                        //     pathSegmentPointsWithSamePosition[ i ].split = true;
 
-                        }
+                        // }
 
-                    }
+                    // }
 
                     if ( DEBUG === true ) {
 
@@ -1622,6 +1518,12 @@
 
             //---
 
+
+
+
+
+
+            /*
             function removeStartPositionToPathSegment() {
 
                 const path = pathHolder[ 0 ];
@@ -1733,6 +1635,37 @@
                 }
 
             }
+            */
+
+            function addStartPointToPath( pathIndex, position ) {
+
+                const path = pathHolder[ pathIndex ];
+
+                path.startPoint = getPathSegmentPointsByPosition( position )[ 0 ];
+
+                path.currentPoint = path.startPoint;
+
+                if ( DEBUG === true ) {
+
+                    rebuildDebugElements();
+
+                }
+
+            }
+
+            function addEndPointToPath( pathIndex, position ) {
+
+                const path = pathHolder[ pathIndex ];
+
+                path.endPoint = getPathSegmentPointsByPosition( position )[ 0 ];
+
+                if ( DEBUG === true ) {
+
+                    rebuildDebugElements();
+
+                }
+
+            }
 
 
 
@@ -1752,6 +1685,18 @@
                 //---
 
                 const path = pathHolder[ 0 ];
+
+                if ( path.startPoint !== null ) {
+
+                    addDebugElement( path.startPoint.x, path.startPoint.y, 'START', 'white', -15, -25, null );
+
+                }
+
+                if ( path.endPoint !== null ) {
+
+                    addDebugElement( path.endPoint.x, path.endPoint.y, 'END', 'white', -15, -25, null );
+
+                }
 
                 path.segments.forEach( ( pathSegment, index ) => {
 
@@ -1774,18 +1719,6 @@
                     }
 
                     addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.index.toString(), 'black', -3, -5, null );
-
-                    if ( pathSegment.startPosition !== null ) {
-
-                        addDebugElement( pathSegment.startPosition.x, pathSegment.startPosition.y, 'START', 'white', -15, -25, null );
-
-                    }
-
-                    if ( pathSegment.endPosition !== null ) {
-
-                        addDebugElement( pathSegment.endPosition.x, pathSegment.endPosition.y, 'END', 'white', -10, -25, null );
-
-                    }
 
                 } );
 
@@ -1910,11 +1843,15 @@
 
                 } else if ( editorMode === EDITOR_MODE_ENUM.setstartPosition ) {
 
-                    addStartPositionToPathSegment( mouseCursor.position );
+                    //addStartPositionToPathSegment( mouseCursor.position );
+
+                    addStartPointToPath( 0, mouseCursor.position );
 
                 } else if ( editorMode === EDITOR_MODE_ENUM.setendPosition ) {
 
-                    addEndPositionToPathSegment( mouseCursor.position );
+                    //addEndPositionToPathSegment( mouseCursor.position );
+
+                    addEndPointToPath( 0, mouseCursor.position );
 
                 } else if ( editorMode === EDITOR_MODE_ENUM.getPathSegment ) {
 
@@ -2250,12 +2187,30 @@
                         }
 
                     }
-            
+
+                    //---
+
+                    if ( path.startPoint !== null ) {
+
+                        drawCircle( path.startPoint, 5, 0, 255, 0, 255 );
+                        drawCircleOutline( path.startPoint, 9, 0, 255, 0, 255 );
+
+                    }
+
+                    if ( path.endPoint !== null ) {
+
+                        drawCircle( path.endPoint, 5, 0, 255, 255, 255 );
+                        drawCircleOutline( path.endPoint, 9, 0, 255, 255, 255 );
+
+                    }
+                    
                     //---
 
                     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
             
                         const pathSegment = path.segments[ i ];
+                        //if ( i === 0 ) 
+                            //console.log( pathSegment );
 
                         if ( pathSegment.p0 !== null ) {
 
@@ -2271,15 +2226,7 @@
 
                         if ( pathSegment.p1 !== null ) {
 
-                            if ( pathSegment.sorted === true ) {
-                            
-                                drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 0, 200, 0, 255 );
-                            
-                            } else {
-                            
-                                drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 200, 0, 0, 255 );
-                            
-                            }
+                            drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 200, 0, 0, 255 );
 
                             drawCircle( pathSegment.p1, 3, 255, 0, 0, 255 );
 
@@ -2287,32 +2234,18 @@
                             drawCircleOutline( pathSegment.centerPoint, 9, 255, 0, 0, 255 );
 
                             
-                            if ( pathSegment.p0.split === true ) {
+                            // if ( pathSegment.p0.split === true ) {
 
-                                drawCircleOutline( pathSegment.p0, 9, 255, 0, 0, 255 );
+                            //     drawCircleOutline( pathSegment.p0, 9, 255, 0, 0, 255 );
 
-                            }
+                            // }
 
-                            if ( pathSegment.p1.split === true ) {
+                            // if ( pathSegment.p1.split === true ) {
 
-                                drawCircleOutline( pathSegment.p1, 9, 255, 0, 0, 255 );
+                            //     drawCircleOutline( pathSegment.p1, 9, 255, 0, 0, 255 );
 
-                            }
-                            
-                                    
-                            if ( pathSegment.startPosition !== null ) {
-
-                                drawCircle( pathSegment.startPosition, 5, 0, 255, 0, 255 );
-                                drawCircleOutline( pathSegment.startPosition, 9, 0, 255, 0, 255 );
-
-                            }
-
-                            if ( pathSegment.endPosition !== null ) {
-
-                                drawCircle( pathSegment.endPosition, 5, 0, 255, 0, 255 );
-                                drawCircleOutline( pathSegment.endPosition, 9, 0, 255, 0, 255 );
-
-                            }
+                            // }
+ 
 
                         }
                         /*
