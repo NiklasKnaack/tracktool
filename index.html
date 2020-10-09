@@ -293,9 +293,175 @@
 
             //---
 
+
+
+
+
+
+
+
+            function getNextPathSegmentsByPoint( point, pathSegments ) {
+
+                const pathSegmentsFound = [];
+
+                //for ( let i = pathSegments.length - 1, l = -1; i > l; i -- ) {
+                for ( let i = 0, l = pathSegments.length; i < l; i ++ ) {
+
+                    const pathSegment = pathSegments[ i ];
+
+                    if ( point.x === pathSegment.p0.x && point.y === pathSegment.p0.y ) {
+
+                        pathSegmentsFound.push( pathSegment );
+                    
+                    } else if ( point.x === pathSegment.p1.x && point.y === pathSegment.p1.y ) {
+
+                        pathSegmentsFound.push( pathSegment );
+                    
+                    }
+
+                }
+
+                return pathSegmentsFound;
+
+            }
+
+            function getNextPointsByCurrentPointAndNextPathSegments( point, nextPathSegments ) {
+
+                const pointsFound = [];
+
+                for ( let i = 0, l = nextPathSegments.length; i < l; i ++ ) {
+
+                    const nextPathSegment = nextPathSegments[ i ];
+
+                    if ( point.x === nextPathSegment.p0.x && point.y === nextPathSegment.p0.y ) {
+
+                        pointsFound.push( nextPathSegment.p1 );
+
+                    } else if ( point.x === nextPathSegment.p1.x && point.y === nextPathSegment.p1.y ) {
+
+                        pointsFound.push( nextPathSegment.p0 );
+
+                    }
+
+                }
+
+                return pointsFound;
+
+            }
+
             function testPath() {
 
-                
+                const pathSegments = [ ...pathHolder[ 0 ].segments ];
+
+                const startPoint = pathHolder[ 0 ].startPoint;
+                const endPoint = pathHolder[ 0 ].endPoint;
+
+                //---
+
+                const currentPoint = startPoint;
+
+                //---
+
+                const nextPathSegments = getNextPathSegmentsByPoint( currentPoint, pathSegments );
+
+                console.log( nextPathSegments );
+
+
+
+
+
+                //const nextPathSegment = nextPathSegments[ i ];
+
+                if ( nextPathSegments.length > 0 ) {
+
+                    const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( currentPoint, nextPathSegments );
+
+                    console.log( nextPoints );
+
+                }
+
+
+
+
+
+
+
+                const test = () => {
+
+                    const nextTiles = [];
+
+                    for ( let i = pathSegments.length - 1, l = -1; i > l; i -- ) {
+
+                        const pathSegment = pathSegments[ i ];
+
+                        //if ( pathSegmentCurrent.index !== pathSegment.index ) {
+
+                            if ( pathSegmentCurrent.p1.x === pathSegment.p0.x && pathSegmentCurrent.p1.y === pathSegment.p0.y ) {
+
+                                //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+                                //_nextPathSegments.push( { segment: pathSegments.sclice( i, 1 )[ 0 ], index: i } );
+
+                                const nPS = pathSegments.splice( i, 1 )[ 0 ];
+
+                                //_nextPathSegments.push( nPS );
+                                //pathSegmentsSave.push( nPS );
+
+                                nextTiles.push( nPS );
+
+                            }
+
+                            if ( pathSegmentCurrent.p1.x === pathSegment.p1.x && pathSegmentCurrent.p1.y === pathSegment.p1.y ) {
+
+                                //flipPathSegmentStartEnd( pathSegment );
+
+                                //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+
+                                const nPS = pathSegments.splice( i, 1 )[ 0 ];
+
+                                //_nextPathSegments.push( nPS );
+                                //pathSegmentsSave.push( nPS );
+
+                                nextTiles.push( nPS );
+
+                            }
+
+                            if ( pathSegmentCurrent.p0.x === pathSegment.p0.x && pathSegmentCurrent.p0.y === pathSegment.p0.y ) {
+
+                                //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+
+                                const nPS = pathSegments.splice( i, 1 )[ 0 ];
+
+                                //_nextPathSegments.push( nPS );
+                                //pathSegmentsSave.push( nPS );
+
+                                nextTiles.push( nPS );
+
+                            }
+
+                            if ( pathSegmentCurrent.p0.x === pathSegment.p1.x && pathSegmentCurrent.p0.y === pathSegment.p1.y ) {
+
+                                //flipPathSegmentStartEnd( pathSegment );
+
+                                //_nextPathSegments.push( pathSegments.splice( i, 1 )[ 0 ] );
+
+                                const nPS = pathSegments.splice( i, 1 )[ 0 ];
+
+                                //_nextPathSegments.push( nPS );
+                                //pathSegmentsSave.push( nPS );
+
+                                nextTiles.push( nPS );
+
+                            }
+
+                        //}
+                        
+                    }
+
+                    console.log( nextTiles );
+
+                };
+
+                //test();
 
             }
 
