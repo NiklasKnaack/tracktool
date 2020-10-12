@@ -114,7 +114,8 @@
                         { index: 10, p0: { x: 408, y: 864, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 245, y: 724, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 326.5, y: 794 }, length: 214.8697279748825 },
                         { index: 11, p0: { x: 245, y: 724, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 241, y: 589, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 243, y: 656.5 }, length: 135.05924625881784 },
                         { index: 12, p0: { x: 241, y: 589, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 87, y: 483, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 164, y: 536 }, length: 186.9545399288287 },
-                    ]
+                    ],
+                    segmentsStartToEnd: []
                 }
             ];
 
@@ -159,7 +160,7 @@
                     tempPathSegments = [];
 
                     currentPathSegment = null;
-                    
+
                     pathHolder[ pathIndex ] = { 
                         id: pathIndex,
                         startPoint: null,
@@ -168,7 +169,8 @@
                         points: [],
                         openSet: [],
                         closedSet: [],
-                        segments: [] 
+                        segments: [],
+                        segmentsStartToEnd: []
                     }
 
                     removeDebugElements();
@@ -272,7 +274,8 @@
 
                     }
 
-                    output += ']' + '\n';
+                    output += '],' + '\n';
+                    output += 'segmentsStartToEnd: []' + '\n';
 
                     console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
                     console.log( output );
@@ -389,13 +392,228 @@
 
 
 
+            function findPath() {
 
+                console.log( '\n\n\n\n\n\n\nfindPath()' );
+
+                tempPathSegments = [];
+
+                //---
+
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
+
+                path.openSet = [];
+                path.closedSet = [];
+                path.segmentsStartToEnd = [];
+
+                for ( let i = 0, l = path.points.length; i < l; i ++ ) {
+
+                    const point = path.points[ i ];
+
+                    point.cost = Infinity;
+                    point.parentPoint = null;
+                    point.visited = false;
+
+                }
+
+                path.currentPoint = getPointByPosition( path.startPoint );
+                path.currentPoint.cost = 0;
+
+                path.openSet.push( path.currentPoint );
+
+                while ( path.openSet.length > 0 ) {
+
+                    console.log( '______________________________________', path.openSet.length );
+
+                    path.currentPoint = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
+                    path.currentPoint.visited = true;
+
+                    // for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
+
+                    //     console.log( '--->>> ', path.openSet[ i ].x, path.openSet[ i ].y, path.openSet[ i ].visited, path.openSet[ i ].cost);
+
+                    // }
+
+                    console.log( path.currentPoint );
+                    console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y, path.currentPoint.visited );
+                    //console.log( path.endPoint );
+
+                    //---
+
+                    const nextPathSegments = getNextPathSegmentsByPoint( path.currentPoint, path.segments );
+
+                    if ( nextPathSegments.length > 0 ) {
+
+                        const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( path.currentPoint, nextPathSegments );
+
+                        console.log( '--_>>> ', nextPoints.length );
+
+                        for ( let i = 0, l = nextPoints.length; i < l; i ++ ) {
+
+                            const nextPoint = getPointByPosition( nextPoints[ i ] );
+
+                            if ( nextPoint.visited === false && nextPoint.walkable === true ) {
+
+                                const nextDistance = path.currentPoint.cost + getDistance( nextPoint, path.currentPoint );
+
+                                if ( nextDistance < nextPoint.cost ) {
+
+                                    nextPoint.parentPoint = path.currentPoint;
+
+                                    nextPoint.cost = nextDistance;
+
+                                } 
+
+                                path.openSet.push( nextPoint );
+
+                            }
+
+                        }
+
+                    } 
+
+                    path.openSet.splice( path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y ), 1 );
+
+                }
+
+
+                //console.log( 'path.openSet, ', path.openSet );
+                //console.log( 'path.endPoint.parentPoint, ', path.endPoint.parentPoint );
+                //console.log( 'path.endPoint.parentPoint, ', getPointByPosition( path.endPoint ).parentPoint );
+
+
+
+                if ( getPointByPosition( path.endPoint ).parentPoint !== null ) {
+
+                    console.log( 'FOUND END' );
+
+                    const pathToEnd = [];
+
+                    let currentPoint = getPointByPosition( path.endPoint );
+
+                    while ( currentPoint !== null ) {
+
+                        pathToEnd.push( currentPoint );
+
+                        currentPoint = currentPoint.parentPoint;
+
+                    }
+
+                    pathToEnd.reverse();
+
+                    for ( let i = 0, l = pathToEnd.length - 1; i < l; i ++ ) {
+
+                        const point0 = pathToEnd[ i ];
+                        const point1 = pathToEnd[ i + 1 ];
+
+                        path.segmentsStartToEnd.push( getPathSegmentByPoints( point0, point1 ) );
+
+                        console.log( path.segmentsStartToEnd[ path.segmentsStartToEnd.length - 1 ] );
+
+                        tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y } } );
+                        tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                        tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+
+                    }
+
+                }
+
+            }
+
+            //---
+
+            function getPathSegmentByPoints( p0, p1 ) {
+
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
+
+                let result = null;
+
+                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                    const pathSegment = path.segments[ i ];
+
+                    let p0Found = false;
+                    let p1Found = false;
+
+                    if ( pathSegment.p0.x === p0.x && pathSegment.p0.y === p0.y || pathSegment.p1.x === p0.x && pathSegment.p1.y === p0.y ) {
+
+                        p0Found = true;
+
+                    }
+
+                    if ( pathSegment.p0.x === p1.x && pathSegment.p0.y === p1.y || pathSegment.p1.x === p1.x && pathSegment.p1.y === p1.y ) {
+
+                        p1Found = true;
+
+                    }
+
+                    if ( p0Found === true && p1Found === true ) {
+
+                        result = pathSegment;
+
+                    }
+
+                }
+
+                return result;
+
+            }
+
+            function getPathSegmentPointsByPosition( position ) {
+
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
+
+                const result = [];
+
+                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+            
+                    const pathSegment = path.segments[ i ];
+
+                    if ( pathSegment.p0.x === position.x && pathSegment.p0.y === position.y ) {
+
+                        result.push( pathSegment.p0 );
+
+                    }
+
+                    if ( pathSegment.p1.x === position.x && pathSegment.p1.y === position.y ) {
+
+                        result.push( pathSegment.p1 );
+
+                    }
+
+                }
+
+                return result;
+
+            }
+
+            function getPathSegementPoint( position, walkable = true, cost = 0, parentPoint = null, visited = false ) {
+
+                const point = {
+
+                    x: position.x,
+                    y: position.y,
+                    walkable: walkable,
+                    cost: cost,
+                    parentPoint: parentPoint,
+                    visited: visited
+
+                };
+
+                return point;
+
+            }
 
             function getNextPathSegmentsByPoint( point, pathSegments ) {
 
                 const pathSegmentsFound = [];
 
-                //for ( let i = pathSegments.length - 1, l = -1; i > l; i -- ) {
                 for ( let i = 0, l = pathSegments.length; i < l; i ++ ) {
 
                     const pathSegment = pathSegments[ i ];
@@ -463,196 +681,13 @@
 
             }
 
-            function findPath() {
-
-                console.log( '\n\n\n\n\n\n\nfindPath()' );
-
-                tempPathSegments = [];
-
-                //---
-
-                const pathIndex = 0;
-
-                const path = pathHolder[ pathIndex ];
-
-                path.openSet = [];
-                path.closedSet = [];
-
-                for ( let i = 0, l = path.points.length; i < l; i ++ ) {
-
-                    const point = path.points[ i ];
-
-                    point.cost = Infinity;
-                    point.parentPoint = null;
-                    point.visited = false;
-
-                }
-
-                path.currentPoint = getPointByPosition( path.startPoint );
-                path.currentPoint.cost = 0;
-
-                path.openSet.push( path.currentPoint );
-
-
-                let iteration = 0;
-
-                //console.log( 'currentPoint: ', path.currentPoint.x, path.currentPoint.y );
-
-                while ( path.openSet.length > 0 && iteration < 111 ) {
-
-                    console.log( '______________________________________', path.openSet.length );
-
-                    path.currentPoint = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
-                    path.currentPoint.visited = true;
-
-                    // for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
-
-                    //     console.log( '--->>> ', path.openSet[ i ].x, path.openSet[ i ].y, path.openSet[ i ].visited, path.openSet[ i ].cost);
-
-                    // }
-
-                    console.log( path.currentPoint );
-                    console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y, path.currentPoint.visited );
-                    //console.log( path.endPoint );
-
-                    //---
-
-                    const nextPathSegments = getNextPathSegmentsByPoint( path.currentPoint, path.segments );
-
-                    if ( nextPathSegments.length > 0 ) {
-
-                        const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( path.currentPoint, nextPathSegments );
-
-                        console.log( '--_>>> ', nextPoints.length );
-
-                        for ( let i = 0, l = nextPoints.length; i < l; i ++ ) {
-
-                            const nextPoint = getPointByPosition( nextPoints[ i ] );
-
-                            if ( nextPoint.visited === false && nextPoint.walkable === true ) {
-
-                                const nextDistance = path.currentPoint.cost + getDistance( nextPoint, path.currentPoint );
-
-                                if ( nextDistance < nextPoint.cost ) {
-
-                                    nextPoint.parentPoint = path.currentPoint;
-
-                                    nextPoint.cost = nextDistance;
-
-                                } 
-
-                                path.openSet.push( nextPoint );
-
-                            }
-
-                        }
-
-                    } 
-
-                    path.openSet.splice( path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y ), 1 );
-
-                    iteration++;
-
-                }
-
-
-                //console.log( 'path.openSet, ', path.openSet );
-                //console.log( 'path.endPoint.parentPoint, ', path.endPoint.parentPoint );
-                //console.log( 'path.endPoint.parentPoint, ', getPointByPosition( path.endPoint ).parentPoint );
-
-
-
-                if ( getPointByPosition( path.endPoint ).parentPoint !== null ) {
-
-                    console.log( 'FOUND END' );
-
-                    const pathToEnd = [];
-
-                    let currentPoint = getPointByPosition( path.endPoint );
-
-                    while ( currentPoint !== null ) {
-
-                        pathToEnd.push( currentPoint );
-
-                        currentPoint = currentPoint.parentPoint;
-
-                    }
-
-                    pathToEnd.reverse();
-
-                    for ( let i = 0, l = pathToEnd.length - 1; i < l; i ++ ) {
-
-                        const point0 = pathToEnd[ i ];
-                        const point1 = pathToEnd[ i + 1 ];
-
-                        tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y } } );
-                        tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: 255, g: 0, b: 255, a: 255 }  } );
-                        tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: 255, g: 0, b: 255, a: 255 }  } );
-
-                    }
-
-                }
-
-            }
-
             //---
-
-            function getPathSegmentPointsByPosition( position ) {
-
-                const pathIndex = 0;
-
-                const path = pathHolder[ pathIndex ];
-
-                const result = [];
-
-                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-            
-                    const pathSegment = path.segments[ i ];
-
-                    if ( pathSegment.p0.x === position.x && pathSegment.p0.y === position.y ) {
-
-                        result.push( pathSegment.p0 );
-
-                    }
-
-                    if ( pathSegment.p1.x === position.x && pathSegment.p1.y === position.y ) {
-
-                        result.push( pathSegment.p1 );
-
-                    }
-
-                }
-
-                return result;
-
-            }
-
-            function getPathSegementPoint( position, walkable = true, cost = 0, hCost = 0, parentPoint = null ) {
-
-                const point = {
-
-                    x: position.x,
-                    y: position.y,
-                    walkable: walkable,
-                    cost: cost,
-                    hCost: hCost,
-                    get fCost() {
-
-                        return this.cost + this.hCost;
-
-                    },
-                    parentPoint: parentPoint,
-                    visited: false
-
-                };
-
-                return point;
-
-            }
 
             function addPathSegment( position ) {
 
-                const path = pathHolder[ 0 ];
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
                 
                 if ( currentPathSegment === null ) {
 
@@ -754,7 +789,9 @@
 
             //---
 
-            function addStartPointToPath( pathIndex, position ) {
+            function addStartPointToPath( position ) {
+
+                const pathIndex = 0;
 
                 const path = pathHolder[ pathIndex ];
 
@@ -772,7 +809,9 @@
 
             }
 
-            function addEndPointToPath( pathIndex, position ) {
+            function addEndPointToPath( position ) {
+
+                const pathIndex = 0;
 
                 const path = pathHolder[ pathIndex ];
 
@@ -967,13 +1006,13 @@
 
                     //addStartPositionToPathSegment( mouseCursor.position );
 
-                    addStartPointToPath( 0, mouseCursor.position );
+                    addStartPointToPath( mouseCursor.position );
 
                 } else if ( editorMode === EDITOR_MODE_ENUM.setendPosition ) {
 
                     //addEndPositionToPathSegment( mouseCursor.position );
 
-                    addEndPointToPath( 0, mouseCursor.position );
+                    addEndPointToPath( mouseCursor.position );
 
                 } else if ( editorMode === EDITOR_MODE_ENUM.getPathSegment ) {
 
