@@ -44,9 +44,10 @@
 
             const EDITOR_MODE_ENUM = Object.freeze( {
                 drawPath: 'drawPath',
-                setstartPosition: 'setstartPosition',
-                setendPosition: 'setendPosition',
-                getPathSegment: 'getPathSegment'
+                setStartPosition: 'setStartPosition',
+                setEndPosition: 'setEndPosition',
+                getPathSegment: 'getPathSegment',
+                togglePointWalkable: 'togglePointWalkable'
             } );
 
             let editorMode = EDITOR_MODE_ENUM.drawPath;
@@ -190,15 +191,21 @@
                 
                 }
                 
-                const _setstartPosition = () => {
+                const _setStartPosition = () => {
                 
-                    editorMode = EDITOR_MODE_ENUM.setstartPosition;
+                    editorMode = EDITOR_MODE_ENUM.setStartPosition;
                 
                 }
                 
-                const _setendPosition = () => {
+                const _setEndPosition = () => {
                 
-                    editorMode = EDITOR_MODE_ENUM.setendPosition;
+                    editorMode = EDITOR_MODE_ENUM.setEndPosition;
+                
+                }
+
+                const _setToggleWalkable = () => {
+                
+                    editorMode = EDITOR_MODE_ENUM.togglePointWalkable;
                 
                 }
 
@@ -241,16 +248,16 @@
                     let output = '';
 
                     output += 'id: ' + pathIndex + ',\n';
-                    output += 'startPoint: ' + '{ x: ' + path.startPoint.x + ', y: ' + path.startPoint.y + ', walkable: ' + path.startPoint.walkable + ', cost: ' + path.startPoint.cost + '' + ', parentPoint: ' + 'null' + ', visited: ' + path.startPoint.visited + ' },' + '\n';
-                    output += 'endPoint: ' + '{ x: ' + path.endPoint.x + ', y: ' + path.endPoint.y + ', walkable: ' + path.endPoint.walkable + ', cost: ' + path.endPoint.cost + '' + ', parentPoint: ' + 'null' + ', visited: ' + path.startPoint.visited + ' },' + '\n';
-                    output += 'currentPoint: ' + '{ x: ' + path.currentPoint.x + ', y: ' + path.currentPoint.y + ', walkable: ' + path.currentPoint.walkable + ', cost: ' + path.currentPoint.cost + '' + ', parentPoint: ' + 'null' + ', visited: ' + path.startPoint.visited + ' },' + '\n';
+                    output += 'startPoint: ' + '{ x: ' + path.startPoint.x + ', y: ' + path.startPoint.y + ', walkable: ' + path.startPoint.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' },' + '\n';
+                    output += 'endPoint: ' + '{ x: ' + path.endPoint.x + ', y: ' + path.endPoint.y + ', walkable: ' + path.endPoint.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' },' + '\n';
+                    output += 'currentPoint: ' + '{ x: ' + path.currentPoint.x + ', y: ' + path.currentPoint.y + ', walkable: ' + path.currentPoint.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' },' + '\n';
                     output += 'points: [' + '\n';
 
                     for ( let i = 0, l = path.points.length; i < l; i ++ ) {
 
                         const point = path.points[ i ];
 
-                        output += '    { x: ' + point.x + ', y: ' + point.y + ', walkable: ' + point.walkable + ', cost: ' + point.cost + '' + ', parentPoint: ' + 'null' + ', visited: ' + path.startPoint.visited + ' }';
+                        output += '    { x: ' + point.x + ', y: ' + point.y + ', walkable: ' + point.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' }';
 
                         if ( i < l ) {
 
@@ -265,48 +272,8 @@
                     }
 
                     output += '],' + '\n';
-                    output += 'openSet: [' + '\n';
-
-                    for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
-
-                        const point = path.openSet[ i ];
-
-                        output += '    { x: ' + point.x + ', y: ' + point.y + ', walkable: ' + point.walkable + ', cost: ' + point.cost + '' + ', parentPoint: ' + 'null' + ', visited: ' + path.startPoint.visited + ' }';
-
-                        if ( i < l ) {
-
-                            output += ',\n';
-
-                        } else {
-
-                            output += '\n';
-
-                        }
-
-                    }
-
-                    output += '],' + '\n';
-                    output += 'closedSet: [' + '\n';
-
-                    for ( let i = 0, l = path.closedSet.length; i < l; i ++ ) {
-
-                        const point = path.closedSet[ i ];
-
-                        output += '    { x: ' + point.x + ', y: ' + point.y + ', walkable: ' + point.walkable + ', cost: ' + point.cost + '' + ', parentPoint: ' + 'null' + ', visited: ' + path.startPoint.visited + ' }';
-
-                        if ( i < l ) {
-
-                            output += ',\n';
-
-                        } else {
-
-                            output += '\n';
-
-                        }
-
-                    }
-
-                    output += '],' + '\n';
+                    output += 'openSet: [],' + '\n';
+                    output += 'closedSet: [],' + '\n';
                     output += 'segments: [' + '\n';
 
                     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
@@ -315,7 +282,7 @@
 
                         console.log(pathSegment);
 
-                        output += '    { index: ' + pathSegment.index + ', p0: ' + '{ x: ' + pathSegment.p0.x + ', y: ' + pathSegment.p0.y + ', walkable: ' + pathSegment.p0.walkable + ', cost: ' + pathSegment.p0.cost + '' + ', parentPoint: ' + 'null' + ', visited: ' + pathSegment.p0.visited + ' }' + ', p1: ' + '{ x: ' + pathSegment.p1.x + ', y: ' + pathSegment.p1.y + ', walkable: ' + pathSegment.p1.walkable + ', cost: ' + pathSegment.p1.cost + '' + ', parentPoint: ' + 'null' + ', visited: ' + pathSegment.p1.visited + ' }' + ', centerPoint: ' + '{ x: ' + pathSegment.centerPoint.x + ', y: ' + pathSegment.centerPoint.y + ' }' + ', length: ' + pathSegment.length + ' }';
+                        output += '    { index: ' + pathSegment.index + ', p0: ' + '{ x: ' + pathSegment.p0.x + ', y: ' + pathSegment.p0.y + ', walkable: ' + pathSegment.p0.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' }' + ', p1: ' + '{ x: ' + pathSegment.p1.x + ', y: ' + pathSegment.p1.y + ', walkable: ' + pathSegment.p1.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' }' + ', centerPoint: ' + '{ x: ' + pathSegment.centerPoint.x + ', y: ' + pathSegment.centerPoint.y + ' }' + ', length: ' + pathSegment.length + ' }';
 
                         if ( i < l ) {
 
@@ -355,8 +322,9 @@
                 const guiSetting = {
                         
                     'Draw Path': _drawPath,
-                    'Set Start Point': _setstartPosition,
-                    'Set End Point': _setendPosition,
+                    'Set Start Point': _setStartPosition,
+                    'Set End Point': _setEndPosition,
+                    'Toggle Walkable': _setToggleWalkable,
                     'Clear All': _clearAll,
                     'Get PathSegment': _getPathSegment,
                     'Log Path': _logPath,
@@ -373,6 +341,7 @@
                 folderEdit.add( guiSetting, 'Draw Path' );
                 folderEdit.add( guiSetting, 'Set Start Point' );
                 folderEdit.add( guiSetting, 'Set End Point' );
+                folderEdit.add( guiSetting, 'Toggle Walkable' );
                 folderEdit.add( guiSetting, 'Clear All' );
 
                 const folderAnalyze = gui.addFolder( 'Analyze' );
@@ -796,7 +765,7 @@
                         addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9, null );
                         addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.index.toString(), 'black', -3, -5, null );
                         
-                        addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.length.toFixed( 2 ).toString(), 'white', 10, -5, null );
+                        addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
 
                     } 
 
@@ -846,6 +815,22 @@
 
             }
 
+            function togglePointWalkable( position ) {
+
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
+
+                const point = getPointByPosition( position );
+
+                if ( point !== null ) {
+
+                    point.walkable = !point.walkable;
+
+                }
+
+            }
+
             //---
 
             function rebuildDebugElements() {
@@ -883,7 +868,7 @@
                     }
 
                     addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.index.toString(), 'black', -3, -5, null );
-                    addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.length.toFixed( 2 ).toString(), 'white', 10, -5, null );
+                    addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
 
                 } );
 
@@ -1014,13 +999,13 @@
 
                     addPathSegment( mouseCursor.position );
 
-                } else if ( editorMode === EDITOR_MODE_ENUM.setstartPosition ) {
+                } else if ( editorMode === EDITOR_MODE_ENUM.setStartPosition ) {
 
                     //addStartPositionToPathSegment( mouseCursor.position );
 
                     addStartPointToPath( mouseCursor.position );
 
-                } else if ( editorMode === EDITOR_MODE_ENUM.setendPosition ) {
+                } else if ( editorMode === EDITOR_MODE_ENUM.setEndPosition ) {
 
                     //addEndPositionToPathSegment( mouseCursor.position );
 
@@ -1029,6 +1014,12 @@
                 } else if ( editorMode === EDITOR_MODE_ENUM.getPathSegment ) {
 
                     //addEndPositionToPathSegment( mouseCursor.position );
+
+                } else if ( editorMode === EDITOR_MODE_ENUM.togglePointWalkable ) {
+
+                    //addEndPositionToPathSegment( mouseCursor.position );
+
+                    togglePointWalkable( mouseCursor.position );
 
                 }
 
@@ -1406,19 +1397,25 @@
                             drawCircle( pathSegment.centerPoint, 9, 200, 200, 200, 255 );
                             drawCircleOutline( pathSegment.centerPoint, 9, 255, 0, 0, 255 );
 
-                            
-                            // if ( pathSegment.p0.split === true ) {
+                            if ( getPointByPosition( pathSegment.p0 ).walkable === true ) {
 
-                            //     drawCircleOutline( pathSegment.p0, 9, 255, 0, 0, 255 );
+                                drawCircleOutline( pathSegment.p0, 6, 0, 255, 255, 255 );
+                                
+                            } else {
 
-                            // }
+                                drawCircleOutline( pathSegment.p0, 6, 255, 0, 0, 255 );
 
-                            // if ( pathSegment.p1.split === true ) {
+                            }
 
-                            //     drawCircleOutline( pathSegment.p1, 9, 255, 0, 0, 255 );
+                            if ( getPointByPosition( pathSegment.p1 ).walkable === true ) {
 
-                            // }
- 
+                                drawCircleOutline( pathSegment.p1, 6, 0, 255, 255, 255 );
+
+                            } else {
+
+                                drawCircleOutline( pathSegment.p1, 6, 255, 0, 0, 255 );                          
+
+                            }
 
                         }
 
