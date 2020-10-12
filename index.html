@@ -423,15 +423,50 @@
 
                 console.log( 'currentPoint: ', path.currentPoint.x, path.currentPoint.y );
 
-                while ( path.openSet.length > 0 && iteration < 22 ) {
+                while ( path.openSet.length > 0 && iteration < 9 ) {
 
                     console.log( '______________________________________' );
 
-                    
+                    /*
+                    for (var i = 1; i < tempArray.length; i++) {
+                        //this if statement is solely to build the starting walls.
+                        if (tempArray[i].getValueF() < currentNode.getValueF() || tempArray[i].getValueF() == currentNode.getValueF() && tempArray[i].getValueH() < currentNode.getValueH()) {
+                        currentNode = tempArray[i]; //sets the currentNode to openSetI if it has a lower F value, or an = F value with a lower HCost.
+
+                        }
+                    }
+                    */
+
+                    //fCost = total
+                    //gCost = zurückgelegter weg
+                    //hCost = weg der noch bevorsteht
+
+                    /*
+                    for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
+
+                        const comparePoint = path.openSet[ i ];
+
+                        if ( comparePoint.fCost < path.currentPoint.fCost || comparePoint.fCost === path.currentPoint.fCost && comparePoint.hCost < path.currentPoint.hCost ) {
+
+                            console.log("SWITCH");
+
+                        }
+
+
+
+                        console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y, path.currentPoint.fCost, path.currentPoint.hCost );
+                        console.log( 'comparePoint: ', comparePoint.x, comparePoint.y, comparePoint.fCost, comparePoint.hCost );
+
+                    }
+                    */
+
+
 
                     
 
                     console.log( path.currentPoint.x, path.currentPoint.y );
+                    console.log( path.endPoint.x, path.endPoint.y );
+
 
                     if ( path.currentPoint.x === path.endPoint.x && path.currentPoint.y === path.endPoint.y ) {
 
@@ -441,6 +476,7 @@
 
                         let currentPoint = path.currentPoint;
 
+<<<<<<< HEAD
                         // wieso führt das nachdem man den startPoint neu gesetzt hat zur unendlichen schleife des todes?!
 
                         console.log( 'currentPoint: ', path.currentPoint );
@@ -454,6 +490,21 @@
                             console.log( 'currentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint );
                             console.log( 'currentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint );
                         }
+=======
+                        // console.log( 'currentPoint: ', path.currentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint.parentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint.parentPoint.parentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint );
+                        // console.log( 'currentPoint.parentPoint: ', path.currentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint.parentPoint );
+
+
+>>>>>>> fad114d67f3c8fe6a0003bee9ebf0ff3608b986e
                         
                         /*
                         while ( currentPoint !== null ) {
@@ -483,7 +534,11 @@
                             tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: 255, g: 0, b: 255, a: 255 }  } );
 
                         }
+<<<<<<< HEAD
                         */
+=======
+                        
+>>>>>>> fad114d67f3c8fe6a0003bee9ebf0ff3608b986e
 
                         return;
 
@@ -495,11 +550,13 @@
 
                             const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( path.currentPoint, nextPathSegments );
 
-                            //console.log( nextPoints );
+                            console.log( '--_>>> ', nextPoints.length );
 
                             for ( let i = 0, l = nextPoints.length; i < l; i ++ ) {
 
                                 const nextPoint = nextPoints[ i ];
+
+                                console.log( 'nextPoint: ', nextPoint.x, nextPoint.y );
 
                                 nextPoint.parentPoint = path.currentPoint;
                                 nextPoint.gCost = getDistance( nextPoint, nextPoint.parentPoint );
