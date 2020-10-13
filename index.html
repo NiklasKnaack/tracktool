@@ -53,8 +53,8 @@
             const EDITOR_MODE_ENUM = Object.freeze( {
                 addPathSegment: 'addPathSegment',
                 removePathSegment: 'removePathSegment',
-                setStartPosition: 'setStartPosition',
-                setEndPosition: 'setEndPosition',
+                setStartPoint: 'setStartPoint',
+                setEndPoint: 'setEndPoint',
                 getPathSegment: 'getPathSegment',
                 togglePointWalkable: 'togglePointWalkable'
             } );
@@ -206,15 +206,15 @@
 
                 }
                 
-                const _setStartPosition = () => {
+                const _setStartPoint = () => {
                 
-                    editorMode = EDITOR_MODE_ENUM.setStartPosition;
+                    editorMode = EDITOR_MODE_ENUM.setStartPoint;
                 
                 }
                 
-                const _setEndPosition = () => {
+                const _setEndPoint = () => {
                 
-                    editorMode = EDITOR_MODE_ENUM.setEndPosition;
+                    editorMode = EDITOR_MODE_ENUM.setEndPoint;
                 
                 }
 
@@ -336,9 +336,9 @@
                         
                     'Add Path Segment': _addPathSegment,
                     'Remove Path Segment': _removePathSegment,
-                    'Set Start Point': _setStartPosition,
-                    'Set End Point': _setEndPosition,
-                    'Toggle Walkable': _setToggleWalkable,
+                    'Set Start Point': _setStartPoint,
+                    'Set End Point': _setEndPoint,
+                    'Toggle Walkable Point': _setToggleWalkable,
                     'Clear All': _clearAll,
                     'Get PathSegment': _getPathSegment,
                     'Log Path': _logPath,
@@ -356,7 +356,7 @@
                 folderEdit.add( guiSetting, 'Remove Path Segment' );
                 folderEdit.add( guiSetting, 'Set Start Point' );
                 folderEdit.add( guiSetting, 'Set End Point' );
-                folderEdit.add( guiSetting, 'Toggle Walkable' );
+                folderEdit.add( guiSetting, 'Toggle Walkable Point' );
                 folderEdit.add( guiSetting, 'Clear All' );
 
                 const folderAnalyze = gui.addFolder( 'Analyze' );
@@ -1069,11 +1069,11 @@
 
                     addPathSegment( mouseCursor.position );
 
-                } else if ( editorMode === EDITOR_MODE_ENUM.setStartPosition ) {
+                } else if ( editorMode === EDITOR_MODE_ENUM.setStartPoint ) {
 
                     addStartPointToPath( mouseCursor.position );
 
-                } else if ( editorMode === EDITOR_MODE_ENUM.setEndPosition ) {
+                } else if ( editorMode === EDITOR_MODE_ENUM.setEndPoint ) {
 
                     addEndPointToPath( mouseCursor.position );
 
