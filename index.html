@@ -464,7 +464,7 @@
 
                 while ( path.openSet.length > 0 ) {
 
-                    console.log( '______________________________________', path.openSet.length );
+                    // console.log( '______________________________________', path.openSet.length );
 
                     path.currentPoint = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
                     path.currentPoint.visited = true;
@@ -475,9 +475,9 @@
 
                     // }
 
-                    console.log( path.currentPoint );
-                    console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y, path.currentPoint.visited );
-                    //console.log( path.endPoint );
+                    // console.log( path.currentPoint );
+                    // console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y, path.currentPoint.visited );
+                    // console.log( path.endPoint );
 
                     //---
 
@@ -485,9 +485,9 @@
 
                     if ( nextPathSegments.length > 0 ) {
 
-                        const nextPoints = getNextPointsByCurrentPointAndNextPathSegments( path.currentPoint, nextPathSegments );
+                        const nextPoints = getNextPointsByPointAndPathSegments( path.currentPoint, nextPathSegments );
 
-                        console.log( '--_>>> ', nextPoints.length );
+                        // console.log( '--_>>> ', nextPoints.length );
 
                         for ( let i = 0, l = nextPoints.length; i < l; i ++ ) {
 
@@ -602,7 +602,7 @@
 
             }
 
-            function getPathSegementPoint( position, walkable = true, cost = 0, parentPoint = null, visited = false ) {
+            function getPathSegmentPoint( position, walkable = true, cost = 0, parentPoint = null, visited = false ) {
 
                 const point = {
 
@@ -643,7 +643,7 @@
 
             }
 
-            function getNextPointsByCurrentPointAndNextPathSegments( point, nextPathSegments ) {
+            function getNextPointsByPointAndPathSegments( point, nextPathSegments ) {
 
                 const pointsFound = [];
 
@@ -700,7 +700,7 @@
                 
                 if ( currentPathSegment === null ) {
 
-                    const pathSegmentPointNew = getPathSegementPoint( position );
+                    const pathSegmentPointNew = getPathSegmentPoint( position );
                     const pathSegmentPointArray = path.points.find( ( point ) => point.x === position.x && point.y === position.y );
 
                     let pathSegmentPoint = pathSegmentPointArray;
@@ -728,7 +728,7 @@
                 
                 } else {
 
-                    const pathSegmentPointNew = getPathSegementPoint( position );
+                    const pathSegmentPointNew = getPathSegmentPoint( position );
                     const pathSegmentPointArray = path.points.find( ( point ) => point.x === position.x && point.y === position.y );
 
                     let pathSegmentPoint = pathSegmentPointArray;
@@ -748,7 +748,7 @@
                     if ( DEBUG === true ) {
 
                         addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9, null );
-                        addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.id.toString(), 'white', -3, -5, null );
+                        addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.id.toString(), 'white', -4, -6, null );
                         
                         addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
 
@@ -947,7 +947,7 @@
 
                     }
 
-                    addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.id.toString(), 'white', -3, -5, null );
+                    addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.id.toString(), 'white', -4, -6, null );
                     addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
 
                 } );
