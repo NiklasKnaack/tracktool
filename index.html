@@ -831,7 +831,11 @@
 
                 //---
 
-                rebuildDebugElements();
+                if ( DEBUG === true ) {
+
+                    rebuildDebugElements();
+
+                }
 
                 tempPathSegments = [];
 
@@ -889,10 +893,6 @@
             }
 
             function movePoint( position ) {
-
-                tempPathSegments = [];
-
-                //---
 
                 const pathIndex = 0;
 
@@ -962,6 +962,8 @@
                         rebuildDebugElements();
 
                     }
+
+                    tempPathSegments = [];
 
                 }
 
