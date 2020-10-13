@@ -798,10 +798,6 @@
 
                 if ( pathSegment !== null ) {
 
-                    console.log( pathSegment.id );
-
-                    // Todo: Remove pathSegment but keep the endpoints if they are used by other segments
-
                     let p0Found = getPointByPosition( pathSegment.p0 );
                     let p1Found = getPointByPosition( pathSegment.p1 );
 
@@ -827,21 +823,27 @@
 
                     }
 
-                    console.log( p0Found, p1Found );
+                    path.segments.splice( path.segments.findIndex( ( pS ) => pS.id === pathSegment.id ), 1 );
 
                     if ( p0Found !== null ) {
 
-                        //remove p0Found
+                        path.points.splice( path.points.findIndex( ( point ) => point.x === p0Found.x && point.y === p0Found.y ), 1 );
 
                     }
 
                     if ( p1Found !== null ) {
 
-                        //remove p1Found
+                        path.points.splice( path.points.findIndex( ( point ) => point.x === p1Found.x && point.y === p1Found.y ), 1 );
 
                     }
-                    
+
                 }
+
+                //---
+
+                rebuildDebugElements();
+
+                tempPathSegments = [];
 
             }
 
