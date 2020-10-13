@@ -22,6 +22,10 @@
             background: radial-gradient(#202020, #000000);
         }
 
+        .dg .property-name {
+            width: 100%;
+        }
+
     </style>
 
     <script>
@@ -47,7 +51,8 @@
                 setStartPosition: 'setStartPosition',
                 setEndPosition: 'setEndPosition',
                 getPathSegment: 'getPathSegment',
-                togglePointWalkable: 'togglePointWalkable'
+                togglePointWalkable: 'togglePointWalkable',
+                removePathSegment: 'removePathSegment'
             } );
 
             let editorMode = EDITOR_MODE_ENUM.drawPath;
@@ -209,6 +214,12 @@
                 
                 }
 
+                const _removePathSegment = () => {
+
+                    editorMode = EDITOR_MODE_ENUM.removePathSegment;
+
+                }
+
                 const _getPathSegment = () => {
 
                     editorMode = EDITOR_MODE_ENUM.getPathSegment;
@@ -325,6 +336,7 @@
                     'Set Start Point': _setStartPosition,
                     'Set End Point': _setEndPosition,
                     'Toggle Walkable': _setToggleWalkable,
+                    'Remove Path Segment': _removePathSegment,
                     'Clear All': _clearAll,
                     'Get PathSegment': _getPathSegment,
                     'Log Path': _logPath,
@@ -342,6 +354,7 @@
                 folderEdit.add( guiSetting, 'Set Start Point' );
                 folderEdit.add( guiSetting, 'Set End Point' );
                 folderEdit.add( guiSetting, 'Toggle Walkable' );
+                folderEdit.add( guiSetting, 'Remove Path Segment' );
                 folderEdit.add( guiSetting, 'Clear All' );
 
                 const folderAnalyze = gui.addFolder( 'Analyze' );
@@ -775,6 +788,24 @@
 
             }
 
+            function removePathSegment( position ) {
+
+                const pathSegment = getPathSegmentByPosition( position );
+
+                if ( pathSegment !== null ) {
+
+                    // tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y } } );
+                    // tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 20, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                    // tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 20, color: { r: 0, g: 255, b: 255, a: 255 }  } );
+
+                    console.log( pathSegment.index );
+
+                    // Todo: Remove pathSegment but keep the endpoints if they are used by other segments
+                    
+                }
+
+            }
+
             //---
 
             function addStartPointToPath( position ) {
@@ -1017,11 +1048,23 @@
 
                 } else if ( editorMode === EDITOR_MODE_ENUM.togglePointWalkable ) {
 
-                    //addEndPositionToPathSegment( mouseCursor.position );
-
                     togglePointWalkable( mouseCursor.position );
 
+                } else if ( editorMode === EDITOR_MODE_ENUM.removePathSegment ) {
+
+                    //remove Path Segment
+                    console.log( 'remove Path Segment' );
+
+                    removePathSegment( mouseCursor.position );
+
                 }
+
+
+
+
+
+
+                
 
             }
 
@@ -1039,46 +1082,15 @@
 
                 mousePos = getMousePos( canvas, event );
 
-                if ( editorMode === EDITOR_MODE_ENUM.getPathSegment ) {
+                if ( editorMode === EDITOR_MODE_ENUM.getPathSegment || editorMode === EDITOR_MODE_ENUM.removePathSegment ) {
 
                     tempPathSegments = [];
 
                     //---
 
-                    let distanceTotal = Infinity;
-                    let indexSave = -1;
+                    const pathSegment = getPathSegmentByPosition( mousePos );
 
-                    pathHolder.forEach( ( path, index ) => {
-                
-                        for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-
-                            const pathSegment = path.segments[ i ];
-
-                            const distanceToPathSegment = signedDistanceToLine( mousePos, pathSegment.p0.x, pathSegment.p0.y, pathSegment.p1.x, pathSegment.p1.y );
-
-                            if ( distanceToPathSegment < distanceTotal ) {
-
-                                distanceTotal = distanceToPathSegment;
-
-                                indexSave = i;
-
-                            }
-
-                        }
-
-                    } );
-                    
-                    if ( indexSave > -1 && distanceTotal <= SNAP_TO_DISTANCE ) {
-
-                        const pathSegment = pathHolder[ 0 ].segments[ indexSave ];
-
-                        // console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
-                        // console.log( 'PATH ID: ', pathSegment.index );
-                        // console.log( 'p0: ', pathSegment.p0 );
-                        // console.log( 'p1: ', pathSegment.p1 );
-                        // console.log( 'startPosition: ', pathSegment.startPosition );
-                        // console.log( 'endPosition: ', pathSegment.endPosition );
-                        // console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
+                    if ( pathSegment !== null ) {
 
                         tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y } } );
                         tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 20, color: { r: 255, g: 0, b: 255, a: 255 }  } );
@@ -1095,6 +1107,57 @@
                 const rect = canvas.getBoundingClientRect();
 
                 return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+
+            }
+
+            //---
+
+            function getPathSegmentByPosition( position ) {
+
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
+
+                let distanceTotal = Infinity;
+                let indexSave = -1;
+
+                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                    const pathSegment = path.segments[ i ];
+
+                    const distanceToPathSegment = signedDistanceToLine( position, pathSegment.p0.x, pathSegment.p0.y, pathSegment.p1.x, pathSegment.p1.y );
+
+                    if ( distanceToPathSegment < distanceTotal ) {
+
+                        distanceTotal = distanceToPathSegment;
+
+                        indexSave = i;
+
+                    }
+
+                }
+
+                if ( indexSave > -1 && distanceTotal <= SNAP_TO_DISTANCE ) {
+
+                    return path.segments[ indexSave ];
+
+                    // const pathSegment = path.segments[ indexSave ];
+
+                    // // console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
+                    // // console.log( 'PATH ID: ', pathSegment.index );
+                    // // console.log( 'p0: ', pathSegment.p0 );
+                    // // console.log( 'p1: ', pathSegment.p1 );
+                    // // console.log( 'startPosition: ', pathSegment.startPosition );
+                    // // console.log( 'endPosition: ', pathSegment.endPosition );
+                    // // console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
+
+                    // tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y } } );
+                    // tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 20, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                    // tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 20, color: { r: 0, g: 255, b: 255, a: 255 }  } );
+
+                }
+
+                return null;
 
             }
 
