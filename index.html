@@ -22,6 +22,10 @@
             background: radial-gradient(#202020, #000000);
         }
 
+        .dg.ac {
+            z-index: 10000;
+        }
+
         .dg .property-name {
             width: 100%;
         }
@@ -83,9 +87,9 @@
             let pathHolder = [
                 { 
                     id: 0,
-                    startPoint: { x: 60, y: 218, walkable: true, cost: 0, parentPoint: null, visited: false },
-                    endPoint: { x: 785, y: 877, walkable: true, cost: 0, parentPoint: null, visited: false },
-                    currentPoint: { x: 785, y: 877, walkable: true, cost: 0, parentPoint: null, visited: false },
+                    startPoint: { x: 60, y: 218 },
+                    endPoint: { x: 785, y: 877 },
+                    currentPoint: { x: 785, y: 877 },
                     points: [
                         { x: 170, y: 835, walkable: true, cost: 0, parentPoint: null, visited: false },
                         { x: 180, y: 716, walkable: true, cost: 0, parentPoint: null, visited: false },
@@ -130,51 +134,51 @@
                     closedSet: [
                     ],
                     segments: [
-                        { id: 0, p0: { x: 170, y: 835, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 180, y: 716, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 175, y: 775.5 }, length: 119.41942890501528 },
-                        { id: 1, p0: { x: 180, y: 716, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 153, y: 584, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 166.5, y: 650 }, length: 134.73306943731373 },
-                        { id: 2, p0: { x: 153, y: 584, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 203, y: 427, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 178, y: 505.5 }, length: 164.76953601925328 },
-                        { id: 3, p0: { x: 203, y: 427, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 170, y: 263, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 186.5, y: 345 }, length: 167.28717822953436 },
-                        { id: 4, p0: { x: 170, y: 263, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 191, y: 70, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 180.5, y: 166.5 }, length: 194.1391253714717 },
-                        { id: 5, p0: { x: 347, y: 63, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 362, y: 232, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 354.5, y: 147.5 }, length: 169.66437457521835 },
-                        { id: 6, p0: { x: 362, y: 232, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 363, y: 325, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 362.5, y: 278.5 }, length: 93.00537618869137 },
-                        { id: 7, p0: { x: 363, y: 325, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 383, y: 418, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 373, y: 371.5 }, length: 95.12623192369179 },
-                        { id: 8, p0: { x: 383, y: 418, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 370, y: 567, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 376.5, y: 492.5 }, length: 149.56603892595405 },
-                        { id: 9, p0: { x: 370, y: 567, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 396, y: 689, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 383, y: 628 }, length: 124.73972903610141 },
-                        { id: 10, p0: { x: 396, y: 689, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 385, y: 798, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 390.5, y: 743.5 }, length: 109.55363982999378 },
-                        { id: 11, p0: { x: 385, y: 798, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 413, y: 890, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 399, y: 844 }, length: 96.16652224137046 },
-                        { id: 12, p0: { x: 578, y: 898, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 578, y: 757, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 578, y: 827.5 }, length: 141 },
-                        { id: 13, p0: { x: 578, y: 757, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 568, y: 646, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 573, y: 701.5 }, length: 111.44954015158609 },
-                        { id: 14, p0: { x: 568, y: 646, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 578, y: 501, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 573, y: 573.5 }, length: 145.34441853748632 },
-                        { id: 15, p0: { x: 578, y: 501, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 562, y: 369, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 570, y: 435 }, length: 132.9661611087573 },
-                        { id: 16, p0: { x: 562, y: 369, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 593, y: 249, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 577.5, y: 309 }, length: 123.9395013706284 },
-                        { id: 17, p0: { x: 593, y: 249, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 548, y: 127, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 570.5, y: 188 }, length: 130.034610777285 },
-                        { id: 18, p0: { x: 548, y: 127, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 606, y: 41, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 577, y: 84 }, length: 103.73041983911952 },
-                        { id: 19, p0: { x: 715, y: 51, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 725, y: 147, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 720, y: 99 }, length: 96.51942809610924 },
-                        { id: 20, p0: { x: 725, y: 147, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 722, y: 271, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 723.5, y: 209 }, length: 124.03628501370073 },
-                        { id: 21, p0: { x: 722, y: 271, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 753, y: 390, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 737.5, y: 330.5 }, length: 122.97154142320898 },
-                        { id: 22, p0: { x: 753, y: 390, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 745, y: 547, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 749, y: 468.5 }, length: 157.20368952413298 },
-                        { id: 23, p0: { x: 745, y: 547, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 801, y: 683, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 773, y: 615 }, length: 147.07821048680188 },
-                        { id: 24, p0: { x: 801, y: 683, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 758, y: 766, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 779.5, y: 724.5 }, length: 93.47726996441435 },
-                        { id: 25, p0: { x: 758, y: 766, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 785, y: 877, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 771.5, y: 821.5 }, length: 114.23659658795863 },
-                        { id: 26, p0: { x: 868, y: 784, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 758, y: 766, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 813, y: 775 }, length: 111.46299834474219 },
-                        { id: 27, p0: { x: 758, y: 766, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 578, y: 757, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 668, y: 761.5 }, length: 180.22485955050706 },
-                        { id: 28, p0: { x: 578, y: 757, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 385, y: 798, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 481.5, y: 777.5 }, length: 197.3068675946177 },
-                        { id: 29, p0: { x: 385, y: 798, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 180, y: 716, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 282.5, y: 757 }, length: 220.79175709251467 },
-                        { id: 30, p0: { x: 153, y: 584, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 370, y: 567, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 261.5, y: 575.5 }, length: 217.66488003350472 },
-                        { id: 31, p0: { x: 370, y: 567, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 578, y: 501, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 474, y: 534 }, length: 218.22007240398395 },
-                        { id: 32, p0: { x: 578, y: 501, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 753, y: 390, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 665.5, y: 445.5 }, length: 207.23416706711276 },
-                        { id: 33, p0: { x: 725, y: 147, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 548, y: 127, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 636.5, y: 137 }, length: 178.12635964393365 },
-                        { id: 34, p0: { x: 548, y: 127, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 362, y: 232, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 455, y: 179.5 }, length: 213.59073013593076 },
-                        { id: 35, p0: { x: 362, y: 232, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 170, y: 263, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 266, y: 247.5 }, length: 194.48650338776724 },
-                        { id: 36, p0: { x: 170, y: 263, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 60, y: 218, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 115, y: 240.5 }, length: 118.84864324004712 },
-                        { id: 37, p0: { x: 153, y: 584, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 57, y: 582, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 105, y: 583 }, length: 96.02083107326243 },
-                        { id: 38, p0: { x: 180, y: 716, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 91, y: 741, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 135.5, y: 728.5 }, length: 92.44457799135652 },
-                        { id: 39, p0: { x: 753, y: 390, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 952, y: 416, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 852.5, y: 403 }, length: 200.6913052426537 },
-                        { id: 40, p0: { x: 725, y: 147, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 645, y: 341, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 685, y: 244 }, length: 209.84756372185979 },
-                        { id: 41, p0: { x: 645, y: 341, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 578, y: 501, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 611.5, y: 421 }, length: 173.46181135915768 },
-                        { id: 42, p0: { x: 153, y: 584, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 385, y: 798, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 269, y: 691 }, length: 315.6263613832026 },
-                        { id: 43, p0: { x: 170, y: 263, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 270, y: 465, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 220, y: 364 }, length: 225.39742678211746 },
-                        { id: 44, p0: { x: 270, y: 465, walkable: true, cost: 0, parentPoint: null, visited: false }, p1: { x: 370, y: 567, walkable: true, cost: 0, parentPoint: null, visited: false }, centerPoint: { x: 320, y: 516 }, length: 142.84257068535277 },
+                        { id: 0, p0: { x: 170, y: 835 }, p1: { x: 180, y: 716 }, centerPoint: { x: 175, y: 775.5 }, length: 119.41942890501528 },
+                        { id: 1, p0: { x: 180, y: 716 }, p1: { x: 153, y: 584 }, centerPoint: { x: 166.5, y: 650 }, length: 134.73306943731373 },
+                        { id: 2, p0: { x: 153, y: 584 }, p1: { x: 203, y: 427 }, centerPoint: { x: 178, y: 505.5 }, length: 164.76953601925328 },
+                        { id: 3, p0: { x: 203, y: 427 }, p1: { x: 170, y: 263 }, centerPoint: { x: 186.5, y: 345 }, length: 167.28717822953436 },
+                        { id: 4, p0: { x: 170, y: 263 }, p1: { x: 191, y: 70 }, centerPoint: { x: 180.5, y: 166.5 }, length: 194.1391253714717 },
+                        { id: 5, p0: { x: 347, y: 63 }, p1: { x: 362, y: 232 }, centerPoint: { x: 354.5, y: 147.5 }, length: 169.66437457521835 },
+                        { id: 6, p0: { x: 362, y: 232 }, p1: { x: 363, y: 325 }, centerPoint: { x: 362.5, y: 278.5 }, length: 93.00537618869137 },
+                        { id: 7, p0: { x: 363, y: 325 }, p1: { x: 383, y: 418 }, centerPoint: { x: 373, y: 371.5 }, length: 95.12623192369179 },
+                        { id: 8, p0: { x: 383, y: 418 }, p1: { x: 370, y: 567 }, centerPoint: { x: 376.5, y: 492.5 }, length: 149.56603892595405 },
+                        { id: 9, p0: { x: 370, y: 567 }, p1: { x: 396, y: 689 }, centerPoint: { x: 383, y: 628 }, length: 124.73972903610141 },
+                        { id: 10, p0: { x: 396, y: 689 }, p1: { x: 385, y: 798 }, centerPoint: { x: 390.5, y: 743.5 }, length: 109.55363982999378 },
+                        { id: 11, p0: { x: 385, y: 798 }, p1: { x: 413, y: 890 }, centerPoint: { x: 399, y: 844 }, length: 96.16652224137046 },
+                        { id: 12, p0: { x: 578, y: 898 }, p1: { x: 578, y: 757 }, centerPoint: { x: 578, y: 827.5 }, length: 141 },
+                        { id: 13, p0: { x: 578, y: 757 }, p1: { x: 568, y: 646 }, centerPoint: { x: 573, y: 701.5 }, length: 111.44954015158609 },
+                        { id: 14, p0: { x: 568, y: 646 }, p1: { x: 578, y: 501 }, centerPoint: { x: 573, y: 573.5 }, length: 145.34441853748632 },
+                        { id: 15, p0: { x: 578, y: 501 }, p1: { x: 562, y: 369 }, centerPoint: { x: 570, y: 435 }, length: 132.9661611087573 },
+                        { id: 16, p0: { x: 562, y: 369 }, p1: { x: 593, y: 249 }, centerPoint: { x: 577.5, y: 309 }, length: 123.9395013706284 },
+                        { id: 17, p0: { x: 593, y: 249 }, p1: { x: 548, y: 127 }, centerPoint: { x: 570.5, y: 188 }, length: 130.034610777285 },
+                        { id: 18, p0: { x: 548, y: 127 }, p1: { x: 606, y: 41 }, centerPoint: { x: 577, y: 84 }, length: 103.73041983911952 },
+                        { id: 19, p0: { x: 715, y: 51 }, p1: { x: 725, y: 147 }, centerPoint: { x: 720, y: 99 }, length: 96.51942809610924 },
+                        { id: 20, p0: { x: 725, y: 147 }, p1: { x: 722, y: 271 }, centerPoint: { x: 723.5, y: 209 }, length: 124.03628501370073 },
+                        { id: 21, p0: { x: 722, y: 271 }, p1: { x: 753, y: 390 }, centerPoint: { x: 737.5, y: 330.5 }, length: 122.97154142320898 },
+                        { id: 22, p0: { x: 753, y: 390 }, p1: { x: 745, y: 547 }, centerPoint: { x: 749, y: 468.5 }, length: 157.20368952413298 },
+                        { id: 23, p0: { x: 745, y: 547 }, p1: { x: 801, y: 683 }, centerPoint: { x: 773, y: 615 }, length: 147.07821048680188 },
+                        { id: 24, p0: { x: 801, y: 683 }, p1: { x: 758, y: 766 }, centerPoint: { x: 779.5, y: 724.5 }, length: 93.47726996441435 },
+                        { id: 25, p0: { x: 758, y: 766 }, p1: { x: 785, y: 877 }, centerPoint: { x: 771.5, y: 821.5 }, length: 114.23659658795863 },
+                        { id: 26, p0: { x: 868, y: 784 }, p1: { x: 758, y: 766 }, centerPoint: { x: 813, y: 775 }, length: 111.46299834474219 },
+                        { id: 27, p0: { x: 758, y: 766 }, p1: { x: 578, y: 757 }, centerPoint: { x: 668, y: 761.5 }, length: 180.22485955050706 },
+                        { id: 28, p0: { x: 578, y: 757 }, p1: { x: 385, y: 798 }, centerPoint: { x: 481.5, y: 777.5 }, length: 197.3068675946177 },
+                        { id: 29, p0: { x: 385, y: 798 }, p1: { x: 180, y: 716 }, centerPoint: { x: 282.5, y: 757 }, length: 220.79175709251467 },
+                        { id: 30, p0: { x: 153, y: 584 }, p1: { x: 370, y: 567 }, centerPoint: { x: 261.5, y: 575.5 }, length: 217.66488003350472 },
+                        { id: 31, p0: { x: 370, y: 567 }, p1: { x: 578, y: 501 }, centerPoint: { x: 474, y: 534 }, length: 218.22007240398395 },
+                        { id: 32, p0: { x: 578, y: 501 }, p1: { x: 753, y: 390 }, centerPoint: { x: 665.5, y: 445.5 }, length: 207.23416706711276 },
+                        { id: 33, p0: { x: 725, y: 147 }, p1: { x: 548, y: 127 }, centerPoint: { x: 636.5, y: 137 }, length: 178.12635964393365 },
+                        { id: 34, p0: { x: 548, y: 127 }, p1: { x: 362, y: 232 }, centerPoint: { x: 455, y: 179.5 }, length: 213.59073013593076 },
+                        { id: 35, p0: { x: 362, y: 232 }, p1: { x: 170, y: 263 }, centerPoint: { x: 266, y: 247.5 }, length: 194.48650338776724 },
+                        { id: 36, p0: { x: 170, y: 263 }, p1: { x: 60, y: 218 }, centerPoint: { x: 115, y: 240.5 }, length: 118.84864324004712 },
+                        { id: 37, p0: { x: 153, y: 584 }, p1: { x: 57, y: 582 }, centerPoint: { x: 105, y: 583 }, length: 96.02083107326243 },
+                        { id: 38, p0: { x: 180, y: 716 }, p1: { x: 91, y: 741 }, centerPoint: { x: 135.5, y: 728.5 }, length: 92.44457799135652 },
+                        { id: 39, p0: { x: 753, y: 390 }, p1: { x: 952, y: 416 }, centerPoint: { x: 852.5, y: 403 }, length: 200.6913052426537 },
+                        { id: 40, p0: { x: 725, y: 147 }, p1: { x: 645, y: 341 }, centerPoint: { x: 685, y: 244 }, length: 209.84756372185979 },
+                        { id: 41, p0: { x: 645, y: 341 }, p1: { x: 578, y: 501 }, centerPoint: { x: 611.5, y: 421 }, length: 173.46181135915768 },
+                        { id: 42, p0: { x: 153, y: 584 }, p1: { x: 385, y: 798 }, centerPoint: { x: 269, y: 691 }, length: 315.6263613832026 },
+                        { id: 43, p0: { x: 170, y: 263 }, p1: { x: 270, y: 465 }, centerPoint: { x: 220, y: 364 }, length: 225.39742678211746 },
+                        { id: 44, p0: { x: 270, y: 465 }, p1: { x: 370, y: 567 }, centerPoint: { x: 320, y: 516 }, length: 142.84257068535277 },
                     ],
                     segmentsStartToEnd: []
                 }
@@ -259,9 +263,9 @@
                     let output = '';
 
                     output += 'id: ' + pathIndex + ',\n';
-                    output += 'startPoint: ' + '{ x: ' + path.startPoint.x + ', y: ' + path.startPoint.y + ', walkable: ' + path.startPoint.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' },' + '\n';
-                    output += 'endPoint: ' + '{ x: ' + path.endPoint.x + ', y: ' + path.endPoint.y + ', walkable: ' + path.endPoint.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' },' + '\n';
-                    output += 'currentPoint: ' + '{ x: ' + path.currentPoint.x + ', y: ' + path.currentPoint.y + ', walkable: ' + path.currentPoint.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' },' + '\n';
+                    output += 'startPoint: ' + '{ x: ' + path.startPoint.x + ', y: ' + path.startPoint.y + ' },' + '\n';
+                    output += 'endPoint: ' + '{ x: ' + path.endPoint.x + ', y: ' + path.endPoint.y + ' },' + '\n';
+                    output += 'currentPoint: ' + '{ x: ' + path.currentPoint.x + ', y: ' + path.currentPoint.y + ' },' + '\n';
                     output += 'points: [' + '\n';
 
                     for ( let i = 0, l = path.points.length; i < l; i ++ ) {
@@ -291,9 +295,7 @@
 
                         const pathSegment = path.segments[ i ];
 
-                        console.log(pathSegment);
-
-                        output += '    { id: ' + pathSegment.id + ', p0: ' + '{ x: ' + pathSegment.p0.x + ', y: ' + pathSegment.p0.y + ', walkable: ' + pathSegment.p0.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' }' + ', p1: ' + '{ x: ' + pathSegment.p1.x + ', y: ' + pathSegment.p1.y + ', walkable: ' + pathSegment.p1.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ' }' + ', centerPoint: ' + '{ x: ' + pathSegment.centerPoint.x + ', y: ' + pathSegment.centerPoint.y + ' }' + ', length: ' + pathSegment.length + ' }';
+                        output += '    { id: ' + pathSegment.id + ', p0: ' + '{ x: ' + pathSegment.p0.x + ', y: ' + pathSegment.p0.y + ' }' + ', p1: ' + '{ x: ' + pathSegment.p1.x + ', y: ' + pathSegment.p1.y + ' }' + ', centerPoint: ' + '{ x: ' + pathSegment.centerPoint.x + ', y: ' + pathSegment.centerPoint.y + ' }' + ', length: ' + pathSegment.length + ' }';
 
                         if ( i < l ) {
 
@@ -600,36 +602,6 @@
 
             }
 
-            function getPathSegmentPointsByPosition( position ) {
-
-                const pathIndex = 0;
-
-                const path = pathHolder[ pathIndex ];
-
-                const result = [];
-
-                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-            
-                    const pathSegment = path.segments[ i ];
-
-                    if ( pathSegment.p0.x === position.x && pathSegment.p0.y === position.y ) {
-
-                        result.push( pathSegment.p0 );
-
-                    }
-
-                    if ( pathSegment.p1.x === position.x && pathSegment.p1.y === position.y ) {
-
-                        result.push( pathSegment.p1 );
-
-                    }
-
-                }
-
-                return result;
-
-            }
-
             function getPathSegementPoint( position, walkable = true, cost = 0, parentPoint = null, visited = false ) {
 
                 const point = {
@@ -729,7 +701,7 @@
                 if ( currentPathSegment === null ) {
 
                     const pathSegmentPointNew = getPathSegementPoint( position );
-                    const pathSegmentPointArray = isObjectInArray( path.points, pathSegmentPointNew );
+                    const pathSegmentPointArray = path.points.find( ( point ) => point.x === position.x && point.y === position.y );
 
                     let pathSegmentPoint = pathSegmentPointArray;
 
@@ -742,8 +714,8 @@
                     }
 
                     currentPathSegment = {};
-                    currentPathSegment.id = path.segments.length.toString();
-                    currentPathSegment.p0 = pathSegmentPoint;
+                    currentPathSegment.id = path.segments.length;
+                    currentPathSegment.p0 = { x: pathSegmentPoint.x, y: pathSegmentPoint.y };
                     currentPathSegment.p1 = null;
 
                     path.segments.push( currentPathSegment );
@@ -757,7 +729,7 @@
                 } else {
 
                     const pathSegmentPointNew = getPathSegementPoint( position );
-                    const pathSegmentPointArray = isObjectInArray( path.points, pathSegmentPointNew );
+                    const pathSegmentPointArray = path.points.find( ( point ) => point.x === position.x && point.y === position.y );
 
                     let pathSegmentPoint = pathSegmentPointArray;
 
@@ -769,14 +741,14 @@
 
                     }
 
-                    currentPathSegment.p1 = pathSegmentPoint;
+                    currentPathSegment.p1 = { x: pathSegmentPoint.x, y: pathSegmentPoint.y };
                     currentPathSegment.length = getDistance( currentPathSegment.p0, currentPathSegment.p1 );
                     currentPathSegment.centerPoint = getPathSegmentCenter( currentPathSegment );
 
                     if ( DEBUG === true ) {
 
                         addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9, null );
-                        addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.id.toString(), 'black', -3, -5, null );
+                        addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.id.toString(), 'white', -3, -5, null );
                         
                         addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
 
@@ -837,6 +809,12 @@
 
                     }
 
+                    for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                        path.segments[ i ].id = i;
+
+                    }
+
                 }
 
                 //---
@@ -855,10 +833,7 @@
 
                 const path = pathHolder[ pathIndex ];
 
-                path.startPoint = getPathSegmentPointsByPosition( position )[ 0 ];
-
-                console.log( 'path.startPoint: ', path.startPoint );
-
+                path.startPoint = getPointByPosition( position );
                 path.currentPoint = path.startPoint;
 
                 if ( DEBUG === true ) {
@@ -875,9 +850,7 @@
 
                 const path = pathHolder[ pathIndex ];
 
-                path.endPoint = getPathSegmentPointsByPosition( position )[ 0 ];
-
-                console.log( 'path.endPoint: ', path.endPoint );
+                path.endPoint = getPointByPosition( position );
 
                 if ( DEBUG === true ) {
 
@@ -974,7 +947,7 @@
 
                     }
 
-                    addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.id.toString(), 'black', -3, -5, null );
+                    addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.id.toString(), 'white', -3, -5, null );
                     addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
 
                 } );
@@ -1078,14 +1051,6 @@
             function clamp( val, min, max ) {
 
                 return Math.min( Math.max( min, val ), max );
-
-            }
-
-            //---
-
-            function isObjectInArray( array, compareObject ) {
-
-                return array.find( ( point ) => point.x === compareObject.x && point.y === compareObject.y );
 
             }
 
@@ -1455,8 +1420,6 @@
                     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
             
                         const pathSegment = path.segments[ i ];
-                        //if ( i === 0 ) 
-                            //console.log( pathSegment );
 
                         if ( pathSegment.p0 !== null ) {
 
@@ -1466,41 +1429,34 @@
 
                             }
 
-                            drawCircle( pathSegment.p0, 3, 255, 0, 0, 255 );
-
                         }
 
                         if ( pathSegment.p1 !== null ) {
 
                             drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 200, 0, 0, 255 );
 
-                            drawCircle( pathSegment.p1, 3, 255, 0, 0, 255 );
-
-                            drawCircle( pathSegment.centerPoint, 9, 200, 200, 200, 255 );
-                            drawCircleOutline( pathSegment.centerPoint, 9, 255, 0, 0, 255 );
-
-                            if ( getPointByPosition( pathSegment.p0 ).walkable === true ) {
-
-                                drawCircleOutline( pathSegment.p0, 6, 0, 255, 255, 255 );
-                                
-                            } else {
-
-                                drawCircleOutline( pathSegment.p0, 6, 255, 0, 0, 255 );
-
-                            }
-
-                            if ( getPointByPosition( pathSegment.p1 ).walkable === true ) {
-
-                                drawCircleOutline( pathSegment.p1, 6, 0, 255, 255, 255 );
-
-                            } else {
-
-                                drawCircleOutline( pathSegment.p1, 6, 255, 0, 0, 255 );                          
-
-                            }
+                            drawCircle( pathSegment.centerPoint, 7, 255, 0, 0, 255 );
 
                         }
 
+                    }
+
+                    for ( let i = 0, l = path.points.length; i < l; i ++ ) {
+
+                        const point = path.points[ i ];
+
+                        drawCircle( point, 3, 255, 0, 0, 255 );
+
+                        if ( getPointByPosition( point ).walkable === true ) {
+
+                            drawCircleOutline( point, 6, 0, 255, 255, 255 );
+
+                        } else {
+
+                            drawCircleOutline( point, 6, 255, 0, 0, 255 );
+
+                        }
+                    
                     }
                 
                 } );
