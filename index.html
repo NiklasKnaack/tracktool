@@ -47,15 +47,15 @@
             const SNAP_TO_DISTANCE = 25;
 
             const EDITOR_MODE_ENUM = Object.freeze( {
-                drawPath: 'drawPath',
+                addPathSegment: 'addPathSegment',
+                removePathSegment: 'removePathSegment',
                 setStartPosition: 'setStartPosition',
                 setEndPosition: 'setEndPosition',
                 getPathSegment: 'getPathSegment',
-                togglePointWalkable: 'togglePointWalkable',
-                removePathSegment: 'removePathSegment'
+                togglePointWalkable: 'togglePointWalkable'
             } );
 
-            let editorMode = EDITOR_MODE_ENUM.drawPath;
+            let editorMode = EDITOR_MODE_ENUM.addPathSegment;
 
             let width = 1024;
             let height = 512;
@@ -190,10 +190,16 @@
 
             function initGUI() {
             
-                const _drawPath = () => {
+                const _addPathSegment = () => {
                 
-                    editorMode = EDITOR_MODE_ENUM.drawPath;
+                    editorMode = EDITOR_MODE_ENUM.addPathSegment;
                 
+                }
+
+                const _removePathSegment = () => {
+
+                    editorMode = EDITOR_MODE_ENUM.removePathSegment;
+
                 }
                 
                 const _setStartPosition = () => {
@@ -212,12 +218,6 @@
                 
                     editorMode = EDITOR_MODE_ENUM.togglePointWalkable;
                 
-                }
-
-                const _removePathSegment = () => {
-
-                    editorMode = EDITOR_MODE_ENUM.removePathSegment;
-
                 }
 
                 const _getPathSegment = () => {
@@ -332,11 +332,11 @@
                 
                 const guiSetting = {
                         
-                    'Draw Path': _drawPath,
+                    'Add Path Segment': _addPathSegment,
+                    'Remove Path Segment': _removePathSegment,
                     'Set Start Point': _setStartPosition,
                     'Set End Point': _setEndPosition,
                     'Toggle Walkable': _setToggleWalkable,
-                    'Remove Path Segment': _removePathSegment,
                     'Clear All': _clearAll,
                     'Get PathSegment': _getPathSegment,
                     'Log Path': _logPath,
@@ -350,11 +350,11 @@
                 const folderEdit = gui.addFolder( 'Edit' );
 
                 folderEdit.open();
-                folderEdit.add( guiSetting, 'Draw Path' );
+                folderEdit.add( guiSetting, 'Add Path Segment' );
+                folderEdit.add( guiSetting, 'Remove Path Segment' );
                 folderEdit.add( guiSetting, 'Set Start Point' );
                 folderEdit.add( guiSetting, 'Set End Point' );
                 folderEdit.add( guiSetting, 'Toggle Walkable' );
-                folderEdit.add( guiSetting, 'Remove Path Segment' );
                 folderEdit.add( guiSetting, 'Clear All' );
 
                 const folderAnalyze = gui.addFolder( 'Analyze' );
@@ -1100,9 +1100,7 @@
 
             function mouseDownHandler( event ) {
 
-                // editorMode = EDITOR_MODE_ENUM.drawPath;
-
-                if ( editorMode === EDITOR_MODE_ENUM.drawPath ) {
+                if ( editorMode === EDITOR_MODE_ENUM.addPathSegment ) {
 
                     addPathSegment( mouseCursor.position );
 
