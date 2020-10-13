@@ -51,12 +51,15 @@
             const SNAP_TO_DISTANCE = 25;
 
             const EDITOR_MODE_ENUM = Object.freeze( {
+
                 addPathSegment: 'addPathSegment',
                 removePathSegment: 'removePathSegment',
                 setStartPoint: 'setStartPoint',
                 setEndPoint: 'setEndPoint',
                 getPathSegment: 'getPathSegment',
-                togglePointWalkable: 'togglePointWalkable'
+                togglePointWalkable: 'togglePointWalkable',
+                movePoint: 'movePoint'
+
             } );
 
             let editorMode = EDITOR_MODE_ENUM.addPathSegment;
@@ -205,6 +208,12 @@
                     editorMode = EDITOR_MODE_ENUM.removePathSegment;
 
                 }
+
+                const _movePoint = () => {
+                
+                    editorMode = EDITOR_MODE_ENUM.movePoint;
+                
+                }
                 
                 const _setStartPoint = () => {
                 
@@ -336,6 +345,7 @@
                         
                     'Add Path Segment': _addPathSegment,
                     'Remove Path Segment': _removePathSegment,
+                    'Move Point': _movePoint,
                     'Set Start Point': _setStartPoint,
                     'Set End Point': _setEndPoint,
                     'Toggle Walkable Point': _setToggleWalkable,
@@ -354,6 +364,7 @@
                 folderEdit.open();
                 folderEdit.add( guiSetting, 'Add Path Segment' );
                 folderEdit.add( guiSetting, 'Remove Path Segment' );
+                folderEdit.add( guiSetting, 'Move Point' );
                 folderEdit.add( guiSetting, 'Set Start Point' );
                 folderEdit.add( guiSetting, 'Set End Point' );
                 folderEdit.add( guiSetting, 'Toggle Walkable Point' );
@@ -368,6 +379,7 @@
 
                 const folderContact = gui.addFolder( 'Contact' );
 
+                //folderContact.open();
                 folderContact.add( guiSetting, '@niklaswebdev' );
 
                 //gui.close();
@@ -379,7 +391,7 @@
             function init() {
                 
                 canvas.addEventListener( 'mousedown', mouseDownHandler, false );
-                //canvas.addEventListener( 'mouseup', mouseUpHandler, false );
+                canvas.addEventListener( 'mouseup', mouseUpHandler, false );
                 canvas.addEventListener( 'mousemove', mouseMoveHandler, false );
 
                 document.body.appendChild( canvas );
@@ -834,7 +846,7 @@
                 const path = pathHolder[ pathIndex ];
 
                 path.startPoint = getPointByPosition( position );
-                path.currentPoint = path.startPoint;
+                //path.currentPoint = path.startPoint;
 
                 if ( DEBUG === true ) {
 
@@ -855,6 +867,101 @@
                 if ( DEBUG === true ) {
 
                     rebuildDebugElements();
+
+                }
+
+            }
+
+            function addCurrentPointToPath( position ) {
+
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
+
+                path.currentPoint = getPointByPosition( position );
+
+                if ( DEBUG === true ) {
+
+                    rebuildDebugElements();
+
+                }
+
+            }
+
+            function movePoint( position ) {
+
+                tempPathSegments = [];
+
+                //---
+
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
+
+                //console.log( path.currentPoint );
+
+                const point = getPointByPosition( path.currentPoint );
+
+                if ( point !== null && mouseDown === true ) {
+
+                    const pointOldX = point.x;
+                    const pointOldY = point.y;
+
+                    point.x = position.x;
+                    point.y = position.y;
+
+                    if ( path.startPoint.x === pointOldX && path.startPoint.y === pointOldY ) {
+
+                        path.startPoint.x = point.x;
+                        path.startPoint.y = point.y;
+
+                    }
+
+                    if ( path.endPoint.x === pointOldX && path.endPoint.y === pointOldY ) {
+
+                        path.endPoint.x = point.x;
+                        path.endPoint.y = point.y;
+
+                    }
+
+                    for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                        const pathSegment = path.segments[ i ];
+
+                        let foundPathSegment = false;
+
+                        if ( pathSegment.p0.x === pointOldX && pathSegment.p0.y === pointOldY ) {
+
+                            pathSegment.p0.x = point.x;
+                            pathSegment.p0.y = point.y;
+
+                            foundPathSegment = true;
+
+                        } else if ( pathSegment.p1.x === pointOldX && pathSegment.p1.y === pointOldY ) {
+
+                            pathSegment.p1.x = point.x;
+                            pathSegment.p1.y = point.y;
+
+                            foundPathSegment = true;
+
+                        }
+
+                        if ( foundPathSegment === true ) {
+
+                            pathSegment.length = getDistance( pathSegment.p0, pathSegment.p1 );
+                            pathSegment.centerPoint = getPathSegmentCenter( pathSegment );
+
+                        }
+
+                    }
+
+                    //---
+
+                    if ( DEBUG === true ) {
+
+                        rebuildDebugElements();
+
+                    }
 
                 }
 
@@ -1065,6 +1172,8 @@
 
             function mouseDownHandler( event ) {
 
+                mouseDown = true;
+
                 if ( editorMode === EDITOR_MODE_ENUM.addPathSegment ) {
 
                     addPathSegment( mouseCursor.position );
@@ -1087,25 +1196,20 @@
 
                 } else if ( editorMode === EDITOR_MODE_ENUM.removePathSegment ) {
 
-                    //remove Path Segment
-                    console.log( 'remove Path Segment' );
-
                     removePathSegment( mouseCursor.position );
+
+                } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
+
+                    addCurrentPointToPath( mouseCursor.position );
 
                 }
 
-
-
-
-
-
-                
 
             }
 
             function mouseUpHandler( event ) {
 
-                //mouseDown = false;
+                mouseDown = false;
             
                 //mousePosEnd = getMousePos( canvas, event );
             
@@ -1128,10 +1232,14 @@
                     if ( pathSegment !== null ) {
 
                         tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y } } );
-                        tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 20, color: { r: 255, g: 0, b: 255, a: 255 }  } );
-                        tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 20, color: { r: 0, g: 255, b: 255, a: 255 }  } );
+                        tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 12, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                        tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 12, color: { r: 0, g: 255, b: 255, a: 255 }  } );
 
                     }
+
+                } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
+
+                    movePoint( mousePos );
 
                 }
 
