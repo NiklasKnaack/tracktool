@@ -756,6 +756,7 @@
                     currentPathSegment.p1 = { x: pathSegmentPoint.x, y: pathSegmentPoint.y };
                     currentPathSegment.length = getDistance( currentPathSegment.p0, currentPathSegment.p1 );
                     currentPathSegment.centerPoint = getPathSegmentCenter( currentPathSegment );
+                    currentPathSegment.walkable = true;
 
                     if ( DEBUG === true ) {
 
