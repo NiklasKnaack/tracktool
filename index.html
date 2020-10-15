@@ -1047,12 +1047,6 @@
 
                 if ( pathSegment !== null ) {
 
-                    console.log( pathSegment.direction );
-
-                    //PATH_DIRECTIONS
-
-                    //path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y )
-
                     let pathDirectionIndex = PATH_DIRECTIONS.findIndex( ( direction ) => direction === pathSegment.direction );
 
                     pathDirectionIndex += 1;
@@ -1065,24 +1059,7 @@
 
                     pathSegment.direction = PATH_DIRECTIONS[ pathDirectionIndex ];
 
-                    console.log( pathDirectionIndex, pathSegment.direction );
-
                 }
-
-                //---
-                /*
-                const pathIndex = 0;
-
-                const path = pathHolder[ pathIndex ];
-
-                const pathSegment = getPathSegmentByPosition( position );
-
-                if ( pathSegment !== null ) {
-
-                    pathSegment.walkable = !pathSegment.walkable;
-
-                }
-                */
 
             }
 
