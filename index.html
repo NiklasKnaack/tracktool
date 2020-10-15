@@ -54,6 +54,7 @@
 
                 addPathSegment: 'addPathSegment',
                 removePathSegment: 'removePathSegment',
+                togglePathWalkable: 'togglePathWalkable',
                 setStartPoint: 'setStartPoint',
                 setEndPoint: 'setEndPoint',
                 getPathSegment: 'getPathSegment',
@@ -209,6 +210,12 @@
 
                 }
 
+                const _togglePathWalkable = () => {
+
+                    editorMode = EDITOR_MODE_ENUM.togglePathWalkable;
+
+                }
+
                 const _movePoint = () => {
                 
                     editorMode = EDITOR_MODE_ENUM.movePoint;
@@ -345,6 +352,7 @@
                         
                     'Add Path Segment': _addPathSegment,
                     'Remove Path Segment': _removePathSegment,
+                    'Toggle Path Walkable': _togglePathWalkable,
                     'Move Point': _movePoint,
                     'Set Start Point': _setStartPoint,
                     'Set End Point': _setEndPoint,
@@ -364,6 +372,7 @@
                 folderEdit.open();
                 folderEdit.add( guiSetting, 'Add Path Segment' );
                 folderEdit.add( guiSetting, 'Remove Path Segment' );
+                folderEdit.add( guiSetting, 'Toggle Path Walkable' );
                 folderEdit.add( guiSetting, 'Move Point' );
                 folderEdit.add( guiSetting, 'Set Start Point' );
                 folderEdit.add( guiSetting, 'Set End Point' );
@@ -639,14 +648,18 @@
 
                     const pathSegment = pathSegments[ i ];
 
-                    if ( point.x === pathSegment.p0.x && point.y === pathSegment.p0.y ) {
+                    if ( pathSegment.walkable === true ) {
 
-                        pathSegmentsFound.push( pathSegment );
-                    
-                    } else if ( point.x === pathSegment.p1.x && point.y === pathSegment.p1.y ) {
+                        if ( point.x === pathSegment.p0.x && point.y === pathSegment.p0.y ) {
 
-                        pathSegmentsFound.push( pathSegment );
-                    
+                            pathSegmentsFound.push( pathSegment );
+
+                        } else if ( point.x === pathSegment.p1.x && point.y === pathSegment.p1.y ) {
+
+                            pathSegmentsFound.push( pathSegment );
+
+                        }
+
                     }
 
                 }
@@ -970,6 +983,10 @@
 
             function togglePointWalkable( position ) {
 
+                tempPathSegments = [];
+
+                //---
+
                 const pathIndex = 0;
 
                 const path = pathHolder[ pathIndex ];
@@ -979,6 +996,26 @@
                 if ( point !== null ) {
 
                     point.walkable = !point.walkable;
+
+                }
+
+            }
+
+            function togglePathWalkable( position ) {
+
+                tempPathSegments = [];
+
+                //---
+
+                const pathIndex = 0;
+
+                const path = pathHolder[ pathIndex ];
+
+                const pathSegment = getPathSegmentByPosition( position );
+
+                if ( pathSegment !== null ) {
+
+                    pathSegment.walkable = !pathSegment.walkable;
 
                 }
 
@@ -1203,6 +1240,10 @@
 
                     addCurrentPointToPath( mouseCursor.position );
 
+                } else if ( editorMode === EDITOR_MODE_ENUM.togglePathWalkable ) {
+
+                    togglePathWalkable( mouseCursor.position );
+
                 }
 
 
@@ -1222,7 +1263,7 @@
 
                 mousePos = getMousePos( canvas, event );
 
-                if ( editorMode === EDITOR_MODE_ENUM.getPathSegment || editorMode === EDITOR_MODE_ENUM.removePathSegment ) {
+                if ( editorMode === EDITOR_MODE_ENUM.getPathSegment || editorMode === EDITOR_MODE_ENUM.removePathSegment || editorMode === EDITOR_MODE_ENUM.togglePathWalkable) {
 
                     tempPathSegments = [];
 
