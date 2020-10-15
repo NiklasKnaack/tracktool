@@ -689,11 +689,19 @@
 
                     if ( point.x === nextPathSegment.p0.x && point.y === nextPathSegment.p0.y ) {
 
-                        pointsFound.push( nextPathSegment.p1 );
+                        if ( nextPathSegment.direction === '><' || nextPathSegment.direction === '>' ) {
+
+                            pointsFound.push( nextPathSegment.p1 );
+
+                        }
 
                     } else if ( point.x === nextPathSegment.p1.x && point.y === nextPathSegment.p1.y ) {
 
-                        pointsFound.push( nextPathSegment.p0 );
+                        if ( nextPathSegment.direction === '><' || nextPathSegment.direction === '<' ) {
+
+                            pointsFound.push( nextPathSegment.p0 );
+
+                        }
 
                     }
 
