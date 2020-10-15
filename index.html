@@ -1198,6 +1198,15 @@
                 return Math.min( Math.max( min, val ), max );
 
             }
+            
+            function interpolate( a, b, frac ) {
+
+                const nx = a.x + ( b.x - a.x ) * frac;
+                const ny = a.y + ( b.y - a.y ) * frac;
+
+                return { x: nx,  y: ny };
+
+            }
 
             //---
 
@@ -1596,6 +1605,57 @@
                                 drawCircle( pathSegment.centerPoint, 7, 178, 34, 34, 255 );
 
                             }
+
+                            //---
+                            //draw debug pathSegement direction stuff
+
+                            //get point on pathSegment depending on percentage value
+                            //const interpolationPoint = interpolate( pathSegment.p0, pathSegment.p1, 0.50 );
+
+                            //const cX = interpolationPoint.x;
+                            //const cY = interpolationPoint.y;
+
+                            //center x & y
+                            const cX = pathSegment.centerPoint.x;// ( ( pathSegment.p0.x + pathSegment.p1.x ) / 2 );
+                            const cY = pathSegment.centerPoint.y;// ( ( pathSegment.p0.y + pathSegment.p1.y ) / 2 );
+
+                            //pathSegement angle
+                            const angle = Math.atan2( pathSegment.p1.y - pathSegment.p0.y, pathSegment.p1.x - pathSegment.p0.x );
+                            
+                            const length = 10;
+                            
+                            const sinA = Math.sin( angle );
+                            const cosA = Math.cos( angle );
+                            
+                            drawLine( ( sinA * length + cX ) | 0, ( -cosA * length + cY ) | 0, ( -sinA * length + cX ) | 0, ( cosA * length + cY ) | 0, 100, 100, 100, 255 );
+
+                            //---
+
+                            const angle2 = angle + Math.PI * 0.5;
+
+                            const length2 = 15;
+
+                            const sinA2 = Math.sin( angle2 );
+                            const cosA2 = Math.cos( angle2 );
+
+                            //drawLine( ( sinA2 * length2 + cX ) | 0, ( -cosA2 * length2 + cY ) | 0, ( -sinA2 * length2 + cX ) | 0, ( cosA2 * length2 + cY ) | 0, 255, 255, 255, 255 );
+
+                            const pSSX = sinA2 * length2 + cX;
+                            const pSSY = -cosA2 * length2 + cY;
+
+                            const pSEX = -sinA2 * length2 + cX;
+                            const pSEY = cosA2 * length2 + cY;
+
+                            //drawLine( pSSX | 0, pSSY | 0, cX | 0, cY | 0, 255, 255, 255, 255 );
+                            //drawLine( cX | 0, cY | 0, pSEX | 0, pSEY | 0, 255, 255, 255, 255 );
+
+                            //---
+
+                            drawLine( ( sinA * length + pSSX ) | 0, ( -cosA * length + pSSY ) | 0, cX | 0, cY | 0, 100, 100, 100, 255 );
+                            drawLine( ( -sinA * length + pSSX ) | 0, ( cosA * length + pSSY ) | 0, cX | 0, cY | 0, 100, 100, 100, 255 );
+
+                            drawLine( ( sinA * length + pSEX ) | 0, ( -cosA * length + pSEY ) | 0, cX | 0, cY | 0, 100, 100, 100, 255 );
+                            drawLine( ( -sinA * length + pSEX ) | 0, ( cosA * length + pSEY ) | 0, cX | 0, cY | 0, 100, 100, 100, 255 );
 
                         }
 
