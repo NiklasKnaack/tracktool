@@ -18,6 +18,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         addPathSegment: 'addPathSegment',
         removePathSegment: 'removePathSegment',
+        bendPathSegment: 'bendPathSegment',
         togglePathWalkable: 'togglePathWalkable',
         togglePathDirections: 'togglePathDirections',
         addStartPoint: 'addStartPoint',
@@ -136,51 +137,51 @@ document.addEventListener( 'DOMContentLoaded', () => {
             openSet: [],
             closedSet: [],
             segments: [
-                { id: 0, p0: { x: 170, y: 835 }, p1: { x: 180, y: 716 }, walkable: true, direction: '><', centerPoint: { x: 175, y: 775.5 }, length: 119.41942890501528 },
-                { id: 1, p0: { x: 180, y: 716 }, p1: { x: 153, y: 584 }, walkable: true, direction: '><', centerPoint: { x: 166.5, y: 650 }, length: 134.73306943731373 },
-                { id: 2, p0: { x: 153, y: 584 }, p1: { x: 203, y: 427 }, walkable: true, direction: '><', centerPoint: { x: 178, y: 505.5 }, length: 164.76953601925328 },
-                { id: 3, p0: { x: 203, y: 427 }, p1: { x: 170, y: 263 }, walkable: true, direction: '><', centerPoint: { x: 186.5, y: 345 }, length: 167.28717822953436 },
-                { id: 4, p0: { x: 170, y: 263 }, p1: { x: 191, y: 70 }, walkable: true, direction: '><', centerPoint: { x: 180.5, y: 166.5 }, length: 194.1391253714717 },
-                { id: 5, p0: { x: 347, y: 63 }, p1: { x: 362, y: 232 }, walkable: true, direction: '><', centerPoint: { x: 354.5, y: 147.5 }, length: 169.66437457521835 },
-                { id: 6, p0: { x: 362, y: 232 }, p1: { x: 363, y: 325 }, walkable: true, direction: '><', centerPoint: { x: 362.5, y: 278.5 }, length: 93.00537618869137 },
-                { id: 7, p0: { x: 363, y: 325 }, p1: { x: 383, y: 418 }, walkable: true, direction: '><', centerPoint: { x: 373, y: 371.5 }, length: 95.12623192369179 },
-                { id: 8, p0: { x: 383, y: 418 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 376.5, y: 492.5 }, length: 149.56603892595405 },
-                { id: 9, p0: { x: 370, y: 567 }, p1: { x: 396, y: 689 }, walkable: true, direction: '><', centerPoint: { x: 383, y: 628 }, length: 124.73972903610141 },
-                { id: 10, p0: { x: 396, y: 689 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 390.5, y: 743.5 }, length: 109.55363982999378 },
-                { id: 11, p0: { x: 385, y: 798 }, p1: { x: 413, y: 890 }, walkable: true, direction: '><', centerPoint: { x: 399, y: 844 }, length: 96.16652224137046 },
-                { id: 12, p0: { x: 578, y: 898 }, p1: { x: 578, y: 757 }, walkable: true, direction: '><', centerPoint: { x: 578, y: 827.5 }, length: 141 },
-                { id: 13, p0: { x: 578, y: 757 }, p1: { x: 568, y: 646 }, walkable: true, direction: '><', centerPoint: { x: 573, y: 701.5 }, length: 111.44954015158609 },
-                { id: 14, p0: { x: 568, y: 646 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 573, y: 573.5 }, length: 145.34441853748632 },
-                { id: 15, p0: { x: 578, y: 501 }, p1: { x: 562, y: 369 }, walkable: true, direction: '><', centerPoint: { x: 570, y: 435 }, length: 132.9661611087573 },
-                { id: 16, p0: { x: 562, y: 369 }, p1: { x: 593, y: 249 }, walkable: true, direction: '><', centerPoint: { x: 577.5, y: 309 }, length: 123.9395013706284 },
-                { id: 17, p0: { x: 593, y: 249 }, p1: { x: 548, y: 127 }, walkable: true, direction: '><', centerPoint: { x: 570.5, y: 188 }, length: 130.034610777285 },
-                { id: 18, p0: { x: 548, y: 127 }, p1: { x: 606, y: 41 }, walkable: true, direction: '><', centerPoint: { x: 577, y: 84 }, length: 103.73041983911952 },
-                { id: 19, p0: { x: 715, y: 51 }, p1: { x: 725, y: 147 }, walkable: true, direction: '><', centerPoint: { x: 720, y: 99 }, length: 96.51942809610924 },
-                { id: 20, p0: { x: 725, y: 147 }, p1: { x: 722, y: 271 }, walkable: true, direction: '><', centerPoint: { x: 723.5, y: 209 }, length: 124.03628501370073 },
-                { id: 21, p0: { x: 722, y: 271 }, p1: { x: 753, y: 390 }, walkable: true, direction: '><', centerPoint: { x: 737.5, y: 330.5 }, length: 122.97154142320898 },
-                { id: 22, p0: { x: 753, y: 390 }, p1: { x: 745, y: 547 }, walkable: true, direction: '><', centerPoint: { x: 749, y: 468.5 }, length: 157.20368952413298 },
-                { id: 23, p0: { x: 745, y: 547 }, p1: { x: 801, y: 683 }, walkable: true, direction: '><', centerPoint: { x: 773, y: 615 }, length: 147.07821048680188 },
-                { id: 24, p0: { x: 801, y: 683 }, p1: { x: 758, y: 766 }, walkable: true, direction: '><', centerPoint: { x: 779.5, y: 724.5 }, length: 93.47726996441435 },
-                { id: 25, p0: { x: 758, y: 766 }, p1: { x: 785, y: 877 }, walkable: true, direction: '><', centerPoint: { x: 771.5, y: 821.5 }, length: 114.23659658795863 },
-                { id: 26, p0: { x: 868, y: 784 }, p1: { x: 758, y: 766 }, walkable: true, direction: '><', centerPoint: { x: 813, y: 775 }, length: 111.46299834474219 },
-                { id: 27, p0: { x: 758, y: 766 }, p1: { x: 578, y: 757 }, walkable: true, direction: '><', centerPoint: { x: 668, y: 761.5 }, length: 180.22485955050706 },
-                { id: 28, p0: { x: 578, y: 757 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 481.5, y: 777.5 }, length: 197.3068675946177 },
-                { id: 29, p0: { x: 385, y: 798 }, p1: { x: 180, y: 716 }, walkable: true, direction: '><', centerPoint: { x: 282.5, y: 757 }, length: 220.79175709251467 },
-                { id: 30, p0: { x: 153, y: 584 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 261.5, y: 575.5 }, length: 217.66488003350472 },
-                { id: 31, p0: { x: 370, y: 567 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 474, y: 534 }, length: 218.22007240398395 },
-                { id: 32, p0: { x: 578, y: 501 }, p1: { x: 753, y: 390 }, walkable: true, direction: '><', centerPoint: { x: 665.5, y: 445.5 }, length: 207.23416706711276 },
-                { id: 33, p0: { x: 725, y: 147 }, p1: { x: 548, y: 127 }, walkable: true, direction: '><', centerPoint: { x: 636.5, y: 137 }, length: 178.12635964393365 },
-                { id: 34, p0: { x: 548, y: 127 }, p1: { x: 362, y: 232 }, walkable: true, direction: '><', centerPoint: { x: 455, y: 179.5 }, length: 213.59073013593076 },
-                { id: 35, p0: { x: 362, y: 232 }, p1: { x: 170, y: 263 }, walkable: true, direction: '><', centerPoint: { x: 266, y: 247.5 }, length: 194.48650338776724 },
-                { id: 36, p0: { x: 170, y: 263 }, p1: { x: 60, y: 218 }, walkable: true, direction: '><', centerPoint: { x: 115, y: 240.5 }, length: 118.84864324004712 },
-                { id: 37, p0: { x: 153, y: 584 }, p1: { x: 57, y: 582 }, walkable: true, direction: '><', centerPoint: { x: 105, y: 583 }, length: 96.02083107326243 },
-                { id: 38, p0: { x: 180, y: 716 }, p1: { x: 91, y: 741 }, walkable: true, direction: '><', centerPoint: { x: 135.5, y: 728.5 }, length: 92.44457799135652 },
-                { id: 39, p0: { x: 753, y: 390 }, p1: { x: 952, y: 416 }, walkable: true, direction: '><', centerPoint: { x: 852.5, y: 403 }, length: 200.6913052426537 },
-                { id: 40, p0: { x: 725, y: 147 }, p1: { x: 645, y: 341 }, walkable: true, direction: '><', centerPoint: { x: 685, y: 244 }, length: 209.84756372185979 },
-                { id: 41, p0: { x: 645, y: 341 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 611.5, y: 421 }, length: 173.46181135915768 },
-                { id: 42, p0: { x: 153, y: 584 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 269, y: 691 }, length: 315.6263613832026 },
-                { id: 43, p0: { x: 170, y: 263 }, p1: { x: 270, y: 465 }, walkable: true, direction: '><', centerPoint: { x: 220, y: 364 }, length: 225.39742678211746 },
-                { id: 44, p0: { x: 270, y: 465 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 320, y: 516 }, length: 142.84257068535277 },
+                { id: 0, p0: { x: 170, y: 835 }, p1: { x: 180, y: 716 }, walkable: true, direction: '><', centerPoint: { x: 175, y: 775.5 }, controlPoint: { x: 175, y: 775.5 }, length: 119.41942890501528 },
+                { id: 1, p0: { x: 180, y: 716 }, p1: { x: 153, y: 584 }, walkable: true, direction: '><', centerPoint: { x: 166.5, y: 650 }, controlPoint: { x: 166.5, y: 650 }, length: 134.73306943731373 },
+                { id: 2, p0: { x: 153, y: 584 }, p1: { x: 203, y: 427 }, walkable: true, direction: '><', centerPoint: { x: 178, y: 505.5 }, controlPoint: { x: 178, y: 505.5 }, length: 164.76953601925328 },
+                { id: 3, p0: { x: 203, y: 427 }, p1: { x: 170, y: 263 }, walkable: true, direction: '><', centerPoint: { x: 186.5, y: 345 }, controlPoint: { x: 186.5, y: 345 }, length: 167.28717822953436 },
+                { id: 4, p0: { x: 170, y: 263 }, p1: { x: 191, y: 70 }, walkable: true, direction: '><', centerPoint: { x: 180.5, y: 166.5 }, controlPoint: { x: 180.5, y: 166.5 }, length: 194.1391253714717 },
+                { id: 5, p0: { x: 347, y: 63 }, p1: { x: 362, y: 232 }, walkable: true, direction: '><', centerPoint: { x: 354.5, y: 147.5 }, controlPoint: { x: 354.5, y: 147.5 }, length: 169.66437457521835 },
+                { id: 6, p0: { x: 362, y: 232 }, p1: { x: 363, y: 325 }, walkable: true, direction: '><', centerPoint: { x: 362.5, y: 278.5 }, controlPoint: { x: 362.5, y: 278.5 }, length: 93.00537618869137 },
+                { id: 7, p0: { x: 363, y: 325 }, p1: { x: 383, y: 418 }, walkable: true, direction: '><', centerPoint: { x: 373, y: 371.5 }, controlPoint: { x: 373, y: 371.5 }, length: 95.12623192369179 },
+                { id: 8, p0: { x: 383, y: 418 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 376.5, y: 492.5 }, controlPoint: { x: 376.5, y: 492.5 }, length: 149.56603892595405 },
+                { id: 9, p0: { x: 370, y: 567 }, p1: { x: 396, y: 689 }, walkable: true, direction: '><', centerPoint: { x: 383, y: 628 }, controlPoint: { x: 383, y: 628 }, length: 124.73972903610141 },
+                { id: 10, p0: { x: 396, y: 689 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 390.5, y: 743.5 }, controlPoint: { x: 390.5, y: 743.5 }, length: 109.55363982999378 },
+                { id: 11, p0: { x: 385, y: 798 }, p1: { x: 413, y: 890 }, walkable: true, direction: '><', centerPoint: { x: 399, y: 844 }, controlPoint: { x: 399, y: 844 }, length: 96.16652224137046 },
+                { id: 12, p0: { x: 578, y: 898 }, p1: { x: 578, y: 757 }, walkable: true, direction: '><', centerPoint: { x: 578, y: 827.5 }, controlPoint: { x: 578, y: 827.5 }, length: 141 },
+                { id: 13, p0: { x: 578, y: 757 }, p1: { x: 568, y: 646 }, walkable: true, direction: '><', centerPoint: { x: 573, y: 701.5 }, controlPoint: { x: 573, y: 701.5 }, length: 111.44954015158609 },
+                { id: 14, p0: { x: 568, y: 646 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 573, y: 573.5 }, controlPoint: { x: 573, y: 573.5 }, length: 145.34441853748632 },
+                { id: 15, p0: { x: 578, y: 501 }, p1: { x: 562, y: 369 }, walkable: true, direction: '><', centerPoint: { x: 570, y: 435 }, controlPoint: { x: 570, y: 435 }, length: 132.9661611087573 },
+                { id: 16, p0: { x: 562, y: 369 }, p1: { x: 593, y: 249 }, walkable: true, direction: '><', centerPoint: { x: 577.5, y: 309 }, controlPoint: { x: 577.5, y: 309 }, length: 123.9395013706284 },
+                { id: 17, p0: { x: 593, y: 249 }, p1: { x: 548, y: 127 }, walkable: true, direction: '><', centerPoint: { x: 570.5, y: 188 }, controlPoint: { x: 570.5, y: 188 }, length: 130.034610777285 },
+                { id: 18, p0: { x: 548, y: 127 }, p1: { x: 606, y: 41 }, walkable: true, direction: '><', centerPoint: { x: 577, y: 84 }, controlPoint: { x: 577, y: 84 }, length: 103.73041983911952 },
+                { id: 19, p0: { x: 715, y: 51 }, p1: { x: 725, y: 147 }, walkable: true, direction: '><', centerPoint: { x: 720, y: 99 }, controlPoint: { x: 720, y: 99 }, length: 96.51942809610924 },
+                { id: 20, p0: { x: 725, y: 147 }, p1: { x: 722, y: 271 }, walkable: true, direction: '><', centerPoint: { x: 723.5, y: 209 }, controlPoint: { x: 723.5, y: 209 }, length: 124.03628501370073 },
+                { id: 21, p0: { x: 722, y: 271 }, p1: { x: 753, y: 390 }, walkable: true, direction: '><', centerPoint: { x: 737.5, y: 330.5 }, controlPoint: { x: 737.5, y: 330.5 }, length: 122.97154142320898 },
+                { id: 22, p0: { x: 753, y: 390 }, p1: { x: 745, y: 547 }, walkable: true, direction: '><', centerPoint: { x: 749, y: 468.5 }, controlPoint: { x: 749, y: 468.5 }, length: 157.20368952413298 },
+                { id: 23, p0: { x: 745, y: 547 }, p1: { x: 801, y: 683 }, walkable: true, direction: '><', centerPoint: { x: 773, y: 615 }, controlPoint: { x: 773, y: 615 }, length: 147.07821048680188 },
+                { id: 24, p0: { x: 801, y: 683 }, p1: { x: 758, y: 766 }, walkable: true, direction: '><', centerPoint: { x: 779.5, y: 724.5 }, controlPoint: { x: 779.5, y: 724.5 }, length: 93.47726996441435 },
+                { id: 25, p0: { x: 758, y: 766 }, p1: { x: 785, y: 877 }, walkable: true, direction: '><', centerPoint: { x: 771.5, y: 821.5 }, controlPoint: { x: 771.5, y: 821.5 }, length: 114.23659658795863 },
+                { id: 26, p0: { x: 868, y: 784 }, p1: { x: 758, y: 766 }, walkable: true, direction: '><', centerPoint: { x: 813, y: 775 }, controlPoint: { x: 813, y: 775 }, length: 111.46299834474219 },
+                { id: 27, p0: { x: 758, y: 766 }, p1: { x: 578, y: 757 }, walkable: true, direction: '><', centerPoint: { x: 668, y: 761.5 }, controlPoint: { x: 668, y: 761.5 }, length: 180.22485955050706 },
+                { id: 28, p0: { x: 578, y: 757 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 481.5, y: 777.5 }, controlPoint: { x: 481.5, y: 777.5 }, length: 197.3068675946177 },
+                { id: 29, p0: { x: 385, y: 798 }, p1: { x: 180, y: 716 }, walkable: true, direction: '><', centerPoint: { x: 282.5, y: 757 }, controlPoint: { x: 282.5, y: 757 }, length: 220.79175709251467 },
+                { id: 30, p0: { x: 153, y: 584 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 261.5, y: 575.5 }, controlPoint: { x: 261.5, y: 575.5 }, length: 217.66488003350472 },
+                { id: 31, p0: { x: 370, y: 567 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 474, y: 534 }, controlPoint: { x: 474, y: 534 }, length: 218.22007240398395 },
+                { id: 32, p0: { x: 578, y: 501 }, p1: { x: 753, y: 390 }, walkable: true, direction: '><', centerPoint: { x: 665.5, y: 445.5 }, controlPoint: { x: 665.5, y: 445.5 }, length: 207.23416706711276 },
+                { id: 33, p0: { x: 725, y: 147 }, p1: { x: 548, y: 127 }, walkable: true, direction: '><', centerPoint: { x: 636.5, y: 137 }, controlPoint: { x: 636.5, y: 137 }, length: 178.12635964393365 },
+                { id: 34, p0: { x: 548, y: 127 }, p1: { x: 362, y: 232 }, walkable: true, direction: '><', centerPoint: { x: 455, y: 179.5 }, controlPoint: { x: 455, y: 179.5 }, length: 213.59073013593076 },
+                { id: 35, p0: { x: 362, y: 232 }, p1: { x: 170, y: 263 }, walkable: true, direction: '><', centerPoint: { x: 266, y: 247.5 }, controlPoint: { x: 266, y: 247.5 }, length: 194.48650338776724 },
+                { id: 36, p0: { x: 170, y: 263 }, p1: { x: 60, y: 218 }, walkable: true, direction: '><', centerPoint: { x: 115, y: 240.5 }, controlPoint: { x: 115, y: 240.5 }, length: 118.84864324004712 },
+                { id: 37, p0: { x: 153, y: 584 }, p1: { x: 57, y: 582 }, walkable: true, direction: '><', centerPoint: { x: 105, y: 583 }, controlPoint: { x: 105, y: 583 }, length: 96.02083107326243 },
+                { id: 38, p0: { x: 180, y: 716 }, p1: { x: 91, y: 741 }, walkable: true, direction: '><', centerPoint: { x: 135.5, y: 728.5 }, controlPoint: { x: 135.5, y: 728.5 }, length: 92.44457799135652 },
+                { id: 39, p0: { x: 753, y: 390 }, p1: { x: 952, y: 416 }, walkable: true, direction: '><', centerPoint: { x: 852.5, y: 403 }, controlPoint: { x: 852.5, y: 403 }, length: 200.6913052426537 },
+                { id: 40, p0: { x: 725, y: 147 }, p1: { x: 645, y: 341 }, walkable: true, direction: '><', centerPoint: { x: 685, y: 244 }, controlPoint: { x: 685, y: 244 }, length: 209.84756372185979 },
+                { id: 41, p0: { x: 645, y: 341 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 611.5, y: 421 }, controlPoint: { x: 611.5, y: 421 }, length: 173.46181135915768 },
+                { id: 42, p0: { x: 153, y: 584 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 269, y: 691 }, controlPoint: { x: 269, y: 691 }, length: 315.6263613832026 },
+                { id: 43, p0: { x: 170, y: 263 }, p1: { x: 270, y: 465 }, walkable: true, direction: '><', centerPoint: { x: 220, y: 364 }, controlPoint: { x: 220, y: 364 }, length: 225.39742678211746 },
+                { id: 44, p0: { x: 270, y: 465 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 320, y: 516 }, controlPoint: { x: 320, y: 516 }, length: 142.84257068535277 },
             ]
         }
     ];
@@ -204,6 +205,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const _removePathSegment = () => {
 
             editorMode = EDITOR_MODE_ENUM.removePathSegment;
+
+        }
+
+        const _bendPathSegment = () => {
+
+            editorMode = EDITOR_MODE_ENUM.bendPathSegment;
 
         }
 
@@ -339,7 +346,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const pathSegment = path.segments[ i ];
 
-                output += '    { id: ' + pathSegment.id + ', p0: ' + '{ x: ' + pathSegment.p0.x + ', y: ' + pathSegment.p0.y + ' }' + ', p1: ' + '{ x: ' + pathSegment.p1.x + ', y: ' + pathSegment.p1.y + ' }' + ', walkable: ' +  pathSegment.walkable + ', direction: "' +  pathSegment.direction + '", centerPoint: ' + '{ x: ' + pathSegment.centerPoint.x + ', y: ' + pathSegment.centerPoint.y + ' }' + ', length: ' + pathSegment.length + ' }';
+                output += '    { id: ' + pathSegment.id + ', p0: ' + '{ x: ' + pathSegment.p0.x + ', y: ' + pathSegment.p0.y + ' }' + ', p1: ' + '{ x: ' + pathSegment.p1.x + ', y: ' + pathSegment.p1.y + ' }' + ', walkable: ' +  pathSegment.walkable + ', direction: "' +  pathSegment.direction + '", centerPoint: ' + '{ x: ' + pathSegment.centerPoint.x + ', y: ' + pathSegment.centerPoint.y + ' }' + ', controlPoint: { x: ' + pathSegment.controlPoint.x + ', y: ' + pathSegment.controlPoint.y + ' }, length: ' + pathSegment.length + ' }';
 
                 if ( i < l ) {
 
@@ -364,8 +371,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
         const _findPath = () => {
-            
-            // findPath();
+
             editorMode = EDITOR_MODE_ENUM.findPath;
         
         }
@@ -398,6 +404,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 
             'Add Path Segment': _addPathSegment,
             'Remove Path Segment': _removePathSegment,
+            'Bend Path Segment': _bendPathSegment,
             'Toggle Path Walkable': _togglePathWalkable,
             'Toggle Path Directions': _togglePathDirections,
             'Move Point': _movePoint,
@@ -421,6 +428,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderEdit.open();
         folderEdit.add( guiSetting, 'Add Path Segment' );
         folderEdit.add( guiSetting, 'Remove Path Segment' );
+        folderEdit.add( guiSetting, 'Bend Path Segment' );
         folderEdit.add( guiSetting, 'Toggle Path Walkable' );
         folderEdit.add( guiSetting, 'Toggle Path Directions' );
         folderEdit.add( guiSetting, 'Move Point' );
@@ -659,11 +667,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 const point0 = pathToEnd[ i ];
                 const point1 = pathToEnd[ i + 1 ];
 
-                path.routes[ routeIndex ].pathSegments.push( getPathSegmentByPoints( point0, point1 ) );
+                const pathSegment = getPathSegmentByPoints( point0, point1 );
+
+                path.routes[ routeIndex ].pathSegments.push( pathSegment );
 
                 console.log( path.routes[ routeIndex ].pathSegments[ path.routes[ routeIndex ].pathSegments.length - 1 ] );
 
-                tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                //tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                tempPathSegments.push( { type: 'bezier', p0: { x: point0.x, y: point0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
                 tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
                 tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
 
@@ -866,8 +877,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
             }
 
             currentPathSegment.p1 = { x: pathSegmentPoint.x, y: pathSegmentPoint.y };
-            currentPathSegment.length = getDistance( currentPathSegment.p0, currentPathSegment.p1 );
             currentPathSegment.centerPoint = getPathSegmentCenter( currentPathSegment );
+            currentPathSegment.controlPoint = getPathSegmentCenter( currentPathSegment );
+            currentPathSegment.length = getPathSegmentLength( currentPathSegment.p0, currentPathSegment.p1, currentPathSegment.controlPoint ); //getDistance( currentPathSegment.p0, currentPathSegment.p1 );
             currentPathSegment.walkable = true;
             currentPathSegment.direction = '><';
 
@@ -952,6 +964,41 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
         tempPathSegments = [];
+
+    }
+
+    function bendPathSegment( position ) {
+
+        const pathSegment = currentPathSegment;
+
+        if ( pathSegment !== null ) {
+
+            pathSegment.controlPoint.x = position.x;
+            pathSegment.controlPoint.y = position.y;
+
+            const centerPoint = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 0.50 );
+
+            pathSegment.centerPoint.x = centerPoint.x;
+            pathSegment.centerPoint.y = centerPoint.y;
+
+            pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );
+
+        }
+
+        //---
+
+        if ( debugMode === true ) {
+
+            rebuildDebugElements();
+
+        }
+
+        tempPathSegments = [];
+
+        tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+        tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p1.x, y: pathSegment.p1.y }, p1: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+        tempPathSegments.push( { type: 'circfill', position: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
+        tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
 
     }
 
@@ -1164,7 +1211,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( foundPathSegment === true ) {
 
-                    pathSegment.length = getDistance( pathSegment.p0, pathSegment.p1 );
+                    pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );// getDistance( pathSegment.p0, pathSegment.p1 );
                     pathSegment.centerPoint = getPathSegmentCenter( pathSegment );
 
                 }
@@ -1191,9 +1238,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const pathIndex = 0;
+        //const pathIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        //const path = pathHolder[ pathIndex ];
 
         const point = getPointByPosition( position );
 
@@ -1211,9 +1258,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const pathIndex = 0;
+        //const pathIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        //const path = pathHolder[ pathIndex ];
 
         const pathSegment = getPathSegmentByPosition( position );
 
@@ -1231,9 +1278,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const pathIndex = 0;
+        //const pathIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        //const path = pathHolder[ pathIndex ];
 
         const pathSegment = getPathSegmentByPosition( position );
 
@@ -1268,7 +1315,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             const pathSegment = path.segments[ i ];
 
-            const distanceToPathSegment = signedDistanceToLine( position, pathSegment.p0.x, pathSegment.p0.y, pathSegment.p1.x, pathSegment.p1.y );
+            //const distanceToPathSegment = signedDistanceToLine( position, pathSegment.p0.x, pathSegment.p0.y, pathSegment.p1.x, pathSegment.p1.y );
+            const distanceToPathSegment = signedDistanceToQuadraticBezier( position, pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );
 
             if ( distanceToPathSegment < distanceTotal ) {
 
@@ -1389,13 +1437,47 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    function getDistance( p1, p2 ) {
+    function getDistance( p0, p1 ) {
 
-        const a = p1.x - p2.x;
-        const b = p1.y - p2.y;
+        const a = p0.x - p1.x;
+        const b = p0.y - p1.y;
 
         return Math.sqrt( a * a + b * b );
     
+    }
+
+    function getPathSegmentLength( p0, p1, controlPoint ) {
+
+        //return getDistance( p0, p1 );
+
+        //---
+
+        const curveAccuracy = 5;
+
+        const dx = p1.x - p0.x;
+        const dy = p1.y - p0.y;
+        
+        const cx = ( dx === 0 ) ? 0 : ( controlPoint.x - p0.x ) / dx;
+        const cy = ( dy === 0 ) ? 0 : ( controlPoint.y - p0.y ) / dy;
+        
+		let d = 0;
+		var p = p0;
+		var np = null;
+
+		for ( let i = 1; i < curveAccuracy; i++ ) {
+
+			const t = i / curveAccuracy;
+			const f1 = 2 * t * ( 1 - t );
+            const f2 = t * t;
+            
+			np = { x: p0.x + dx * ( f1 * cx + f2 ), y: p0.y + dy * ( f1 * cy + f2 ) };
+			d += getDistance( p, np );
+            p = np;
+            
+        }
+        
+		return d + getDistance( p, p1 );
+
     }
 
     function getPathSegmentCenter( pathSegment ) {
@@ -1438,6 +1520,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
+    function signedDistanceToQuadraticBezier( p, p0, p1, pControl, precision = 25 ) {
+
+        let distance = Infinity;
+
+        for ( let i = 0, l = 1 / precision; i < 1 + l; i += l ) {
+
+            const pOnBezier = interpolateQuadraticBezier( p0, pControl, p1, i );
+
+            const d = getDistance( p, pOnBezier );
+
+            if ( distance > d ) {
+
+                distance = d;
+
+            }
+
+        }
+
+        return distance;
+
+    }
+
     //---
 
     function clamp( val, min, max ) {
@@ -1446,12 +1550,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
     
-    function interpolate( a, b, frac ) {
+    // function interpolate( a, b, frac ) {
 
-        const nx = a.x + ( b.x - a.x ) * frac;
-        const ny = a.y + ( b.y - a.y ) * frac;
+    //     const nx = a.x + ( b.x - a.x ) * frac;
+    //     const ny = a.y + ( b.y - a.y ) * frac;
 
-        return { x: nx,  y: ny };
+    //     return { x: nx,  y: ny };
+
+    // }
+
+    function interpolateQuadraticBezier( sv, cv, ev, t ) {
+
+        const t1 = 1 - t;
+        const t1pow = t1 * t1;
+        const tpow = t * t;
+        const t2 = 2 * t1 * t;
+            
+        return {
+
+            x: t1pow * sv.x + t2 * cv.x + tpow * ev.x,
+            y: t1pow * sv.y + t2 * cv.y + tpow * ev.y
+
+        };
 
     }
 
@@ -1467,6 +1587,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
     function mouseDownHandler( event ) {
 
         mouseDown = true;
+
+        //---
 
         if ( editorMode === EDITOR_MODE_ENUM.addPathSegment ) {
 
@@ -1512,6 +1634,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             removeStartEndPoints( mouseCursor.position );
 
+        } else if ( editorMode === EDITOR_MODE_ENUM.bendPathSegment ) {
+
+            currentPathSegment = getPathSegmentByPosition( mouseCursor.position );
+
         }
 
     }
@@ -1519,10 +1645,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
     function mouseUpHandler( event ) {
 
         mouseDown = false;
-    
-        //mousePosEnd = getMousePos( canvas, event );
-    
-        //endLineSegment( mousePosEnd );
+
+        //---
+
+        if ( editorMode === EDITOR_MODE_ENUM.bendPathSegment ) {
+
+            currentPathSegment = null;
+
+            tempPathSegments = [];
+
+        }
 
     }
 
@@ -1530,7 +1662,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         mousePos = getMousePos( canvas, event );
 
-        if ( editorMode === EDITOR_MODE_ENUM.getPathSegment || editorMode === EDITOR_MODE_ENUM.removePathSegment || editorMode === EDITOR_MODE_ENUM.togglePathWalkable || editorMode === EDITOR_MODE_ENUM.togglePathDirections ) {
+        //---
+
+        if ( editorMode === EDITOR_MODE_ENUM.getPathSegment || 
+             editorMode === EDITOR_MODE_ENUM.removePathSegment || 
+             editorMode === EDITOR_MODE_ENUM.togglePathWalkable || 
+             editorMode === EDITOR_MODE_ENUM.togglePathDirections ) {
 
             tempPathSegments = [];
 
@@ -1540,7 +1677,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( pathSegment !== null ) {
 
-                tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                //tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
                 tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 12, color: { r: 255, g: 0, b: 255, a: 255 }  } );
                 tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 12, color: { r: 0, g: 255, b: 255, a: 255 }  } );
 
@@ -1559,6 +1697,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
             findPath( mouseCursor.position );
 
         } 
+        
+        if ( editorMode === EDITOR_MODE_ENUM.bendPathSegment ) {
+
+            if ( mouseDown === true ) { 
+
+                bendPathSegment( mousePos );
+
+            }
+
+        }
 
     }
 
@@ -1779,22 +1927,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function drawQuadraticBezier( sv, cv, ev, segments, r, g, b, a ) {
 
-        const interpolateQuadraticBezier = ( sv, cv, ev, t ) => {
-
-            const t1 = 1 - t;
-            const t1pow = t1 * t1;
-            const tpow = t * t;
-            const t2 = 2 * t1 * t;
-                
-            return {
-
-                x: t1pow * sv.x + t2 * cv.x + tpow * ev.x,
-                y: t1pow * sv.y + t2 * cv.y + tpow * ev.y
-
-            };
-
-        }
-
         for ( let i = 0, l = 1 / segments; i < 1 + l; i += l ) {
 
             if ( i > 0 ) {
@@ -1880,7 +2012,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     
                     if ( pathSegment.walkable === true ) {
 
-                        //drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 60, 120, 0, 255 );
+                        // drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 60, 120, 0, 255 );
 
                         pathSegmentLineColor.r = 60;
                         pathSegmentLineColor.g = 120;
@@ -1888,10 +2020,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         pathSegmentLineColor.a = 255;
 
                         drawCircle( pathSegment.centerPoint, 7, 60, 120, 0, 255 );
+                        // drawCircle( pathSegment.controlPoint, 5, 60, 120, 0, 255 );
 
                     } else {
 
-                        //drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 178, 34, 34, 255 );
+                        // drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 178, 34, 34, 255 );
 
                         pathSegmentLineColor.r = 178;
                         pathSegmentLineColor.g = 34;
@@ -1899,13 +2032,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         pathSegmentLineColor.a = 255;
 
                         drawCircle( pathSegment.centerPoint, 7, 178, 34, 34, 255 );
+                        // drawCircle( pathSegment.controlPoint, 5, 178, 34, 34, 255 );
 
                     }
 
-                    drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
+                    //drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
+
+                    drawQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 25, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
 
                     //---
-                    //draw debug pathSegement direction stuff
+                    //draw debug pathSegment direction stuff
 
                     //get point on pathSegment depending on percentage value
                     //const interpolationPoint = interpolate( pathSegment.p0, pathSegment.p1, 0.50 );
@@ -1917,7 +2053,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     const cX = pathSegment.centerPoint.x;// ( ( pathSegment.p0.x + pathSegment.p1.x ) / 2 );
                     const cY = pathSegment.centerPoint.y;// ( ( pathSegment.p0.y + pathSegment.p1.y ) / 2 );
 
-                    //pathSegement angle
+                    //pathSegment angle
                     const angle = Math.atan2( pathSegment.p1.y - pathSegment.p0.y, pathSegment.p1.x - pathSegment.p0.x );
                     
                     const length = 10;
@@ -2038,13 +2174,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 drawCircleOutline( tempPathSegment.position, tempPathSegment.diameter, tempPathSegment.color.r, tempPathSegment.color.g, tempPathSegment.color.b, tempPathSegment.color.a );
 
+            } else if ( tempPathSegment.type === 'circfill' ) {
+
+                drawCircle( tempPathSegment.position, tempPathSegment.diameter, tempPathSegment.color.r, tempPathSegment.color.g, tempPathSegment.color.b, tempPathSegment.color.a );
+
+            } else if ( tempPathSegment.type === 'bezier' ) {
+
+                drawQuadraticBezier( tempPathSegment.p0, tempPathSegment.controlPoint, tempPathSegment.p1, 25, tempPathSegment.color.r, tempPathSegment.color.g, tempPathSegment.color.b, tempPathSegment.color.a );
+
             }
 
         }
-
-        // just some tests
-
-        //drawQuadraticBezier( { x: 100, y: 100 }, { x: 100, y: 400 }, { x: 400, y: 400 }, 25, 255, 0, 0, 255 );
 
     }
 
