@@ -19,6 +19,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         addPathSegment: 'addPathSegment',
         removePathSegment: 'removePathSegment',
         bendPathSegment: 'bendPathSegment',
+        straightenPathSegment: 'straightenPathSegment',
         togglePathWalkable: 'togglePathWalkable',
         togglePathDirections: 'togglePathDirections',
         addStartPoint: 'addStartPoint',
@@ -79,8 +80,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let mouseDown = false;
     let mousePos = { x: 0, y: 0 };
-    let mousePosStart = { x: 0, y: 0 };
-    let mousePosEnd = { x: 0, y: 0 };
+    // let mousePosStart = { x: 0, y: 0 };
+    // let mousePosEnd = { x: 0, y: 0 };
     const mouseCursor = { diameter: 9, color: { r: 255, g: 255, b: 255, a: 255 }, position: { x: 0, y: 0 } };
 
     let currentPathSegment = null;
@@ -211,6 +212,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const _bendPathSegment = () => {
 
             editorMode = EDITOR_MODE_ENUM.bendPathSegment;
+
+        }
+
+        const _straightenPathSegment = () => {
+
+            editorMode = EDITOR_MODE_ENUM.straightenPathSegment;
 
         }
 
@@ -405,6 +412,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Add Path Segment': _addPathSegment,
             'Remove Path Segment': _removePathSegment,
             'Bend Path Segment': _bendPathSegment,
+            'Straighten Path Segment': _straightenPathSegment,
             'Toggle Path Walkable': _togglePathWalkable,
             'Toggle Path Directions': _togglePathDirections,
             'Move Point': _movePoint,
@@ -429,6 +437,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderEdit.add( guiSetting, 'Add Path Segment' );
         folderEdit.add( guiSetting, 'Remove Path Segment' );
         folderEdit.add( guiSetting, 'Bend Path Segment' );
+        folderEdit.add( guiSetting, 'Straighten Path Segment' );
         folderEdit.add( guiSetting, 'Toggle Path Walkable' );
         folderEdit.add( guiSetting, 'Toggle Path Directions' );
         folderEdit.add( guiSetting, 'Move Point' );
@@ -996,6 +1005,31 @@ document.addEventListener( 'DOMContentLoaded', () => {
         tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p1.x, y: pathSegment.p1.y }, p1: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
         tempPathSegments.push( { type: 'circfill', position: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
         tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+
+    }
+
+    function straightenPathSegment( position ) {
+
+        const pathSegment = getPathSegmentByPosition( position );
+
+        if ( pathSegment !== null ) {
+
+            const centerPoint = getPathSegmentCenter( pathSegment );
+
+            pathSegment.centerPoint = centerPoint;
+            pathSegment.controlPoint = centerPoint;
+
+        }
+
+        //---
+
+        if ( debugMode === true ) {
+
+            rebuildDebugElements();
+
+        }
+
+        tempPathSegments = [];
 
     }
 
@@ -1637,6 +1671,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             currentPathSegment = getPathSegmentByPosition( mouseCursor.position );
 
+        } else if ( editorMode === EDITOR_MODE_ENUM.straightenPathSegment ) {
+
+            straightenPathSegment( mouseCursor.position );
+
         }
 
     }
@@ -1667,7 +1705,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
              editorMode === EDITOR_MODE_ENUM.removePathSegment || 
              editorMode === EDITOR_MODE_ENUM.togglePathWalkable || 
              editorMode === EDITOR_MODE_ENUM.togglePathDirections || 
-             ( editorMode === EDITOR_MODE_ENUM.bendPathSegment && mouseDown === false ) ) {
+             ( editorMode === EDITOR_MODE_ENUM.bendPathSegment && mouseDown === false ) ||
+             editorMode === EDITOR_MODE_ENUM.straightenPathSegment ) {
 
             tempPathSegments = [];
 
