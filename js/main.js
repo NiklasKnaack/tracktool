@@ -499,11 +499,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-
-
-
-
-
     function findPath( position ) {
 
         console.log( '\n\n\n\n\n\n\nfindPath()' );
@@ -635,10 +630,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-
-        //console.log( 'path.openSet, ', path.openSet );
-        //console.log( 'path.endPoint.parentPoint, ', path.endPoint.parentPoint );
-        //console.log( 'path.endPoint.parentPoint, ', getPointByPosition( path.endPoint ).parentPoint );
+        //---
 
         const routeEndPoint = getPointByPosition( path.routes[ routeIndex ].endPoint );
 
@@ -1899,7 +1891,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     const sinA = Math.sin( angle );
                     const cosA = Math.cos( angle );
                     
-                    drawLine( ( sinA * length + cX ) | 0, ( -cosA * length + cY ) | 0, ( -sinA * length + cX ) | 0, ( cosA * length + cY ) | 0, 100, 100, 100, 255 );
+                    //drawLine( ( sinA * length + cX ) | 0, ( -cosA * length + cY ) | 0, ( -sinA * length + cX ) | 0, ( cosA * length + cY ) | 0, 100, 100, 100, 255 );
 
                     //---
 
