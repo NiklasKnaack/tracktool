@@ -976,10 +976,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             pathSegment.controlPoint.x = position.x;
             pathSegment.controlPoint.y = position.y;
 
-            const centerPoint = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 0.50 );
-
-            pathSegment.centerPoint.x = centerPoint.x;
-            pathSegment.centerPoint.y = centerPoint.y;
+            pathSegment.centerPoint = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 0.50 );
 
             pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );
 
@@ -1212,7 +1209,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 if ( foundPathSegment === true ) {
 
                     pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );// getDistance( pathSegment.p0, pathSegment.p1 );
-                    pathSegment.centerPoint = getPathSegmentCenter( pathSegment );
+                    //pathSegment.centerPoint = getPathSegmentCenter( pathSegment );
+                    pathSegment.centerPoint = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 0.50 );
+
 
                 }
 
