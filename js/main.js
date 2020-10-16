@@ -1776,6 +1776,40 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
     */
+
+    function drawQuadraticBezier( sv, cv, ev, segments, r, g, b, a ) {
+
+        const interpolateQuadraticBezier = ( sv, cv, ev, t ) => {
+
+            const t1 = 1 - t;
+            const t1pow = t1 * t1;
+            const tpow = t * t;
+            const t2 = 2 * t1 * t;
+                
+            return {
+
+                x: t1pow * sv.x + t2 * cv.x + tpow * ev.x,
+                y: t1pow * sv.y + t2 * cv.y + tpow * ev.y
+
+            };
+
+        }
+
+        for ( let i = 0, l = 1 / segments; i < 1 + l; i += l ) {
+
+            if ( i > 0 ) {
+
+                const c1 = interpolateQuadraticBezier( sv, cv, ev, i - l );
+                const c2 = interpolateQuadraticBezier( sv, cv, ev, i );
+                
+                drawLine( c1.x | 0, c1.y | 0, c2.x | 0, c2.y | 0, r, g, b, a );
+
+            }
+
+        }
+
+    }
+
     //---
 
 
@@ -2007,6 +2041,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
             }
 
         }
+
+        // just some tests
+
+        //drawQuadraticBezier( { x: 100, y: 100 }, { x: 100, y: 400 }, { x: 400, y: 400 }, 25, 255, 0, 0, 255 );
 
     }
 
