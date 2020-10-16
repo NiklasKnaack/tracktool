@@ -1549,7 +1549,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
     
-    // function interpolate( a, b, frac ) {
+    // function interpolateLine( a, b, frac ) {
 
     //     const nx = a.x + ( b.x - a.x ) * frac;
     //     const ny = a.y + ( b.y - a.y ) * frac;
@@ -1666,7 +1666,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         if ( editorMode === EDITOR_MODE_ENUM.getPathSegment || 
              editorMode === EDITOR_MODE_ENUM.removePathSegment || 
              editorMode === EDITOR_MODE_ENUM.togglePathWalkable || 
-             editorMode === EDITOR_MODE_ENUM.togglePathDirections ) {
+             editorMode === EDITOR_MODE_ENUM.togglePathDirections || 
+             ( editorMode === EDITOR_MODE_ENUM.bendPathSegment && mouseDown === false ) ) {
 
             tempPathSegments = [];
 
