@@ -1019,6 +1019,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             pathSegment.centerPoint = centerPoint;
             pathSegment.controlPoint = centerPoint;
 
+            pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );
+
         }
 
         //---
