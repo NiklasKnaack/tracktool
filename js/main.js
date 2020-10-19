@@ -33,6 +33,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     } );
 
     const PATH_DIRECTIONS = [ '><', '>', '<' ];
+    const PATH_SEGMENT_CURVE_ACCURACY = 5;
 
     const PATH_COLORS = [
         { r: 255, g: 213, b:   0, a: 255 },
@@ -85,6 +86,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     const mouseCursor = { diameter: 9, color: { r: 255, g: 255, b: 255, a: 255 }, position: { x: 0, y: 0 } };
 
     let currentPathSegment = null;
+    let selectedPathSegments = [];
 
     let tempPathSegments = [];
 
@@ -286,6 +288,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             tempPathSegments = [];
 
             currentPathSegment = null;
+            selectedPathSegments = [];
 
             removeDebugElements();
         
@@ -1174,7 +1177,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const path = pathHolder[ pathIndex ];
 
-        path.currentPoint = getPointByPosition( position );
+        const point = getPointByPosition( position );
+
+        if ( point !== null ) {
+
+            path.currentPoint = point;
+
+        }
 
         if ( debugMode === true ) {
 
@@ -1184,13 +1193,47 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
+    function addSelectedPathSegments( position ) {
+
+        selectedPathSegments = [];
+
+        //---
+
+        const pathIndex = 0;
+
+        const path = pathHolder[ pathIndex ];
+
+        for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+            const pathSegment = path.segments[ i ];
+
+            if ( pathSegment.p0.x === position.x && pathSegment.p0.y === position.y ) {
+
+                selectedPathSegments.push( pathSegment );
+
+            } else if ( pathSegment.p1.x === position.x && pathSegment.p1.y === position.y ) {
+
+                selectedPathSegments.push( pathSegment );
+
+            }
+
+        }
+
+    }
+
+    function removeSelectedPathSegments( position ) {
+
+        selectedPathSegments = [];
+
+    }
+
     function movePoint( position ) {
 
         const pathIndex = 0;
 
         const path = pathHolder[ pathIndex ];
 
-        const point = getPointByPosition( path.currentPoint );
+        const point = path.currentPoint;
 
         if ( point !== null ) {
 
@@ -1220,11 +1263,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+            for ( let i = 0, l = selectedPathSegments.length; i < l; i ++ ) {
 
-                const pathSegment = path.segments[ i ];
-
-                let foundPathSegment = false;
+                const pathSegment = selectedPathSegments[ i ];
 
                 let diffX = 0;
                 let diffY = 0;
@@ -1237,8 +1278,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     pathSegment.p0.x = point.x;
                     pathSegment.p0.y = point.y;
 
-                    foundPathSegment = true;
-
                 } else if ( pathSegment.p1.x === pointOldX && pathSegment.p1.y === pointOldY ) {
 
                     diffX = point.x - pathSegment.p1.x;
@@ -1247,22 +1286,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     pathSegment.p1.x = point.x;
                     pathSegment.p1.y = point.y;
 
-                    foundPathSegment = true;
-
                 }
 
-                if ( foundPathSegment === true ) {
+                pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );// getDistance( pathSegment.p0, pathSegment.p1 );
+                //pathSegment.centerPoint = getPathSegmentCenter( pathSegment );
+                pathSegment.centerPoint = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 0.50 );
 
-                    pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );// getDistance( pathSegment.p0, pathSegment.p1 );
-                    //pathSegment.centerPoint = getPathSegmentCenter( pathSegment );
-                    pathSegment.centerPoint = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 0.50 );
+                pathSegment.controlPoint.x += diffX / 2;
+                pathSegment.controlPoint.y += diffY / 2;
 
-                    pathSegment.controlPoint.x += diffX / 2;
-                    pathSegment.controlPoint.y += diffY / 2;
-
-                    //tempPathSegments.push( { type: 'circfill', position: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
-
-                }
+                //tempPathSegments.push( { type: 'circfill', position: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
 
             }
 
@@ -1500,8 +1533,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const curveAccuracy = 5;
-
         const dx = p1.x - p0.x;
         const dy = p1.y - p0.y;
         
@@ -1512,9 +1543,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		var p = p0;
 		var np = null;
 
-		for ( let i = 1; i < curveAccuracy; i++ ) {
+		for ( let i = 1; i < PATH_SEGMENT_CURVE_ACCURACY; i++ ) {
 
-			const t = i / curveAccuracy;
+			const t = i / PATH_SEGMENT_CURVE_ACCURACY;
 			const f1 = 2 * t * ( 1 - t );
             const f2 = t * t;
             
@@ -1537,36 +1568,36 @@ document.addEventListener( 'DOMContentLoaded', () => {
     
     }
 
-    function signedDistanceToLine( p, p0X, p0Y, p1X, p1Y ) {
+    // function signedDistanceToLine( p, p0X, p0Y, p1X, p1Y ) {
 
-        const p0p1X = p0X - p1X;
-        const p0p1Y = p0Y - p1Y;
+    //     const p0p1X = p0X - p1X;
+    //     const p0p1Y = p0Y - p1Y;
 
-        const l2 = p0p1X * p0p1X + p0p1Y * p0p1Y;
+    //     const l2 = p0p1X * p0p1X + p0p1Y * p0p1Y;
 
-        const pp0X = p.x - p0X;
-        const pp0Y = p.y - p0Y;
+    //     const pp0X = p.x - p0X;
+    //     const pp0Y = p.y - p0Y;
 
-        if ( l2 === 0 ) {
+    //     if ( l2 === 0 ) {
 
-            return pp0X * pp0X + pp0Y * pp0Y;
+    //         return pp0X * pp0X + pp0Y * pp0Y;
 
-        }
+    //     }
 
-        const p1p0X = p1X - p0X;
-        const p1p0Y = p1Y - p0Y;
+    //     const p1p0X = p1X - p0X;
+    //     const p1p0Y = p1Y - p0Y;
 
-        const t = clamp( ( pp0X * p1p0X + pp0Y * p1p0Y ) / l2, 0, 1 );
+    //     const t = clamp( ( pp0X * p1p0X + pp0Y * p1p0Y ) / l2, 0, 1 );
 
-        const ptX = p0X + t * p1p0X;
-        const ptY = p0Y + t * p1p0Y;
+    //     const ptX = p0X + t * p1p0X;
+    //     const ptY = p0Y + t * p1p0Y;
 
-        const pX = p.x - ptX;
-        const pY = p.y - ptY;
+    //     const pX = p.x - ptX;
+    //     const pY = p.y - ptY;
 
-        return Math.sqrt( pX * pX + pY * pY );
+    //     return Math.sqrt( pX * pX + pY * pY );
 
-    }
+    // }
 
     function signedDistanceToQuadraticBezier( p, p0, p1, pControl, precision = 25 ) {
 
@@ -1665,6 +1696,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
 
             addCurrentPointToPath( mouseCursor.position );
+            addSelectedPathSegments( mouseCursor.position );
 
         } else if ( editorMode === EDITOR_MODE_ENUM.togglePathWalkable ) {
 
@@ -1705,6 +1737,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
             currentPathSegment = null;
 
             tempPathSegments = [];
+
+        } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
+
+            removeSelectedPathSegments();
 
         }
 
