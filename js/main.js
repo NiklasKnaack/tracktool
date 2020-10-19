@@ -1226,7 +1226,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 let foundPathSegment = false;
 
+                let diffX = 0;
+                let diffY = 0;
+
                 if ( pathSegment.p0.x === pointOldX && pathSegment.p0.y === pointOldY ) {
+
+                    diffX = point.x - pathSegment.p0.x;
+                    diffY = point.y - pathSegment.p0.y;
 
                     pathSegment.p0.x = point.x;
                     pathSegment.p0.y = point.y;
@@ -1234,6 +1240,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     foundPathSegment = true;
 
                 } else if ( pathSegment.p1.x === pointOldX && pathSegment.p1.y === pointOldY ) {
+
+                    diffX = point.x - pathSegment.p1.x;
+                    diffY = point.y - pathSegment.p1.y;
 
                     pathSegment.p1.x = point.x;
                     pathSegment.p1.y = point.y;
@@ -1248,6 +1257,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     //pathSegment.centerPoint = getPathSegmentCenter( pathSegment );
                     pathSegment.centerPoint = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 0.50 );
 
+                    pathSegment.controlPoint.x += diffX / 2;
+                    pathSegment.controlPoint.y += diffY / 2;
+
+                    //tempPathSegments.push( { type: 'circfill', position: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
 
                 }
 
