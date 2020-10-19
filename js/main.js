@@ -1727,6 +1727,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const denominator = ( ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 ) );
 
+        //console.log( 'denominator: ', denominator );
+
         // Lines are parallel
         if ( denominator === 0 ) {
 
@@ -1801,16 +1803,23 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                 if ( intersectionPoint !== null ) {
 
-                                    if ( intersectionPoint.x !== tempComparePathSegment.p0.x && intersectionPoint.y !== tempComparePathSegment.p0.y || intersectionPoint.x !== tempComparePathSegment.p1.x && intersectionPoint.y !== tempComparePathSegment.p1.y ) {
+                                    // const distance0 = getDistance( intersectionPoint, comparePathSegment.p0 );
+                                    // const distance1 = getDistance( intersectionPoint, comparePathSegment.p1 );
 
-                                        //console.log( intersectionPoint );
+                                    // if ( distance0 < 25 || distance1 < 25 ) {
+
+                                    //     continue;
+
+                                    // }
+
+                                    if ( Math.round( intersectionPoint.x ) !== tempInputPathSegment.p0.x && Math.round( intersectionPoint.y ) !== tempInputPathSegment.p0.y && Math.round( intersectionPoint.x ) !== tempInputPathSegment.p1.x && Math.round( intersectionPoint.y ) !== tempInputPathSegment.p1.y ) {
+
+                                        //console.log( intersectionPoint, tempInputPathSegment.p0, tempInputPathSegment.p1 );
 
                                         tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
 
-
                                     }
 
-                                    
                                 }
 
                             }
@@ -1820,9 +1829,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     }
 
                 }
-                
-
-
                 
                 //drawLine( c1.x | 0, c1.y | 0, c2.x | 0, c2.y | 0, r, g, b, a );
 
@@ -1891,11 +1897,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    function clamp( val, min, max ) {
+    // function clamp( val, min, max ) {
 
-        return Math.min( Math.max( min, val ), max );
+    //     return Math.min( Math.max( min, val ), max );
 
-    }
+    // }
     
     // function interpolateLine( a, b, frac ) {
 
@@ -1906,7 +1912,37 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     // }
 
-    function interpolateQuadraticBezier( sv, cv, ev, t ) {
+    function interpolateQuadraticBezier( sv, cv, ev, t, tMin = 0.0, tMax = 1.0 ) {
+
+        // if ( t < tMin ) {
+
+        //     return {
+
+        //         x: sv.x,
+        //         y: sv.y
+    
+        //     };
+
+        // }
+
+        // if ( t > tMax ) {
+
+        //     return {
+
+        //         x: ev.x,
+        //         y: ev.y
+    
+        //     };
+
+        // }
+
+        //---
+        
+        // const tNew = clamp( t, tMin, tMax );
+        // const t1 = 1 - tNew;
+        // const t1pow = t1 * t1;
+        // const tpow = tNew * tNew;
+        // const t2 = 2 * t1 * tNew;
 
         const t1 = 1 - t;
         const t1pow = t1 * t1;
