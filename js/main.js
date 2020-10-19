@@ -1229,6 +1229,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function movePoint( position ) {
 
+        tempPathSegments = [];
+
+        //---
+
         const pathIndex = 0;
 
         const path = pathHolder[ pathIndex ];
@@ -1297,6 +1301,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 //tempPathSegments.push( { type: 'circfill', position: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
 
+                getPathSegmentsIntersectionPoints( pathSegment, 25 );
+                //getPathSegmentsIntersectionPoints( pathSegment, 5 );
+
             }
 
             //---
@@ -1307,7 +1314,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            tempPathSegments = [];
+            //tempPathSegments = [];
 
         }
 
@@ -1566,6 +1573,126 @@ document.addEventListener( 'DOMContentLoaded', () => {
     
         return { x: x, y: y };
     
+    }
+
+    function getLinesIntersectionPoint( x1, y1, x2, y2, x3, y3, x4, y4 ) {
+
+        // Check if none of the lines are of length 0
+        if ( ( x1 === x2 && y1 === y2 ) || ( x3 === x4 && y3 === y4 ) ) {
+
+            return null;
+
+        }
+
+        const denominator = ( ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 ) );
+
+        // Lines are parallel
+        if ( denominator === 0 ) {
+
+            return null;
+
+        }
+
+        const ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denominator;
+        const ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denominator;
+
+        // is the intersection along the segments
+        if ( ua < 0 || ua > 1 || ub < 0 || ub > 1 ) {
+
+            return null
+
+        }
+
+        // Return a object with the x and y coordinates of the intersection
+        return { 
+            x: x1 + ua * ( x2 - x1 ), 
+            y: y1 + ua * ( y2 - y1 ) 
+        };
+        
+    }
+
+    function getPathSegmentsIntersectionPoints( inputPathSegment, precision = 25 ) {
+
+        //tempPathSegments = [];
+
+        //---
+
+        const pathIndex = 0;
+
+        const path = pathHolder[ pathIndex ];
+
+        //---
+
+        const intersectionPoints = [];
+
+        for ( let iI = 0, iIStep = 1 / precision; iI < 1 + iIStep; iI += iIStep ) {
+
+            if ( iI > 0 ) {
+
+                const tempInputPathSegment = {};
+
+                tempInputPathSegment.id = inputPathSegment.id;
+                tempInputPathSegment.p0 = interpolateQuadraticBezier( inputPathSegment.p0, inputPathSegment.controlPoint, inputPathSegment.p1, iI - iIStep );
+                tempInputPathSegment.p1 = interpolateQuadraticBezier( inputPathSegment.p0, inputPathSegment.controlPoint, inputPathSegment.p1, iI );
+
+                //tempPathSegments.push( { type: 'line', p0: { x: tempInputPathSegment.p0.x | 0, y: tempInputPathSegment.p0.y | 0 }, p1: { x: tempInputPathSegment.p1.x | 0, y: tempInputPathSegment.p1.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                //tempPathSegments.push( { type: 'circfill', position: { x: tempInputPathSegment.p0.x | 0, y: tempInputPathSegment.p0.y | 0 }, diameter: 9, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                
+                for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                    const comparePathSegment = path.segments[ i ];
+
+                    for ( let iC = 0, iCStep = 1 / precision; iC < 1 + iCStep; iC += iCStep ) {
+
+                        if ( iC > 0 ) {
+            
+                            const tempComparePathSegment = {};
+            
+                            tempComparePathSegment.id = comparePathSegment.id;
+                            tempComparePathSegment.p0 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC - iCStep );
+                            tempComparePathSegment.p1 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC );
+
+                            if ( tempInputPathSegment.id !== tempComparePathSegment.id ) {
+
+                                //tempPathSegments.push( { type: 'line', p0: { x: tempComparePathSegment.p0.x | 0, y: tempComparePathSegment.p0.y | 0 }, p1: { x: tempComparePathSegment.p1.x | 0, y: tempComparePathSegment.p1.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
+
+                                const intersectionPoint = getLinesIntersectionPoint( tempInputPathSegment.p0.x, tempInputPathSegment.p0.y, tempInputPathSegment.p1.x, tempInputPathSegment.p1.y, tempComparePathSegment.p0.x, tempComparePathSegment.p0.y, tempComparePathSegment.p1.x, tempComparePathSegment.p1.y );
+
+                                if ( intersectionPoint !== null ) {
+
+                                    if ( intersectionPoint.x !== tempComparePathSegment.p0.x && intersectionPoint.y !== tempComparePathSegment.p0.y || intersectionPoint.x !== tempComparePathSegment.p1.x && intersectionPoint.y !== tempComparePathSegment.p1.y ) {
+
+                                        //console.log( intersectionPoint );
+
+                                        tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+
+
+                                    }
+
+                                    
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+                
+
+
+                
+                //drawLine( c1.x | 0, c1.y | 0, c2.x | 0, c2.y | 0, r, g, b, a );
+
+                // for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+                //     const pathSegment = path.segments[ i ];
+
+            }
+
+        }
+
     }
 
     // function signedDistanceToLine( p, p0X, p0Y, p1X, p1Y ) {
