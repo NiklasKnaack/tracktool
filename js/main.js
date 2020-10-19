@@ -20,6 +20,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         removePathSegment: 'removePathSegment',
         bendPathSegment: 'bendPathSegment',
         straightenPathSegment: 'straightenPathSegment',
+        splitPathSegment: 'splitPathSegment',
         togglePathWalkable: 'togglePathWalkable',
         togglePathDirections: 'togglePathDirections',
         addStartPoint: 'addStartPoint',
@@ -223,6 +224,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        const _splitPathSegment = () => {
+
+            editorMode = EDITOR_MODE_ENUM.splitPathSegment;
+
+        }
+
         const _togglePathWalkable = () => {
 
             editorMode = EDITOR_MODE_ENUM.togglePathWalkable;
@@ -416,6 +423,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Remove Path Segment': _removePathSegment,
             'Bend Path Segment': _bendPathSegment,
             'Straighten Path Segment': _straightenPathSegment,
+            'Split Path Segment': _splitPathSegment,
             'Toggle Path Walkable': _togglePathWalkable,
             'Toggle Path Directions': _togglePathDirections,
             'Move Point': _movePoint,
@@ -441,6 +449,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderEdit.add( guiSetting, 'Remove Path Segment' );
         folderEdit.add( guiSetting, 'Bend Path Segment' );
         folderEdit.add( guiSetting, 'Straighten Path Segment' );
+        folderEdit.add( guiSetting, 'Split Path Segment' );
         folderEdit.add( guiSetting, 'Toggle Path Walkable' );
         folderEdit.add( guiSetting, 'Toggle Path Directions' );
         folderEdit.add( guiSetting, 'Move Point' );
@@ -1037,6 +1046,138 @@ document.addEventListener( 'DOMContentLoaded', () => {
         tempPathSegments = [];
 
     }
+
+    function splitPathSegment( position ) {
+
+        const pathIndex = 0;
+
+        const path = pathHolder[ pathIndex ];
+
+        const pathSegment = getPathSegmentByPosition( position );
+
+        if ( pathSegment !== null ) {
+
+            const newPathSegment0 = trimPathSegment( pathSegment, 0.50, false );
+            const newPathSegment1 = trimPathSegment( pathSegment, 0.50, true );
+
+            const newPathSegments = [ newPathSegment0, newPathSegment1 ];
+
+            //---
+
+            removePathSegment( position );
+
+            //---
+
+            for ( let i = 0, l = newPathSegments.length; i < l; i ++ ) {
+
+                const newPathSegment = newPathSegments[ i ];
+
+                newPathSegment.id = path.segments.length;
+
+                const pathSegment0Point0New = getPathSegmentPoint( newPathSegment.p0 );
+                const pathSegment0Point0Array = path.points.find( ( point ) => point.x === newPathSegment.p0.x && point.y === newPathSegment.p0.y );
+                const pathSegment0Point1New = getPathSegmentPoint( newPathSegment.p1 );
+                const pathSegment0Point1Array = path.points.find( ( point ) => point.x === newPathSegment.p1.x && point.y === newPathSegment.p1.y );
+
+                let pathSegmentPoint0 = pathSegment0Point0Array;
+                let pathSegmentPoint1 = pathSegment0Point1Array;
+
+                if ( typeof pathSegmentPoint0 === 'undefined' ) {
+
+                    pathSegmentPoint0 = pathSegment0Point0New;
+
+                    path.points.push( pathSegmentPoint0 );
+
+                }
+
+                if ( typeof pathSegmentPoint1 === 'undefined' ) {
+
+                    pathSegmentPoint1 = pathSegment0Point1New;
+
+                    path.points.push( pathSegmentPoint1 );
+
+                }
+
+                newPathSegment.centerPoint = interpolateQuadraticBezier( newPathSegment.p0, newPathSegment.controlPoint, newPathSegment.p1, 0.50 );
+                newPathSegment.length = getPathSegmentLength( newPathSegment.p0, newPathSegment.p1, newPathSegment.controlPoint ); //getDistance( newPathSegment0.p0, newPathSegment0.p1 );
+                newPathSegment.walkable = true;
+                newPathSegment.direction = '><';
+
+                path.segments.push( newPathSegment );
+
+            }
+
+        }
+
+        //---
+
+        if ( debugMode === true ) {
+
+            rebuildDebugElements();
+
+        }
+
+        tempPathSegments = [];
+
+    }
+
+    function trimPathSegment ( pathSegment, t = 0.50, fromStart = false ) {
+
+		let startPoint;
+        let endPoint;
+        
+		if ( fromStart ) {
+
+			endPoint = pathSegment.p0;
+			startPoint = pathSegment.p1;
+            t = 1 - t;
+            
+		} else {
+
+			startPoint = pathSegment.p0;
+            endPoint = pathSegment.p1;
+            
+        }
+
+		const dscx = pathSegment.controlPoint.x - startPoint.x;
+		const dscy = pathSegment.controlPoint.y - startPoint.y;
+		const dcex = endPoint.x - pathSegment.controlPoint.x;
+        const dcey = endPoint.y - pathSegment.controlPoint.y;
+
+        const newPathSegment = {
+
+            p0: startPoint,
+            controlPoint: { x: startPoint.x + dscx * t, y: startPoint.y + dscy * t },
+            p1: startPoint
+
+        };
+        
+		let dx = pathSegment.controlPoint.x + dcex * t - newPathSegment.controlPoint.x;
+        let dy = pathSegment.controlPoint.y + dcey * t - newPathSegment.controlPoint.y;
+        
+		if ( fromStart ) {
+
+            newPathSegment.p0 = { 
+                
+                x: newPathSegment.controlPoint.x + dx * t, 
+                y: newPathSegment.controlPoint.y + dy * t 
+            
+            };
+            
+		} else {
+
+            newPathSegment.p1 = { 
+                
+                x: newPathSegment.controlPoint.x + dx * t, 
+                y: newPathSegment.controlPoint.y + dy * t 
+            
+            };
+            
+        }
+
+        return newPathSegment;
+        
+	}
 
     //---
 
@@ -1849,6 +1990,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             straightenPathSegment( mouseCursor.position );
 
+        } else if ( editorMode === EDITOR_MODE_ENUM.splitPathSegment ) {
+
+            splitPathSegment( mouseCursor.position );
+
         }
 
     }
@@ -1884,7 +2029,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
              editorMode === EDITOR_MODE_ENUM.togglePathWalkable || 
              editorMode === EDITOR_MODE_ENUM.togglePathDirections || 
              ( editorMode === EDITOR_MODE_ENUM.bendPathSegment && mouseDown === false ) ||
-             editorMode === EDITOR_MODE_ENUM.straightenPathSegment ) {
+             editorMode === EDITOR_MODE_ENUM.straightenPathSegment ||
+             editorMode === EDITOR_MODE_ENUM.splitPathSegment ) {
 
             tempPathSegments = [];
 
