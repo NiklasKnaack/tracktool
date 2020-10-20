@@ -1410,6 +1410,34 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
+    // function removeDuplicatePointsFromArray() {
+
+    //     const pathIndex = 0;
+
+    //     const path = pathHolder[ pathIndex ];
+
+    //     const point = path.currentPoint;
+
+    //     const duplicatePoints = path.points.filter( ( p ) => p.x === point.x && p.y === point.y );
+
+    //     if ( duplicatePoints.length > 1 ) {
+
+    //         path.points.splice( path.points.findIndex( ( p ) => p.x === point.x && p.y === point.y ), 1 );
+
+    //     }
+
+    // }
+
+    // function removeDuplicatePathSegmentsFromArray() {
+
+    //     const pathIndex = 0;
+
+    //     const path = pathHolder[ pathIndex ];
+
+    //     //under construction
+
+    // }
+
     function movePoint( position ) {
 
         tempPathSegments = [];
@@ -2130,6 +2158,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
 
             removeSelectedPathSegments();
+            // removeDuplicatePointsFromArray();
+            // removeDuplicatePathSegmentsFromArray();
 
         }
 
@@ -2169,7 +2199,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             if ( mouseDown === true ) { 
 
                 movePoint( mousePos );
-                //movePoint( mouseCursor.position );
+                // movePoint( mouseCursor.position ); //under construction
 
             }
 
