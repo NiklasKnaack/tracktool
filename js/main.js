@@ -1784,6 +1784,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
 
                     const comparePathSegment = path.segments[ i ];
+                    const compareIndex = selectedPathSegments.findIndex( ( pathSegment ) => pathSegment.id === comparePathSegment.id );
+
+                    if ( compareIndex > -1 ) {
+
+                        continue;
+
+                    }
 
                     for ( let iC = 0, iCStep = 1 / precision; iC < 1 + iCStep; iC += iCStep ) {
 
@@ -1795,30 +1802,26 @@ document.addEventListener( 'DOMContentLoaded', () => {
                             tempComparePathSegment.p0 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC - iCStep );
                             tempComparePathSegment.p1 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC );
 
-                            if ( tempInputPathSegment.id !== tempComparePathSegment.id ) {
+                            //tempPathSegments.push( { type: 'line', p0: { x: tempComparePathSegment.p0.x | 0, y: tempComparePathSegment.p0.y | 0 }, p1: { x: tempComparePathSegment.p1.x | 0, y: tempComparePathSegment.p1.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
 
-                                //tempPathSegments.push( { type: 'line', p0: { x: tempComparePathSegment.p0.x | 0, y: tempComparePathSegment.p0.y | 0 }, p1: { x: tempComparePathSegment.p1.x | 0, y: tempComparePathSegment.p1.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                            const intersectionPoint = getLinesIntersectionPoint( tempInputPathSegment.p0.x, tempInputPathSegment.p0.y, tempInputPathSegment.p1.x, tempInputPathSegment.p1.y, tempComparePathSegment.p0.x, tempComparePathSegment.p0.y, tempComparePathSegment.p1.x, tempComparePathSegment.p1.y );
 
-                                const intersectionPoint = getLinesIntersectionPoint( tempInputPathSegment.p0.x, tempInputPathSegment.p0.y, tempInputPathSegment.p1.x, tempInputPathSegment.p1.y, tempComparePathSegment.p0.x, tempComparePathSegment.p0.y, tempComparePathSegment.p1.x, tempComparePathSegment.p1.y );
+                            if ( intersectionPoint !== null ) {
 
-                                if ( intersectionPoint !== null ) {
+                                // const distance0 = getDistance( intersectionPoint, comparePathSegment.p0 );
+                                // const distance1 = getDistance( intersectionPoint, comparePathSegment.p1 );
 
-                                    // const distance0 = getDistance( intersectionPoint, comparePathSegment.p0 );
-                                    // const distance1 = getDistance( intersectionPoint, comparePathSegment.p1 );
+                                // if ( distance0 < 25 || distance1 < 25 ) {
 
-                                    // if ( distance0 < 25 || distance1 < 25 ) {
+                                //     continue;
 
-                                    //     continue;
+                                // }
 
-                                    // }
+                                if ( Math.round( intersectionPoint.x ) !== tempInputPathSegment.p0.x && Math.round( intersectionPoint.y ) !== tempInputPathSegment.p0.y && Math.round( intersectionPoint.x ) !== tempInputPathSegment.p1.x && Math.round( intersectionPoint.y ) !== tempInputPathSegment.p1.y ) {
 
-                                    if ( Math.round( intersectionPoint.x ) !== tempInputPathSegment.p0.x && Math.round( intersectionPoint.y ) !== tempInputPathSegment.p0.y && Math.round( intersectionPoint.x ) !== tempInputPathSegment.p1.x && Math.round( intersectionPoint.y ) !== tempInputPathSegment.p1.y ) {
+                                    //console.log( intersectionPoint, tempInputPathSegment.p0, tempInputPathSegment.p1 );
 
-                                        //console.log( intersectionPoint, tempInputPathSegment.p0, tempInputPathSegment.p1 );
-
-                                        tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
-
-                                    }
+                                    tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
 
                                 }
 
@@ -1829,12 +1832,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     }
 
                 }
-                
-                //drawLine( c1.x | 0, c1.y | 0, c2.x | 0, c2.y | 0, r, g, b, a );
-
-                // for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
-
-                //     const pathSegment = path.segments[ i ];
 
             }
 
