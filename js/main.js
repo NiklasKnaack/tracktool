@@ -2612,108 +2612,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    // function getPointOnRouteByT( t, routeIndex ) {
-
-    //     const pathIndex = 0;
-
-    //     const path = pathHolder[ pathIndex ];
-
-    //     //---
-
-    //     const route = path.routes[ routeIndex ];
-
-    //     let point = null;
-
-    //     if ( t === 0 ) {
-
-    //         point = { x: route.startPoint.x, y: route.startPoint.y };
-
-    //     } else if ( t === 1 ) {
-
-    //         point = { x: route.endPoint.x, y: route.endPoint.y };
-
-    //     } else {
-
-    //         const routeLength = route.length;
-    //         const tLength = t * routeLength;
-
-    //         let curLength = 0;
-    //         let lastLength = 0;
-
-    //         for ( let i = 0, l = route.pathSegments.length; i < l; i ++ ) {
-
-    //             const pathSegment = route.pathSegments[ i ];
-
-    //             curLength += pathSegment.length;
-
-    //             if ( tLength <= curLength ) {
-
-    //                 const tPathSegment = ( tLength - lastLength ) / pathSegment.length;
-
-    //                 point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment );
-
-    //                 break;
-
-    //             }
-
-    //             lastLength = curLength;
-
-    //         }
-
-    //     }
-
-    //     //---
-
-    //     return point;
-
-    // }
-
-    // function getAngleOnRouteByT( t, routeIndex ) {
-
-    //     const pathIndex = 0;
-
-    //     const path = pathHolder[ pathIndex ];
-
-    //     //---
-
-    //     const route = path.routes[ routeIndex ];
-
-    //     let angle = 0;
-
-    //     const routeLength = route.length;
-    //     const tLength = t * routeLength;
-
-    //     let curLength = 0;
-    //     let lastLength = 0;
-
-    //     for ( let i = 0, l = route.pathSegments.length; i < l; i ++ ) {
-
-    //         const pathSegment = route.pathSegments[ i ];
-
-    //         curLength += pathSegment.length;
-
-    //         if ( tLength <= curLength ) {
-
-    //             const tPathSegment = ( tLength - lastLength ) / pathSegment.length;
-
-    //             const point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment );
-
-    //             angle = Math.atan2( pathSegment.p1.y - point.y, pathSegment.p1.x - point.x );
-
-    //             break;
-
-    //         }
-
-    //         lastLength = curLength;
-
-    //     }
-
-    //     //---
-
-    //     return angle;
-
-    // }
-
     function getPointAndAngleOnRouteByT( t, routeIndex ) {
 
         const pathIndex = 0;
@@ -3073,15 +2971,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const routePositionObject = getPointAndAngleOnRouteByT( tTest, routeIndex );
 
-        const angleOnRoute = routePositionObject.angle;
+        const angleOnRoute0 = routePositionObject.angle;
+        const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
 
-        const length = 10;
+        const length = 20;
         
-        const sinA = Math.sin( angleOnRoute );
-        const cosA = Math.cos( angleOnRoute );
+        const sinA0 = Math.sin( angleOnRoute0 );
+        const cosA0 = Math.cos( angleOnRoute0 );
+        const sinA1 = Math.sin( angleOnRoute1 );
+        const cosA1 = Math.cos( angleOnRoute1 );
 
         tempPathSegments.push( { type: 'circfill', position: { x: routePositionObject.point.x, y: routePositionObject.point.y }, diameter: 9, color: { r: 230, g: 29, b: 95, a: 255 } } );
-        tempPathSegments.push( { type: 'line', p0: { x: ( sinA * length + routePositionObject.point.x ) | 0, y: ( -cosA * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA * length + routePositionObject.point.x ) | 0, y: ( cosA * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+        tempPathSegments.push( { type: 'line', p0: { x: ( sinA0 * length + routePositionObject.point.x ) | 0, y: ( -cosA0 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA0 * length + routePositionObject.point.x ) | 0, y: ( cosA0 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+        tempPathSegments.push( { type: 'line', p0: { x: ( sinA1 * length + routePositionObject.point.x ) | 0, y: ( -cosA1 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA1 * length + routePositionObject.point.x ) | 0, y: ( cosA1 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
 
         //---
 
