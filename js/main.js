@@ -2648,9 +2648,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //             if ( tLength <= curLength ) {
 
-    //                 const pathSegmentT = ( tLength - lastLength ) / pathSegment.length;
+    //                 const tPathSegment = ( tLength - lastLength ) / pathSegment.length;
 
-    //                 point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, pathSegmentT );
+    //                 point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment );
 
     //                 break;
 
@@ -2694,9 +2694,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //         if ( tLength <= curLength ) {
 
-    //             const pathSegmentT = ( tLength - lastLength ) / pathSegment.length;
+    //             const tPathSegment = ( tLength - lastLength ) / pathSegment.length;
 
-    //             const point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, pathSegmentT );
+    //             const point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment );
 
     //             angle = Math.atan2( pathSegment.p1.y - point.y, pathSegment.p1.x - point.x );
 
@@ -2745,9 +2745,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( tLength <= curLength ) {
 
-                const pathSegmentT = ( tLength - lastLength ) / pathSegment.length;
+                const tPathSegment = ( tLength - lastLength ) / pathSegment.length;
 
-                const point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, pathSegmentT );
+                const point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment );
 
                 output.point = point;
                 output.angle = Math.atan2( pathSegment.p1.y - point.y, pathSegment.p1.x - point.x );
