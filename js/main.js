@@ -7,6 +7,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
+    let stats = null;
+
     let debugMode = true;
     let debugElements = [];
 
@@ -485,6 +487,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //gui.close();
 
+        //---
+
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+
+        document.body.appendChild( stats.domElement );
+
     }
 
     //---
@@ -895,7 +905,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( debugMode === true ) {
 
-                addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9, null );
+                addDebugElement( position.x, position.y, position.x.toFixed( 0 ).toString() + ', ' + position.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
 
             } 
         
@@ -943,7 +953,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( debugMode === true ) {
 
-                addDebugElement( position.x, position.y, position.x.toString() + ', ' + position.y.toString(), 'white', 0, 9, null );
+                addDebugElement( position.x, position.y, position.x.toFixed( 0 ).toString() + ', ' + position.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
                 addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.id.toString(), 'white', -4, -6, null );
                 
                 addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
@@ -1690,13 +1700,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( index < path.segments.length - 1 ) {
 
-                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toFixed( 2 ).toString() + ', ' + pathSegment.p0.y.toFixed( 2 ).toString(), 'white', 0, 9, null );
-                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toFixed( 2 ).toString() + ', ' + pathSegment.p1.y.toFixed( 2 ).toString(), 'white', 0, 9, null );
+                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toFixed( 0 ).toString() + ', ' + pathSegment.p0.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
+                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toFixed( 0 ).toString() + ', ' + pathSegment.p1.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
 
             } else {
 
-                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toFixed( 2 ).toString() + ', ' + pathSegment.p0.y.toFixed( 2 ).toString(), 'white', 0, 9, null );
-                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toFixed( 2 ).toString() + ', ' + pathSegment.p1.y.toFixed( 2 ).toString(), 'white', 0, 9, null );
+                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toFixed( 0 ).toString() + ', ' + pathSegment.p0.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
+                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toFixed( 0 ).toString() + ', ' + pathSegment.p1.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
 
             }
 
@@ -1772,8 +1782,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const cy = ( dy === 0 ) ? 0 : ( controlPoint.y - p0.y ) / dy;
         
 		let d = 0;
-		var p = p0;
-		var np = null;
+		let p = p0;
+		let np = null;
 
 		for ( let i = 1; i < PATH_SEGMENT_CURVE_ACCURACY; i++ ) {
 
@@ -2256,9 +2266,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( pathSegment !== null ) {
 
+                //tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 12, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 12, color: { r: 0, g: 255, b: 255, a: 255 }  } );
+
                 const pointOnPathSegment = getNearestPointOnPathSegmentByPosition( pathSegment, mousePos, 100 );
 
-                tempPathSegments.push( { type: 'circfill', position: { x: pointOnPathSegment.x, y: pointOnPathSegment.y }, diameter: 3, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                tempPathSegments.push( { type: 'circfill', position: { x: pointOnPathSegment.x, y: pointOnPathSegment.y }, diameter: 5, color: { r: 255, g: 0, b: 255, a: 255 }  } );
 
             }
 
@@ -2842,6 +2857,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //---
 
         context.putImageData( imageData, 0, 0 );
+
+        //---
+
+        stats.update();
 
         //---
 
