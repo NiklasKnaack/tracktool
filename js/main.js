@@ -98,8 +98,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         {
             id: 0,
             routes: [
-                { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [] },
-                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [] },
+                { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [], length: 0 },
+                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0 },
             ],
             currentPoint: { x: 0, y: 0 },
             points: [
@@ -192,6 +192,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
             ]
         }
     ];
+
+    for ( let i = 0, l = pathHolder[ 0 ].routes.length; i < l; i ++ ) {
+
+        const route = pathHolder[ 0 ].routes[ i ];
+
+        const startPoint = route.startPoint;
+        const endPoint = route.endPoint;
+
+        if ( startPoint !== null && endPoint !== null ) {
+
+            findPath( startPoint );
+
+        }
+
+    }
 
     if ( debugMode === true ) {
 
@@ -325,7 +340,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const route = path.routes[ i ];
 
-                output += '    { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, pathSegments: [] }';
+                output += '    { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, pathSegments: [], length: 0 }';
 
                 if ( i < l ) {
 
@@ -417,7 +432,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
             }
         
         }
+
+        const _playPauseSimulation = () => {
         
+            getPointOnRouteByT( 0.5, 1 );
+        
+        }
+
         const _linkTo = () => {
         
             window.open( 'https://twitter.com/niklaswebdev', '_blank' );
@@ -447,6 +468,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Log Path': _logPath,
             'Find Path': _findPath,
             'Toggle Debug Mode': _toggleDebugMode,
+            'Play/Pause Simulation': _playPauseSimulation,
             '@niklaswebdev': _linkTo
             
         }
@@ -479,6 +501,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderAnalyze.add( guiSetting, 'Log Path' );
         folderAnalyze.add( guiSetting, 'Find Path' );
         folderAnalyze.add( guiSetting, 'Toggle Debug Mode' );
+
+        const folderSimulation = gui.addFolder( 'Simulation' );
+
+        folderSimulation.open();
+        folderSimulation.add( guiSetting, 'Play/Pause Simulation' );
 
         const folderContact = gui.addFolder( 'Contact' );
 
@@ -702,6 +729,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             pathToEnd.reverse();
 
+            path.routes[ routeIndex ].length = 0;
             path.routes[ routeIndex ].pathSegments = [];
 
             for ( let i = 0, l = pathToEnd.length - 1; i < l; i ++ ) {
@@ -711,7 +739,53 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const pathSegment = getPathSegmentByPoints( point0, point1 );
 
-                path.routes[ routeIndex ].pathSegments.push( pathSegment );
+                //---
+
+                path.routes[ routeIndex ].length += pathSegment.length;
+
+                //---
+
+                let newPathSegment = {};
+
+                //newPathSegment.id = pathSegment.id;
+                newPathSegment.controlPoint = { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y };
+                newPathSegment.length = pathSegment.length;
+
+                if ( i === 0 ) {
+
+                    if ( pathSegment.p0.x === path.routes[ routeIndex ].startPoint.x && pathSegment.p0.y === path.routes[ routeIndex ].startPoint.y ) {
+
+                        newPathSegment.p0 = { x: pathSegment.p0.x, y: pathSegment.p0.y };
+                        newPathSegment.p1 = { x: pathSegment.p1.x, y: pathSegment.p1.y };
+
+                    } else {
+
+                        newPathSegment.p0 = { x: pathSegment.p1.x, y: pathSegment.p1.y };
+                        newPathSegment.p1 = { x: pathSegment.p0.x, y: pathSegment.p0.y };
+
+                    }
+
+                } else {
+
+                    const predecessorNewPathSegment = path.routes[ routeIndex ].pathSegments[ path.routes[ routeIndex ].pathSegments.length - 1 ];
+
+                    if ( pathSegment.p0.x === predecessorNewPathSegment.p1.x && pathSegment.p0.y === predecessorNewPathSegment.p1.y ) {
+
+                        newPathSegment.p0 = { x: pathSegment.p0.x, y: pathSegment.p0.y };
+                        newPathSegment.p1 = { x: pathSegment.p1.x, y: pathSegment.p1.y };
+
+                    } else {
+
+                        newPathSegment.p0 = { x: pathSegment.p1.x, y: pathSegment.p1.y };
+                        newPathSegment.p1 = { x: pathSegment.p0.x, y: pathSegment.p0.y };
+
+                    }
+
+                }
+
+                path.routes[ routeIndex ].pathSegments.push( newPathSegment );
+
+                //---
 
                 console.log( path.routes[ routeIndex ].pathSegments[ path.routes[ routeIndex ].pathSegments.length - 1 ] );
 
@@ -2538,12 +2612,170 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
+    function getPointOnRouteByT( t, routeIndex ) {
+
+        const pathIndex = 0;
+
+        const path = pathHolder[ pathIndex ];
+
+        //---
+
+        const route = path.routes[ routeIndex ];
+
+        let point = null;
+
+        if ( t === 0 ) {
+
+            point = { x: route.startPoint.x, y: route.startPoint.y };
+
+        } else if ( t === 1 ) {
+
+            point = { x: route.endPoint.x, y: route.endPoint.y };
+
+        } else {
+
+            const routeLength = route.length;
+            const tLength = t * routeLength;
+
+            let curLength = 0;
+            let lastLength = 0;
+
+            for ( let i = 0, l = route.pathSegments.length; i < l; i ++ ) {
+
+                const pathSegment = route.pathSegments[ i ];
+
+                curLength += pathSegment.length;
+
+                if ( tLength <= curLength ) {
+
+                    const pathSegmentT = ( tLength - lastLength ) / pathSegment.length;
+
+                    point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, pathSegmentT );
+
+                    break;
+
+                }
+
+                lastLength = curLength;
+
+            }
+
+        }
+
+        //---
+
+        return point;
+
+    }
+
+    function getAngleOnRouteByT( t, routeIndex ) {
+
+        const pathIndex = 0;
+
+        const path = pathHolder[ pathIndex ];
+
+        //---
+
+        const route = path.routes[ routeIndex ];
+
+        let angle = 0;
+
+        const routeLength = route.length;
+        const tLength = t * routeLength;
+
+        let curLength = 0;
+        let lastLength = 0;
+
+        for ( let i = 0, l = route.pathSegments.length; i < l; i ++ ) {
+
+            const pathSegment = route.pathSegments[ i ];
+
+            curLength += pathSegment.length;
+
+            if ( tLength <= curLength ) {
+
+                const pathSegmentT = ( tLength - lastLength ) / pathSegment.length;
+
+                const point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, pathSegmentT );
+
+                angle = Math.atan2( pathSegment.p1.y - point.y, pathSegment.p1.x - point.x );
+
+                break;
+
+            }
+
+            lastLength = curLength;
+
+        }
+
+        //---
+
+        return angle;
+
+    }
 
 
 
 
 
+    /*
+    public function pointAt(t:Number):Point {
+        t = cleant(t);
+        if (t == 0){
+            return _segments[0].pointAt(t);
+        }else if (t == 1){
+            var last:int = _segments.length - 1;
+            return _segments[last].pointAt(t);
+        }
+        var tLength:Number = t*length;
+        var curLength:Number = 0;
+        var lastLength:Number = 0;
+        var seg:PathSegment;
+        var n:int = _segments.length;
+        var i:int;
+        for (i=0; i<n; i++){
+            seg = _segments[i];
+            _segmentIndex = i;
+            if ((_moveToHasLength || seg._command != "moveTo") && seg.length){
+                curLength += seg.length;
+            }else{
+                continue;
+            }
+            if (tLength <= curLength){
+                return seg.pointAt((tLength - lastLength)/seg.length);
+            }
+            lastLength = curLength;
+        }
+        return new Point(0, 0);
+    }
 
+    public function angleAt(t:Number):Number {
+        t = cleant(t);
+        var tLength:Number = t*length;
+        var curLength:Number = 0;
+        var lastLength:Number = 0;
+        var seg:PathSegment;
+        var n:int = _segments.length;
+        var i:int;
+        for (i=0; i<n; i++){
+            seg = _segments[i];
+            if ((_moveToHasLength || seg._command != "moveTo") && seg.length){
+                curLength += seg.length;
+            }else{
+                continue;
+            }
+            if (tLength <= curLength){
+                return seg.angleAt((tLength - lastLength)/seg.length);
+            }
+            lastLength = curLength;
+        }
+        return 0;
+    }
+    */
+
+
+
+    //---
 
     function draw() {
 
@@ -2842,7 +3074,37 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        //---
+
+        const routeIndex = 1;
+
+        const pointOnRoute = getPointOnRouteByT( tTest, routeIndex );
+
+        tempPathSegments = [];
+        tempPathSegments.push( { type: 'circfill', position: { x: pointOnRoute.x, y: pointOnRoute.y }, diameter: 9, color: { r: 230, g: 29, b: 95, a: 255 } } );
+
+        const angleOnRoute = getAngleOnRouteByT( tTest, routeIndex );
+
+        const length = 10;
+        
+        const sinA = Math.sin( angleOnRoute );
+        const cosA = Math.cos( angleOnRoute );
+
+        tempPathSegments.push( { type: 'line', p0: { x: ( sinA * length + pointOnRoute.x ) | 0, y: ( -cosA * length + pointOnRoute.y ) | 0 }, p1: { x: ( -sinA * length + pointOnRoute.x ) | 0, y: ( cosA * length + pointOnRoute.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+
+        //---
+
+        tTest += 0.002;
+
+        if ( tTest > 1 ) {
+
+            tTest = 0;
+
+        }
+
     }
+
+    let tTest = 1;
 
     //---
 
