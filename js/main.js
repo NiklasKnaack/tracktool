@@ -21,6 +21,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         bendPathSegment: 'bendPathSegment',
         straightenPathSegment: 'straightenPathSegment',
         splitPathSegment: 'splitPathSegment',
+        splitPathSegmentAt: 'splitPathSegmentAt',
         togglePathWalkable: 'togglePathWalkable',
         togglePathDirections: 'togglePathDirections',
         addStartPoint: 'addStartPoint',
@@ -230,6 +231,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        const _splitPathSegmentAt = () => {
+
+            editorMode = EDITOR_MODE_ENUM.splitPathSegmentAt;
+
+        }
+
         const _togglePathWalkable = () => {
 
             editorMode = EDITOR_MODE_ENUM.togglePathWalkable;
@@ -425,6 +432,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Bend Path Segment': _bendPathSegment,
             'Straighten Path Segment': _straightenPathSegment,
             'Split Path Segment': _splitPathSegment,
+            'Split Path Segment At': _splitPathSegmentAt,
             'Toggle Path Walkable': _togglePathWalkable,
             'Toggle Path Directions': _togglePathDirections,
             'Move Point': _movePoint,
@@ -452,6 +460,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderEdit.add( guiSetting, 'Bend Path Segment' );
         folderEdit.add( guiSetting, 'Straighten Path Segment' );
         folderEdit.add( guiSetting, 'Split Path Segment' );
+        folderEdit.add( guiSetting, 'Split Path Segment At' );
         folderEdit.add( guiSetting, 'Toggle Path Walkable' );
         folderEdit.add( guiSetting, 'Toggle Path Directions' );
         folderEdit.add( guiSetting, 'Move Point' );
@@ -1056,20 +1065,26 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function straightenPathSegment( position ) {
+    function straightenPathSegmentByPosition( position ) {
 
         const pathSegment = getPathSegmentByPosition( position );
 
         if ( pathSegment !== null ) {
 
-            const centerPoint = getPathSegmentCenter( pathSegment );
-
-            pathSegment.centerPoint = centerPoint;
-            pathSegment.controlPoint = centerPoint;
-
-            pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );
+            straightenPathSegment( pathSegment );
 
         }
+
+    }
+
+    function straightenPathSegment( pathSegment ) {
+
+        const centerPoint = getPathSegmentCenter( pathSegment );
+
+        pathSegment.centerPoint = centerPoint;
+        pathSegment.controlPoint = centerPoint;
+
+        pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );
 
         //---
 
@@ -1675,13 +1690,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( index < path.segments.length - 1 ) {
 
-                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toString() + ', ' + pathSegment.p0.y.toString(), 'white', 0, 9, null );
-                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toString() + ', ' + pathSegment.p1.y.toString(), 'white', 0, 9, null );
+                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toFixed( 2 ).toString() + ', ' + pathSegment.p0.y.toFixed( 2 ).toString(), 'white', 0, 9, null );
+                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toFixed( 2 ).toString() + ', ' + pathSegment.p1.y.toFixed( 2 ).toString(), 'white', 0, 9, null );
 
             } else {
 
-                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toString() + ', ' + pathSegment.p0.y.toString(), 'white', 0, 9, null );
-                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toString() + ', ' + pathSegment.p1.y.toString(), 'white', 0, 9, null );
+                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toFixed( 2 ).toString() + ', ' + pathSegment.p0.y.toFixed( 2 ).toString(), 'white', 0, 9, null );
+                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toFixed( 2 ).toString() + ', ' + pathSegment.p1.y.toFixed( 2 ).toString(), 'white', 0, 9, null );
 
             }
 
@@ -1785,90 +1800,90 @@ document.addEventListener( 'DOMContentLoaded', () => {
     
     }
 
-    function getLinesIntersectionPoint( x1, y1, x2, y2, x3, y3, x4, y4 ) {
+    // function getLinesIntersectionPoint( x1, y1, x2, y2, x3, y3, x4, y4 ) {
 
-        // Check if none of the lines are of length 0
-        if ( ( x1 === x2 && y1 === y2 ) || ( x3 === x4 && y3 === y4 ) ) {
+    //     // Check if none of the lines are of length 0
+    //     if ( ( x1 === x2 && y1 === y2 ) || ( x3 === x4 && y3 === y4 ) ) {
 
-            return null;
+    //         return null;
 
-        }
+    //     }
 
-        const denominator = ( ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 ) );
+    //     const denominator = ( ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 ) );
 
-        // Lines are parallel
-        if ( denominator === 0 ) {
+    //     // Lines are parallel
+    //     if ( denominator === 0 ) {
 
-            return null;
+    //         return null;
 
-        }
+    //     }
 
-        const ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denominator;
-        const ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denominator;
+    //     const ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denominator;
+    //     const ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denominator;
 
-        // is the intersection along the segments
-        if ( ua < 0 || ua > 1 || ub < 0 || ub > 1 ) {
+    //     // is the intersection along the segments
+    //     if ( ua < 0 || ua > 1 || ub < 0 || ub > 1 ) {
 
-            return null
+    //         return null
 
-        }
+    //     }
 
-        // Return a object with the x and y coordinates of the intersection
-        return { 
-            x: x1 + ua * ( x2 - x1 ), 
-            y: y1 + ua * ( y2 - y1 ) 
-        };
+    //     // Return a object with the x and y coordinates of the intersection
+    //     return { 
+    //         x: x1 + ua * ( x2 - x1 ), 
+    //         y: y1 + ua * ( y2 - y1 ) 
+    //     };
         
-    }
+    // }
 
-    function showPathSegmentIntersectionPointsWithLine( line, precision = 25 ) {
+    // function showPathSegmentIntersectionPointsWithLine( line, precision = 25 ) {
 
-        tempPathSegments = [];
+    //     tempPathSegments = [];
 
-        //---
+    //     //---
 
-        const pathIndex = 0;
+    //     const pathIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+    //     const path = pathHolder[ pathIndex ];
 
-        //---
+    //     //---
 
-        for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+    //     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
 
-            const comparePathSegment = path.segments[ i ];
+    //         const comparePathSegment = path.segments[ i ];
 
-            if ( line.id !== comparePathSegment.id ) {
+    //         if ( line.id !== comparePathSegment.id ) {
 
-                for ( let iC = 0, iCStep = 1 / precision; iC < 1 + iCStep; iC += iCStep ) {
+    //             for ( let iC = 0, iCStep = 1 / precision; iC < 1 + iCStep; iC += iCStep ) {
 
-                    if ( iC > 0 ) {
+    //                 if ( iC > 0 ) {
         
-                        const tempComparePathSegment = {};
+    //                     const tempComparePathSegment = {};
         
-                        tempComparePathSegment.p0 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC - iCStep );
-                        tempComparePathSegment.p1 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC );
+    //                     tempComparePathSegment.p0 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC - iCStep );
+    //                     tempComparePathSegment.p1 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC );
 
-                        const intersectionPoint = getLinesIntersectionPoint( line.p0.x, line.p0.y, line.p1.x, line.p1.y, tempComparePathSegment.p0.x, tempComparePathSegment.p0.y, tempComparePathSegment.p1.x, tempComparePathSegment.p1.y );
+    //                     const intersectionPoint = getLinesIntersectionPoint( line.p0.x, line.p0.y, line.p1.x, line.p1.y, tempComparePathSegment.p0.x, tempComparePathSegment.p0.y, tempComparePathSegment.p1.x, tempComparePathSegment.p1.y );
 
-                        if ( intersectionPoint !== null ) {
+    //                     if ( intersectionPoint !== null ) {
 
-                            if ( Math.round( intersectionPoint.x ) !== line.p0.x && Math.round( intersectionPoint.y ) !== line.p0.y && Math.round( intersectionPoint.x ) !== line.p1.x && Math.round( intersectionPoint.y ) !== line.p1.y ) {
+    //                         if ( Math.round( intersectionPoint.x ) !== line.p0.x && Math.round( intersectionPoint.y ) !== line.p0.y && Math.round( intersectionPoint.x ) !== line.p1.x && Math.round( intersectionPoint.y ) !== line.p1.y ) {
 
-                                tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+    //                             tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
 
-                            }
+    //                         }
 
-                        }
+    //                     }
 
-                    }
+    //                 }
 
-                }
+    //             }
 
-            }
+    //         }
 
-        }
+    //     }
 
-    }
+    // }
 
     // function getPathSegmentsIntersections( inputPathSegment, precision = 25 ) {
 
@@ -1955,29 +1970,53 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     // }
 
-    // function getTOfQuadraticBezierFromIntersectionPoint( pathSegment, p, precision = 100 ) {
+    function getTOfQuadraticBezierFromIntersectionPoint( pathSegment, position, precision = 100 ) {
 
-    //     let distance = Infinity;
-    //     let t = -1;
+        let distance = Infinity;
+        let t = -1;
 
-    //     for ( let i = 0, l = 1 / precision; i < 1 + l; i += l ) {
+        for ( let i = 0, l = 1 / precision; i < 1 + l; i += l ) {
 
-    //         const pOnBezier = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, i );
+            const pOnBezier = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, i );
 
-    //         const d = getDistance( p, pOnBezier );
+            const d = getDistance( position, pOnBezier );
 
-    //         if ( distance > d ) {
+            if ( distance > d ) {
 
-    //             distance = d;
-    //             t = i;
+                distance = d;
+                t = i;
 
-    //         }
+            }
 
-    //     }
+        }
 
-    //     return t;
+        return t;
 
-    // }
+    }
+
+    function getNearestPointOnPathSegmentByPosition( pathSegment, position, precision = 100 ) {
+
+        let distance = Infinity;
+        let nearestPoint = null;
+
+        for ( let i = 0, l = 1 / precision; i < 1 + l; i += l ) {
+
+            const pOnBezier = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, i );
+
+            const d = getDistance( position, pOnBezier );
+
+            if ( distance > d ) {
+
+                distance = d;
+                nearestPoint = pOnBezier;
+
+            }
+
+        }
+
+        return nearestPoint;
+
+    }
 
     // function signedDistanceToLine( p, p0X, p0Y, p1X, p1Y ) {
 
@@ -2133,11 +2172,24 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         } else if ( editorMode === EDITOR_MODE_ENUM.straightenPathSegment ) {
 
-            straightenPathSegment( mouseCursor.position );
+            straightenPathSegmentByPosition( mouseCursor.position );
 
         } else if ( editorMode === EDITOR_MODE_ENUM.splitPathSegment ) {
 
             splitPathSegmentByPosition( mouseCursor.position );
+
+        } else if ( editorMode === EDITOR_MODE_ENUM.splitPathSegmentAt ) {
+
+            const pathSegment = getPathSegmentByPosition( mousePos );
+
+            if ( pathSegment !== null ) {
+
+                const pointOnPathSegment = getNearestPointOnPathSegmentByPosition( pathSegment, mousePos, 100 );
+                const tOnPathSegment = getTOfQuadraticBezierFromIntersectionPoint( pathSegment, pointOnPathSegment, 100 );
+
+                splitPathSegment( pathSegment, tOnPathSegment );
+
+            }
 
         }
 
@@ -2191,6 +2243,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
                 tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 12, color: { r: 255, g: 0, b: 255, a: 255 }  } );
                 tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 12, color: { r: 0, g: 255, b: 255, a: 255 }  } );
+
+            }
+
+        } else if ( editorMode === EDITOR_MODE_ENUM.splitPathSegmentAt ) {
+
+            tempPathSegments = [];
+
+            //---
+
+            const pathSegment = getPathSegmentByPosition( mousePos );
+
+            if ( pathSegment !== null ) {
+
+                const pointOnPathSegment = getNearestPointOnPathSegmentByPosition( pathSegment, mousePos, 100 );
+
+                tempPathSegments.push( { type: 'circfill', position: { x: pointOnPathSegment.x, y: pointOnPathSegment.y }, diameter: 3, color: { r: 255, g: 0, b: 255, a: 255 }  } );
 
             }
 
@@ -2469,12 +2537,60 @@ document.addEventListener( 'DOMContentLoaded', () => {
         mouseCursor.color = { r: 255, g: 255, b: 255, a: 255 };
         
         pathHolder.forEach( ( path, index ) => {
+
+            // let distanceAtTheMoment = Infinity;
+            // let pathSegmentSelected = null;
+
+            // if ( editorMode === EDITOR_MODE_ENUM.addPathSegment ) {
+
+            //     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+
+            //         const pathSegment = path.segments[ i ];
+
+            //         if ( pathSegment.p0 !== null && pathSegment.p1 !== null ) {
+
+            //             const distanceToSegment = signedDistanceToQuadraticBezier( mousePos, pathSegment.p0, pathSegment.p1, pathSegment.controlPoint, 25 );
+
+            //             if ( distanceAtTheMoment > distanceToSegment ) {
+
+            //                 distanceAtTheMoment = distanceToSegment;
+
+            //                 if ( distanceAtTheMoment <= SNAP_TO_DISTANCE ) {
+
+            //                     pathSegmentSelected = pathSegment;
+
+            //                 }
+
+            //             }
+
+            //         }
+
+            //     }
+
+            //     if ( pathSegmentSelected !== null ) {
+
+
+
+            //     }
+
+            // }
+
+            // //console.log( 'd: ', d );
+            // //console.log( 'pathSegmentSelected: ', pathSegmentSelected );
         
             for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
 
                 const pathSegment = path.segments[ i ];
 
                 if ( pathSegment.p0 !== null && pathSegment.p1 !== null ) {
+
+                    //const distanceToSegment = signedDistanceToQuadraticBezier( mousePos, pathSegment.p0, pathSegment.p1, pathSegment.controlPoint, 25 );
+
+                    //console.log( distanceToSegment );
+
+
+
+                    //---
 
                     const distancep0 = getDistance( mousePos, pathSegment.p0 );
                     const distancep1 = getDistance( mousePos, pathSegment.p1 );
