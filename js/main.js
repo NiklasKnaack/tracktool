@@ -2612,7 +2612,109 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    function getPointOnRouteByT( t, routeIndex ) {
+    // function getPointOnRouteByT( t, routeIndex ) {
+
+    //     const pathIndex = 0;
+
+    //     const path = pathHolder[ pathIndex ];
+
+    //     //---
+
+    //     const route = path.routes[ routeIndex ];
+
+    //     let point = null;
+
+    //     if ( t === 0 ) {
+
+    //         point = { x: route.startPoint.x, y: route.startPoint.y };
+
+    //     } else if ( t === 1 ) {
+
+    //         point = { x: route.endPoint.x, y: route.endPoint.y };
+
+    //     } else {
+
+    //         const routeLength = route.length;
+    //         const tLength = t * routeLength;
+
+    //         let curLength = 0;
+    //         let lastLength = 0;
+
+    //         for ( let i = 0, l = route.pathSegments.length; i < l; i ++ ) {
+
+    //             const pathSegment = route.pathSegments[ i ];
+
+    //             curLength += pathSegment.length;
+
+    //             if ( tLength <= curLength ) {
+
+    //                 const pathSegmentT = ( tLength - lastLength ) / pathSegment.length;
+
+    //                 point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, pathSegmentT );
+
+    //                 break;
+
+    //             }
+
+    //             lastLength = curLength;
+
+    //         }
+
+    //     }
+
+    //     //---
+
+    //     return point;
+
+    // }
+
+    // function getAngleOnRouteByT( t, routeIndex ) {
+
+    //     const pathIndex = 0;
+
+    //     const path = pathHolder[ pathIndex ];
+
+    //     //---
+
+    //     const route = path.routes[ routeIndex ];
+
+    //     let angle = 0;
+
+    //     const routeLength = route.length;
+    //     const tLength = t * routeLength;
+
+    //     let curLength = 0;
+    //     let lastLength = 0;
+
+    //     for ( let i = 0, l = route.pathSegments.length; i < l; i ++ ) {
+
+    //         const pathSegment = route.pathSegments[ i ];
+
+    //         curLength += pathSegment.length;
+
+    //         if ( tLength <= curLength ) {
+
+    //             const pathSegmentT = ( tLength - lastLength ) / pathSegment.length;
+
+    //             const point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, pathSegmentT );
+
+    //             angle = Math.atan2( pathSegment.p1.y - point.y, pathSegment.p1.x - point.x );
+
+    //             break;
+
+    //         }
+
+    //         lastLength = curLength;
+
+    //     }
+
+    //     //---
+
+    //     return angle;
+
+    // }
+
+    function getPointAndAngleOnRouteByT( t, routeIndex ) {
 
         const pathIndex = 0;
 
@@ -2622,63 +2724,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const route = path.routes[ routeIndex ];
 
-        let point = null;
+        const output = {
 
-        if ( t === 0 ) {
+            point: null,
+            angle: 0
 
-            point = { x: route.startPoint.x, y: route.startPoint.y };
-
-        } else if ( t === 1 ) {
-
-            point = { x: route.endPoint.x, y: route.endPoint.y };
-
-        } else {
-
-            const routeLength = route.length;
-            const tLength = t * routeLength;
-
-            let curLength = 0;
-            let lastLength = 0;
-
-            for ( let i = 0, l = route.pathSegments.length; i < l; i ++ ) {
-
-                const pathSegment = route.pathSegments[ i ];
-
-                curLength += pathSegment.length;
-
-                if ( tLength <= curLength ) {
-
-                    const pathSegmentT = ( tLength - lastLength ) / pathSegment.length;
-
-                    point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, pathSegmentT );
-
-                    break;
-
-                }
-
-                lastLength = curLength;
-
-            }
-
-        }
-
-        //---
-
-        return point;
-
-    }
-
-    function getAngleOnRouteByT( t, routeIndex ) {
-
-        const pathIndex = 0;
-
-        const path = pathHolder[ pathIndex ];
-
-        //---
-
-        const route = path.routes[ routeIndex ];
-
-        let angle = 0;
+        };
 
         const routeLength = route.length;
         const tLength = t * routeLength;
@@ -2698,7 +2749,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, pathSegmentT );
 
-                angle = Math.atan2( pathSegment.p1.y - point.y, pathSegment.p1.x - point.x );
+                output.point = point;
+                output.angle = Math.atan2( pathSegment.p1.y - point.y, pathSegment.p1.x - point.x );
 
                 break;
 
@@ -2710,70 +2762,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        return angle;
+        return output;
 
     }
-
-
-
-
-
-    /*
-    public function pointAt(t:Number):Point {
-        t = cleant(t);
-        if (t == 0){
-            return _segments[0].pointAt(t);
-        }else if (t == 1){
-            var last:int = _segments.length - 1;
-            return _segments[last].pointAt(t);
-        }
-        var tLength:Number = t*length;
-        var curLength:Number = 0;
-        var lastLength:Number = 0;
-        var seg:PathSegment;
-        var n:int = _segments.length;
-        var i:int;
-        for (i=0; i<n; i++){
-            seg = _segments[i];
-            _segmentIndex = i;
-            if ((_moveToHasLength || seg._command != "moveTo") && seg.length){
-                curLength += seg.length;
-            }else{
-                continue;
-            }
-            if (tLength <= curLength){
-                return seg.pointAt((tLength - lastLength)/seg.length);
-            }
-            lastLength = curLength;
-        }
-        return new Point(0, 0);
-    }
-
-    public function angleAt(t:Number):Number {
-        t = cleant(t);
-        var tLength:Number = t*length;
-        var curLength:Number = 0;
-        var lastLength:Number = 0;
-        var seg:PathSegment;
-        var n:int = _segments.length;
-        var i:int;
-        for (i=0; i<n; i++){
-            seg = _segments[i];
-            if ((_moveToHasLength || seg._command != "moveTo") && seg.length){
-                curLength += seg.length;
-            }else{
-                continue;
-            }
-            if (tLength <= curLength){
-                return seg.angleAt((tLength - lastLength)/seg.length);
-            }
-            lastLength = curLength;
-        }
-        return 0;
-    }
-    */
-
-
 
     //---
 
@@ -3076,25 +3067,25 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
+        tempPathSegments = [];
+
         const routeIndex = 1;
 
-        const pointOnRoute = getPointOnRouteByT( tTest, routeIndex );
+        const routePositionObject = getPointAndAngleOnRouteByT( tTest, routeIndex );
 
-        tempPathSegments = [];
-        tempPathSegments.push( { type: 'circfill', position: { x: pointOnRoute.x, y: pointOnRoute.y }, diameter: 9, color: { r: 230, g: 29, b: 95, a: 255 } } );
-
-        const angleOnRoute = getAngleOnRouteByT( tTest, routeIndex );
+        const angleOnRoute = routePositionObject.angle;
 
         const length = 10;
         
         const sinA = Math.sin( angleOnRoute );
         const cosA = Math.cos( angleOnRoute );
 
-        tempPathSegments.push( { type: 'line', p0: { x: ( sinA * length + pointOnRoute.x ) | 0, y: ( -cosA * length + pointOnRoute.y ) | 0 }, p1: { x: ( -sinA * length + pointOnRoute.x ) | 0, y: ( cosA * length + pointOnRoute.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+        tempPathSegments.push( { type: 'circfill', position: { x: routePositionObject.point.x, y: routePositionObject.point.y }, diameter: 9, color: { r: 230, g: 29, b: 95, a: 255 } } );
+        tempPathSegments.push( { type: 'line', p0: { x: ( sinA * length + routePositionObject.point.x ) | 0, y: ( -cosA * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA * length + routePositionObject.point.x ) | 0, y: ( cosA * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
 
         //---
 
-        tTest += 0.002;
+        tTest += 0.0015;
 
         if ( tTest > 1 ) {
 
