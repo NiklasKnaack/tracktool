@@ -2967,23 +2967,31 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         tempPathSegments = [];
 
-        const routeIndex = 1;
+        const pathIndex = 0;
 
-        const routePositionObject = getPointAndAngleOnRouteByT( tTest, routeIndex );
+        const path = pathHolder[ pathIndex ];
 
-        const angleOnRoute0 = routePositionObject.angle;
-        const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
+        for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
 
-        const length = 20;
-        
-        const sinA0 = Math.sin( angleOnRoute0 );
-        const cosA0 = Math.cos( angleOnRoute0 );
-        const sinA1 = Math.sin( angleOnRoute1 );
-        const cosA1 = Math.cos( angleOnRoute1 );
+            const routeIndex = i;
 
-        tempPathSegments.push( { type: 'circfill', position: { x: routePositionObject.point.x, y: routePositionObject.point.y }, diameter: 9, color: { r: 230, g: 29, b: 95, a: 255 } } );
-        tempPathSegments.push( { type: 'line', p0: { x: ( sinA0 * length + routePositionObject.point.x ) | 0, y: ( -cosA0 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA0 * length + routePositionObject.point.x ) | 0, y: ( cosA0 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
-        tempPathSegments.push( { type: 'line', p0: { x: ( sinA1 * length + routePositionObject.point.x ) | 0, y: ( -cosA1 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA1 * length + routePositionObject.point.x ) | 0, y: ( cosA1 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+            const routePositionObject = getPointAndAngleOnRouteByT( tTest, routeIndex );
+
+            const angleOnRoute0 = routePositionObject.angle;
+            const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
+
+            const length = 20;
+            
+            const sinA0 = Math.sin( angleOnRoute0 );
+            const cosA0 = Math.cos( angleOnRoute0 );
+            const sinA1 = Math.sin( angleOnRoute1 );
+            const cosA1 = Math.cos( angleOnRoute1 );
+
+            tempPathSegments.push( { type: 'circfill', position: { x: routePositionObject.point.x, y: routePositionObject.point.y }, diameter: 5, color: { r: 230, g: 29, b: 95, a: 255 } } );
+            tempPathSegments.push( { type: 'line', p0: { x: ( sinA0 * length + routePositionObject.point.x ) | 0, y: ( -cosA0 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA0 * length + routePositionObject.point.x ) | 0, y: ( cosA0 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+            tempPathSegments.push( { type: 'line', p0: { x: ( sinA1 * length + routePositionObject.point.x ) | 0, y: ( -cosA1 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA1 * length + routePositionObject.point.x ) | 0, y: ( cosA1 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+
+        }
 
         //---
 
