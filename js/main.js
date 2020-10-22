@@ -502,10 +502,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderAnalyze.add( guiSetting, 'Find Path' );
         folderAnalyze.add( guiSetting, 'Toggle Debug Mode' );
 
-        const folderSimulation = gui.addFolder( 'Simulation' );
+        // const folderSimulation = gui.addFolder( 'Simulation' );
 
-        folderSimulation.open();
-        folderSimulation.add( guiSetting, 'Play/Pause Simulation' );
+        // folderSimulation.open();
+        // folderSimulation.add( guiSetting, 'Play/Pause Simulation' );
 
         const folderContact = gui.addFolder( 'Contact' );
 
@@ -571,6 +571,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
         
         animationFrame = requestAnimFrame( render );
+
+        //---
+
+
+        initVehicles();
 
     }
 
@@ -787,12 +792,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 //---
 
-                console.log( path.routes[ routeIndex ].pathSegments[ path.routes[ routeIndex ].pathSegments.length - 1 ] );
+                // console.log( path.routes[ routeIndex ].pathSegments[ path.routes[ routeIndex ].pathSegments.length - 1 ] );
 
-                //tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                tempPathSegments.push( { type: 'bezier', p0: { x: point0.x, y: point0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                // //tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                // tempPathSegments.push( { type: 'bezier', p0: { x: point0.x, y: point0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                // tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                // tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
 
             }
 
@@ -2299,6 +2304,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        //---
+
+        const pathIndex = 0;
+
+        const path = pathHolder[ pathIndex ];
+
+        for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+
+            const route = path.routes[ i ];
+    
+            const startPoint = route.startPoint;
+            const endPoint = route.endPoint;
+    
+            if ( startPoint !== null && endPoint !== null ) {
+    
+                findPath( startPoint );
+    
+            }
+    
+        }
+
     }
 
     function mouseMoveHandler( event ) {
@@ -2966,7 +2992,71 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        // tempPathSegments = [];
+        simulateVehicles();
+
+        // const pathIndex = 0;
+
+        // const path = pathHolder[ pathIndex ];
+
+        // for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+
+        //     const routeIndex = i;
+
+        //     const routePositionObject = getPointAndAngleOnRouteByT( tTest, routeIndex );
+
+        //     const angleOnRoute0 = routePositionObject.angle;
+        //     const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
+
+        //     const length = 20;
+            
+        //     const sinA0 = Math.sin( angleOnRoute0 );
+        //     const cosA0 = Math.cos( angleOnRoute0 );
+        //     const sinA1 = Math.sin( angleOnRoute1 );
+        //     const cosA1 = Math.cos( angleOnRoute1 );
+
+        //     drawCircle( routePositionObject.point, 5, 230, 29, 95, 255 );
+        //     drawLine( ( sinA0 * length + routePositionObject.point.x ) | 0, ( -cosA0 * length + routePositionObject.point.y ) | 0, ( -sinA0 * length + routePositionObject.point.x ) | 0, ( cosA0 * length + routePositionObject.point.y ) | 0, 0, 0, 255, 255 );
+        //     drawLine( ( sinA1 * length + routePositionObject.point.x ) | 0, ( -cosA1 * length + routePositionObject.point.y ) | 0, ( -sinA1 * length + routePositionObject.point.x ) | 0, ( cosA1 * length + routePositionObject.point.y ) | 0, 255, 255, 255, 255 );
+
+        // }
+
+        //---
+
+        // tTest += 0.0015;
+
+        // if ( tTest > 1 ) {
+
+        //     tTest = 0;
+
+        // }
+
+    }
+
+    // let tTest = 1;
+
+    //---
+
+    let vehiclesHolder = [];
+    let vehicleTimer = null;
+
+    function initVehicles() {
+
+        vehiclesHolder = [];
+        vehicleCounter = 0;
+
+        if ( vehicleTimer !== null ) {
+
+            clearInterval( vehicleTimer );
+
+        }
+
+        vehicleTimer = setInterval( addVehicle, 500 );
+
+        addVehicle();
+
+    }
+
+    function addVehicle() {
 
         const pathIndex = 0;
 
@@ -2975,10 +3065,54 @@ document.addEventListener( 'DOMContentLoaded', () => {
         for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
 
             const routeIndex = i;
+            const route = path.routes[ routeIndex ];
+            
+            if ( route.startPoint === null || route.endPoint === null ) {
 
-            const routePositionObject = getPointAndAngleOnRouteByT( tTest, routeIndex );
+                continue;
 
-            const angleOnRoute0 = routePositionObject.angle;
+            }
+
+            const routePositionObject = getPointAndAngleOnRouteByT( 0, routeIndex );
+
+            const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, pathIndex, routeIndex, 0.0015, null );
+
+            vehiclesHolder.push( vehicle );
+
+        }
+
+    }
+
+    function getVehicle( position, angle = 0, t = 0, pathIndex = 0, routeIndex = 0, speed = 0.0015, image = null ) {
+
+        const vehicle = {
+
+            position: { x: position.x, y: position.y },
+            angle: angle,
+            t: t,
+            pathIndex: pathIndex,
+            routeIndex: routeIndex,
+            speed: speed,
+            image: image
+
+        }
+
+        return vehicle;
+
+    }
+
+    function simulateVehicles() {
+
+        for ( let i = 0, l = vehiclesHolder.length; i < l; i ++ ) {
+
+            const vehicle = vehiclesHolder[ i ];
+
+            const routePositionObject = getPointAndAngleOnRouteByT( vehicle.t, vehicle.routeIndex );
+
+            vehicle.position = routePositionObject.point;
+            vehicle.angle = routePositionObject.angle;
+
+            const angleOnRoute0 = vehicle.angle;
             const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
 
             const length = 20;
@@ -2988,29 +3122,23 @@ document.addEventListener( 'DOMContentLoaded', () => {
             const sinA1 = Math.sin( angleOnRoute1 );
             const cosA1 = Math.cos( angleOnRoute1 );
 
-            // tempPathSegments.push( { type: 'circfill', position: { x: routePositionObject.point.x, y: routePositionObject.point.y }, diameter: 5, color: { r: 230, g: 29, b: 95, a: 255 } } );
-            // tempPathSegments.push( { type: 'line', p0: { x: ( sinA0 * length + routePositionObject.point.x ) | 0, y: ( -cosA0 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA0 * length + routePositionObject.point.x ) | 0, y: ( cosA0 * length + routePositionObject.point.y ) | 0  }, color: { r: 0, g: 0, b: 255, a: 255 } } );
-            // tempPathSegments.push( { type: 'line', p0: { x: ( sinA1 * length + routePositionObject.point.x ) | 0, y: ( -cosA1 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA1 * length + routePositionObject.point.x ) | 0, y: ( cosA1 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+            drawCircle( vehicle.position, 5, 230, 29, 95, 255 );
+            drawLine( ( sinA0 * length + vehicle.position.x ) | 0, ( -cosA0 * length + vehicle.position.y ) | 0, ( -sinA0 * length + vehicle.position.x ) | 0, ( cosA0 * length + vehicle.position.y ) | 0, 0, 0, 255, 255 );
+            drawLine( ( sinA1 * length + vehicle.position.x ) | 0, ( -cosA1 * length + vehicle.position.y ) | 0, ( -sinA1 * length + vehicle.position.x ) | 0, ( cosA1 * length + vehicle.position.y ) | 0, 255, 255, 255, 255 );
 
-            drawCircle( routePositionObject.point, 5, 230, 29, 95, 255 );
-            drawLine( ( sinA0 * length + routePositionObject.point.x ) | 0, ( -cosA0 * length + routePositionObject.point.y ) | 0, ( -sinA0 * length + routePositionObject.point.x ) | 0, ( cosA0 * length + routePositionObject.point.y ) | 0, 0, 0, 255, 255 );
-            drawLine( ( sinA1 * length + routePositionObject.point.x ) | 0, ( -cosA1 * length + routePositionObject.point.y ) | 0, ( -sinA1 * length + routePositionObject.point.x ) | 0, ( cosA1 * length + routePositionObject.point.y ) | 0, 255, 255, 255, 255 );
+            vehicle.t += vehicle.speed;
 
-        }
+            if ( vehicle.t > 1 ) {
 
-        //---
+                vehicle.t = 1;
 
-        tTest += 0.0015;
-
-        if ( tTest > 1 ) {
-
-            tTest = 0;
+            }
 
         }
+
+        vehiclesHolder = vehiclesHolder.filter( ( v ) => v.t !== 1 );
 
     }
-
-    let tTest = 1;
 
     //---
 
