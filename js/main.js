@@ -2645,10 +2645,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const tPathSegment = ( tLength - lastLength ) / pathSegment.length;
 
-                const point = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment );
+                const point0 = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment );
+                const point1 = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment + 0.001 );
 
-                output.point = point;
-                output.angle = Math.atan2( pathSegment.p1.y - point.y, pathSegment.p1.x - point.x );
+                output.point = point0;
+                output.angle = Math.atan2( point0.y - point1.y, point0.x - point1.x );
 
                 break;
 
@@ -2988,7 +2989,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             const cosA1 = Math.cos( angleOnRoute1 );
 
             tempPathSegments.push( { type: 'circfill', position: { x: routePositionObject.point.x, y: routePositionObject.point.y }, diameter: 5, color: { r: 230, g: 29, b: 95, a: 255 } } );
-            tempPathSegments.push( { type: 'line', p0: { x: ( sinA0 * length + routePositionObject.point.x ) | 0, y: ( -cosA0 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA0 * length + routePositionObject.point.x ) | 0, y: ( cosA0 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+            tempPathSegments.push( { type: 'line', p0: { x: ( sinA0 * length + routePositionObject.point.x ) | 0, y: ( -cosA0 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA0 * length + routePositionObject.point.x ) | 0, y: ( cosA0 * length + routePositionObject.point.y ) | 0  }, color: { r: 0, g: 0, b: 255, a: 255 } } );
             tempPathSegments.push( { type: 'line', p0: { x: ( sinA1 * length + routePositionObject.point.x ) | 0, y: ( -cosA1 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA1 * length + routePositionObject.point.x ) | 0, y: ( cosA1 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
 
         }
