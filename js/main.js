@@ -2966,7 +2966,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        tempPathSegments = [];
+        // tempPathSegments = [];
 
         const pathIndex = 0;
 
@@ -2988,9 +2988,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
             const sinA1 = Math.sin( angleOnRoute1 );
             const cosA1 = Math.cos( angleOnRoute1 );
 
-            tempPathSegments.push( { type: 'circfill', position: { x: routePositionObject.point.x, y: routePositionObject.point.y }, diameter: 5, color: { r: 230, g: 29, b: 95, a: 255 } } );
-            tempPathSegments.push( { type: 'line', p0: { x: ( sinA0 * length + routePositionObject.point.x ) | 0, y: ( -cosA0 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA0 * length + routePositionObject.point.x ) | 0, y: ( cosA0 * length + routePositionObject.point.y ) | 0  }, color: { r: 0, g: 0, b: 255, a: 255 } } );
-            tempPathSegments.push( { type: 'line', p0: { x: ( sinA1 * length + routePositionObject.point.x ) | 0, y: ( -cosA1 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA1 * length + routePositionObject.point.x ) | 0, y: ( cosA1 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+            // tempPathSegments.push( { type: 'circfill', position: { x: routePositionObject.point.x, y: routePositionObject.point.y }, diameter: 5, color: { r: 230, g: 29, b: 95, a: 255 } } );
+            // tempPathSegments.push( { type: 'line', p0: { x: ( sinA0 * length + routePositionObject.point.x ) | 0, y: ( -cosA0 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA0 * length + routePositionObject.point.x ) | 0, y: ( cosA0 * length + routePositionObject.point.y ) | 0  }, color: { r: 0, g: 0, b: 255, a: 255 } } );
+            // tempPathSegments.push( { type: 'line', p0: { x: ( sinA1 * length + routePositionObject.point.x ) | 0, y: ( -cosA1 * length + routePositionObject.point.y ) | 0 }, p1: { x: ( -sinA1 * length + routePositionObject.point.x ) | 0, y: ( cosA1 * length + routePositionObject.point.y ) | 0  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+
+            drawCircle( routePositionObject.point, 5, 230, 29, 95, 255 );
+            drawLine( ( sinA0 * length + routePositionObject.point.x ) | 0, ( -cosA0 * length + routePositionObject.point.y ) | 0, ( -sinA0 * length + routePositionObject.point.x ) | 0, ( cosA0 * length + routePositionObject.point.y ) | 0, 0, 0, 255, 255 );
+            drawLine( ( sinA1 * length + routePositionObject.point.x ) | 0, ( -cosA1 * length + routePositionObject.point.y ) | 0, ( -sinA1 * length + routePositionObject.point.x ) | 0, ( cosA1 * length + routePositionObject.point.y ) | 0, 255, 255, 255, 255 );
 
         }
 
