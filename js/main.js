@@ -1532,6 +1532,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
+        removeVehiclesByRouteIndex( routeIndex );
+        
+        //---
+        
         if ( debugMode === true ) {
 
             rebuildDebugElements();
@@ -3160,6 +3164,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
             }
 
         }
+
+    }
+
+    function removeVehiclesByRouteIndex( routeIndex ) {
+
+        for ( let i = 0, l = vehiclesHolder.length; i < l; i ++ ) {
+
+            const vehicle = vehiclesHolder[ i ];
+
+            if ( vehicle.routeIndex === routeIndex ) {
+
+                vehicle.t = 1;
+
+            } else if ( vehicle.routeIndex > routeIndex ) {
+
+                vehicle.routeIndex--;
+
+            }
+
+        }
+
+        vehiclesHolder = vehiclesHolder.filter( ( v ) => v.t !== 1 );
 
     }
 
