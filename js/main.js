@@ -82,6 +82,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let data = null;
 
     const border = { left: 1, top: 1, right: width, bottom: height };
+    // const center = { x: width / 2, y: height / 2 };
 
     let mouseDown = false;
     let mousePos = { x: 0, y: 0 };
@@ -100,6 +101,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             routes: [
                 { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [], length: 0 },
                 { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0 },
+                { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0 },
             ],
             currentPoint: { x: 0, y: 0 },
             points: [
@@ -140,12 +142,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 { x: 952, y: 416, walkable: true, cost: 0, parentPoint: null, visited: false },
                 { x: 645, y: 341, walkable: true, cost: 0, parentPoint: null, visited: false },
                 { x: 270, y: 465, walkable: true, cost: 0, parentPoint: null, visited: false },
+                { x: 266, y: 915, walkable: true, cost: 0, parentPoint: null, visited: false },
+                { x: 867, y: 157, walkable: true, cost: 0, parentPoint: null, visited: false },
+                { x: 906, y: 57, walkable: true, cost: 0, parentPoint: null, visited: false },
+                { x: 874, y: 547, walkable: true, cost: 0, parentPoint: null, visited: false },
+                { x: 938, y: 757, walkable: true, cost: 0, parentPoint: null, visited: false },
+                { x: 122, y: 426, walkable: true, cost: 0, parentPoint: null, visited: false },
             ],
             openSet: [],
             closedSet: [],
             segments: [
-                { id: 0, p0: { x: 170, y: 835 }, p1: { x: 180, y: 716 }, walkable: true, direction: '><', centerPoint: { x: 175, y: 775.5 }, controlPoint: { x: 175, y: 775.5 }, length: 119.41942890501528 },
-                { id: 1, p0: { x: 180, y: 716 }, p1: { x: 153, y: 584 }, walkable: true, direction: '><', centerPoint: { x: 166.5, y: 650 }, controlPoint: { x: 166.5, y: 650 }, length: 134.73306943731373 },
+                { id: 0, p0: { x: 170, y: 835 }, p1: { x: 180, y: 716 }, walkable: true, direction: '><', centerPoint: { x: 200.5, y: 764.75 }, controlPoint: { x: 226, y: 754 }, length: 132.12833065410595 },
+                { id: 1, p0: { x: 180, y: 716 }, p1: { x: 153, y: 584 }, walkable: true, direction: '><', centerPoint: { x: 116.25, y: 634 }, controlPoint: { x: 66, y: 618 }, length: 172.63169979347268 },
                 { id: 2, p0: { x: 153, y: 584 }, p1: { x: 203, y: 427 }, walkable: true, direction: '><', centerPoint: { x: 178, y: 505.5 }, controlPoint: { x: 178, y: 505.5 }, length: 164.76953601925328 },
                 { id: 3, p0: { x: 203, y: 427 }, p1: { x: 170, y: 263 }, walkable: true, direction: '><', centerPoint: { x: 186.5, y: 345 }, controlPoint: { x: 186.5, y: 345 }, length: 167.28717822953436 },
                 { id: 4, p0: { x: 170, y: 263 }, p1: { x: 191, y: 70 }, walkable: true, direction: '><', centerPoint: { x: 180.5, y: 166.5 }, controlPoint: { x: 180.5, y: 166.5 }, length: 194.1391253714717 },
@@ -153,8 +161,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 { id: 6, p0: { x: 362, y: 232 }, p1: { x: 363, y: 325 }, walkable: true, direction: '><', centerPoint: { x: 362.5, y: 278.5 }, controlPoint: { x: 362.5, y: 278.5 }, length: 93.00537618869137 },
                 { id: 7, p0: { x: 363, y: 325 }, p1: { x: 383, y: 418 }, walkable: true, direction: '><', centerPoint: { x: 373, y: 371.5 }, controlPoint: { x: 373, y: 371.5 }, length: 95.12623192369179 },
                 { id: 8, p0: { x: 383, y: 418 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 376.5, y: 492.5 }, controlPoint: { x: 376.5, y: 492.5 }, length: 149.56603892595405 },
-                { id: 9, p0: { x: 370, y: 567 }, p1: { x: 396, y: 689 }, walkable: true, direction: '><', centerPoint: { x: 383, y: 628 }, controlPoint: { x: 383, y: 628 }, length: 124.73972903610141 },
-                { id: 10, p0: { x: 396, y: 689 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 390.5, y: 743.5 }, controlPoint: { x: 390.5, y: 743.5 }, length: 109.55363982999378 },
+                { id: 9, p0: { x: 370, y: 567 }, p1: { x: 396, y: 689 }, walkable: true, direction: '><', centerPoint: { x: 454.5, y: 605 }, controlPoint: { x: 526, y: 582 }, length: 202.36587650554344 },
+                { id: 10, p0: { x: 396, y: 689 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 353.25, y: 770.75 }, controlPoint: { x: 316, y: 798 }, length: 141.0039299212495 },
                 { id: 11, p0: { x: 385, y: 798 }, p1: { x: 413, y: 890 }, walkable: true, direction: '><', centerPoint: { x: 399, y: 844 }, controlPoint: { x: 399, y: 844 }, length: 96.16652224137046 },
                 { id: 12, p0: { x: 578, y: 898 }, p1: { x: 578, y: 757 }, walkable: true, direction: '><', centerPoint: { x: 578, y: 827.5 }, controlPoint: { x: 578, y: 827.5 }, length: 141 },
                 { id: 13, p0: { x: 578, y: 757 }, p1: { x: 568, y: 646 }, walkable: true, direction: '><', centerPoint: { x: 573, y: 701.5 }, controlPoint: { x: 573, y: 701.5 }, length: 111.44954015158609 },
@@ -163,19 +171,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 { id: 16, p0: { x: 562, y: 369 }, p1: { x: 593, y: 249 }, walkable: true, direction: '><', centerPoint: { x: 577.5, y: 309 }, controlPoint: { x: 577.5, y: 309 }, length: 123.9395013706284 },
                 { id: 17, p0: { x: 593, y: 249 }, p1: { x: 548, y: 127 }, walkable: true, direction: '><', centerPoint: { x: 570.5, y: 188 }, controlPoint: { x: 570.5, y: 188 }, length: 130.034610777285 },
                 { id: 18, p0: { x: 548, y: 127 }, p1: { x: 606, y: 41 }, walkable: true, direction: '><', centerPoint: { x: 577, y: 84 }, controlPoint: { x: 577, y: 84 }, length: 103.73041983911952 },
-                { id: 19, p0: { x: 715, y: 51 }, p1: { x: 725, y: 147 }, walkable: true, direction: '><', centerPoint: { x: 720, y: 99 }, controlPoint: { x: 720, y: 99 }, length: 96.51942809610924 },
+                { id: 19, p0: { x: 715, y: 51 }, p1: { x: 725, y: 147 }, walkable: true, direction: '><', centerPoint: { x: 735.5, y: 99 }, controlPoint: { x: 751, y: 99 }, length: 102.52190685098208 },
                 { id: 20, p0: { x: 725, y: 147 }, p1: { x: 722, y: 271 }, walkable: true, direction: '><', centerPoint: { x: 723.5, y: 209 }, controlPoint: { x: 723.5, y: 209 }, length: 124.03628501370073 },
                 { id: 21, p0: { x: 722, y: 271 }, p1: { x: 753, y: 390 }, walkable: true, direction: '><', centerPoint: { x: 737.5, y: 330.5 }, controlPoint: { x: 737.5, y: 330.5 }, length: 122.97154142320898 },
                 { id: 22, p0: { x: 753, y: 390 }, p1: { x: 745, y: 547 }, walkable: true, direction: '><', centerPoint: { x: 749, y: 468.5 }, controlPoint: { x: 749, y: 468.5 }, length: 157.20368952413298 },
                 { id: 23, p0: { x: 745, y: 547 }, p1: { x: 801, y: 683 }, walkable: true, direction: '><', centerPoint: { x: 773, y: 615 }, controlPoint: { x: 773, y: 615 }, length: 147.07821048680188 },
                 { id: 24, p0: { x: 801, y: 683 }, p1: { x: 758, y: 766 }, walkable: true, direction: '><', centerPoint: { x: 779.5, y: 724.5 }, controlPoint: { x: 779.5, y: 724.5 }, length: 93.47726996441435 },
-                { id: 25, p0: { x: 758, y: 766 }, p1: { x: 785, y: 877 }, walkable: true, direction: '><', centerPoint: { x: 771.5, y: 821.5 }, controlPoint: { x: 771.5, y: 821.5 }, length: 114.23659658795863 },
+                { id: 25, p0: { x: 758, y: 766 }, p1: { x: 785, y: 877 }, walkable: true, direction: '><', centerPoint: { x: 787.25, y: 821.25 }, controlPoint: { x: 803, y: 821 }, length: 119.36777422738726 },
                 { id: 26, p0: { x: 868, y: 784 }, p1: { x: 758, y: 766 }, walkable: true, direction: '><', centerPoint: { x: 813, y: 775 }, controlPoint: { x: 813, y: 775 }, length: 111.46299834474219 },
-                { id: 27, p0: { x: 758, y: 766 }, p1: { x: 578, y: 757 }, walkable: true, direction: '><', centerPoint: { x: 668, y: 761.5 }, controlPoint: { x: 668, y: 761.5 }, length: 180.22485955050706 },
-                { id: 28, p0: { x: 578, y: 757 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 481.5, y: 777.5 }, controlPoint: { x: 481.5, y: 777.5 }, length: 197.3068675946177 },
-                { id: 29, p0: { x: 385, y: 798 }, p1: { x: 180, y: 716 }, walkable: true, direction: '><', centerPoint: { x: 282.5, y: 757 }, controlPoint: { x: 282.5, y: 757 }, length: 220.79175709251467 },
-                { id: 30, p0: { x: 153, y: 584 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 261.5, y: 575.5 }, controlPoint: { x: 261.5, y: 575.5 }, length: 217.66488003350472 },
-                { id: 31, p0: { x: 370, y: 567 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 474, y: 534 }, controlPoint: { x: 474, y: 534 }, length: 218.22007240398395 },
+                { id: 27, p0: { x: 758, y: 766 }, p1: { x: 578, y: 757 }, walkable: true, direction: '><', centerPoint: { x: 680, y: 735.75 }, controlPoint: { x: 692, y: 710 }, length: 189.8810076738418 },
+                { id: 28, p0: { x: 578, y: 757 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 489.25, y: 783.75 }, controlPoint: { x: 497, y: 790 }, length: 198.0851248248224 },
+                { id: 29, p0: { x: 385, y: 798 }, p1: { x: 180, y: 716 }, walkable: true, direction: '><', centerPoint: { x: 315.25, y: 801 }, controlPoint: { x: 348, y: 845 }, length: 234.1480208493167 },
+                { id: 30, p0: { x: 153, y: 584 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 256.25, y: 566.25 }, controlPoint: { x: 251, y: 557 }, length: 218.75535666362188 },
+                { id: 31, p0: { x: 370, y: 567 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 477.5, y: 546 }, controlPoint: { x: 481, y: 558 }, length: 220.0392352919533 },
                 { id: 32, p0: { x: 578, y: 501 }, p1: { x: 753, y: 390 }, walkable: true, direction: '><', centerPoint: { x: 665.5, y: 445.5 }, controlPoint: { x: 665.5, y: 445.5 }, length: 207.23416706711276 },
                 { id: 33, p0: { x: 725, y: 147 }, p1: { x: 548, y: 127 }, walkable: true, direction: '><', centerPoint: { x: 636.5, y: 137 }, controlPoint: { x: 636.5, y: 137 }, length: 178.12635964393365 },
                 { id: 34, p0: { x: 548, y: 127 }, p1: { x: 362, y: 232 }, walkable: true, direction: '><', centerPoint: { x: 455, y: 179.5 }, controlPoint: { x: 455, y: 179.5 }, length: 213.59073013593076 },
@@ -184,11 +192,26 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 { id: 37, p0: { x: 153, y: 584 }, p1: { x: 57, y: 582 }, walkable: true, direction: '><', centerPoint: { x: 105, y: 583 }, controlPoint: { x: 105, y: 583 }, length: 96.02083107326243 },
                 { id: 38, p0: { x: 180, y: 716 }, p1: { x: 91, y: 741 }, walkable: true, direction: '><', centerPoint: { x: 135.5, y: 728.5 }, controlPoint: { x: 135.5, y: 728.5 }, length: 92.44457799135652 },
                 { id: 39, p0: { x: 753, y: 390 }, p1: { x: 952, y: 416 }, walkable: true, direction: '><', centerPoint: { x: 852.5, y: 403 }, controlPoint: { x: 852.5, y: 403 }, length: 200.6913052426537 },
-                { id: 40, p0: { x: 725, y: 147 }, p1: { x: 645, y: 341 }, walkable: true, direction: '><', centerPoint: { x: 685, y: 244 }, controlPoint: { x: 685, y: 244 }, length: 209.84756372185979 },
-                { id: 41, p0: { x: 645, y: 341 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 611.5, y: 421 }, controlPoint: { x: 611.5, y: 421 }, length: 173.46181135915768 },
-                { id: 42, p0: { x: 153, y: 584 }, p1: { x: 385, y: 798 }, walkable: true, direction: '><', centerPoint: { x: 269, y: 691 }, controlPoint: { x: 269, y: 691 }, length: 315.6263613832026 },
-                { id: 43, p0: { x: 170, y: 263 }, p1: { x: 270, y: 465 }, walkable: true, direction: '><', centerPoint: { x: 220, y: 364 }, controlPoint: { x: 220, y: 364 }, length: 225.39742678211746 },
-                { id: 44, p0: { x: 270, y: 465 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 320, y: 516 }, controlPoint: { x: 320, y: 516 }, length: 142.84257068535277 },
+                { id: 40, p0: { x: 725, y: 147 }, p1: { x: 645, y: 341 }, walkable: true, direction: '><', centerPoint: { x: 670.5, y: 242 }, controlPoint: { x: 656, y: 240 }, length: 212.27855795506213 },
+                { id: 41, p0: { x: 645, y: 341 }, p1: { x: 578, y: 501 }, walkable: true, direction: '><', centerPoint: { x: 625.75, y: 441 }, controlPoint: { x: 640, y: 461 }, length: 179.9662239981235 },
+                { id: 42, p0: { x: 170, y: 263 }, p1: { x: 270, y: 465 }, walkable: true, direction: '><', centerPoint: { x: 229, y: 325 }, controlPoint: { x: 238, y: 286 }, length: 233.68522295677627 },
+                { id: 43, p0: { x: 270, y: 465 }, p1: { x: 370, y: 567 }, walkable: true, direction: '><', centerPoint: { x: 308.5, y: 536 }, controlPoint: { x: 297, y: 556 }, length: 151.37623926012898 },
+                { id: 44, p0: { x: 266, y: 915 }, p1: { x: 413, y: 890 }, walkable: true, direction: '><', centerPoint: { x: 339.5, y: 902.5 }, controlPoint: { x: 339.5, y: 902.5 }, length: 149.11069713471264 },
+                { id: 45, p0: { x: 266, y: 915 }, p1: { x: 170, y: 835 }, walkable: true, direction: '><', centerPoint: { x: 218, y: 875 }, controlPoint: { x: 218, y: 875 }, length: 124.96399481450648 },
+                { id: 46, p0: { x: 413, y: 890 }, p1: { x: 578, y: 898 }, walkable: true, direction: '><', centerPoint: { x: 495.5, y: 894 }, controlPoint: { x: 495.5, y: 894 }, length: 165.1938255504727 },
+                { id: 47, p0: { x: 952, y: 416 }, p1: { x: 867, y: 157 }, walkable: true, direction: '><', centerPoint: { x: 909.5, y: 286.5 }, controlPoint: { x: 909.5, y: 286.5 }, length: 272.5912691191704 },
+                { id: 48, p0: { x: 867, y: 157 }, p1: { x: 725, y: 147 }, walkable: true, direction: '><', centerPoint: { x: 796, y: 152 }, controlPoint: { x: 796, y: 152 }, length: 142.35167719419397 },
+                { id: 49, p0: { x: 867, y: 157 }, p1: { x: 906, y: 57 }, walkable: true, direction: '><', centerPoint: { x: 864.25, y: 98.5 }, controlPoint: { x: 842, y: 90 }, length: 119.68479395158667 },
+                { id: 50, p0: { x: 952, y: 416 }, p1: { x: 874, y: 547 }, walkable: true, direction: '><', centerPoint: { x: 974, y: 559.75 }, controlPoint: { x: 1035, y: 638 }, length: 256.45209604670714 },
+                { id: 51, p0: { x: 874, y: 547 }, p1: { x: 938, y: 757 }, walkable: true, direction: '><', centerPoint: { x: 809.5, y: 563 }, controlPoint: { x: 713, y: 474 }, length: 324.4999260528535 },
+                { id: 52, p0: { x: 938, y: 757 }, p1: { x: 868, y: 784 }, walkable: true, direction: '><', centerPoint: { x: 934.5, y: 792.25 }, controlPoint: { x: 966, y: 814 }, length: 107.58727858984204 },
+                { id: 53, p0: { x: 191, y: 70 }, p1: { x: 347, y: 63 }, walkable: true, direction: '><', centerPoint: { x: 269, y: 66.5 }, controlPoint: { x: 269, y: 66.5 }, length: 156.1569723067145 },
+                { id: 54, p0: { x: 347, y: 63 }, p1: { x: 548, y: 127 }, walkable: true, direction: '><', centerPoint: { x: 447.5, y: 95 }, controlPoint: { x: 447.5, y: 95 }, length: 210.94312029549576 },
+                { id: 55, p0: { x: 60, y: 218 }, p1: { x: 191, y: 70 }, walkable: true, direction: '><', centerPoint: { x: 125.5, y: 144 }, controlPoint: { x: 125.5, y: 144 }, length: 197.6486782146544 },
+                { id: 56, p0: { x: 60, y: 218 }, p1: { x: 57, y: 582 }, walkable: true, direction: '><', centerPoint: { x: 58.5, y: 400 }, controlPoint: { x: 58.5, y: 400 }, length: 364.0123624274318 },
+                { id: 57, p0: { x: 57, y: 582 }, p1: { x: 91, y: 741 }, walkable: true, direction: '><', centerPoint: { x: 74, y: 661.5 }, controlPoint: { x: 74, y: 661.5 }, length: 162.5945878558078 },
+                { id: 58, p0: { x: 57, y: 582 }, p1: { x: 122, y: 426 }, walkable: true, direction: '><', centerPoint: { x: 89.5, y: 504 }, controlPoint: { x: 89.5, y: 504 }, length: 169 },
+                { id: 59, p0: { x: 122, y: 426 }, p1: { x: 203, y: 427 }, walkable: true, direction: '><', centerPoint: { x: 162.5, y: 426.5 }, controlPoint: { x: 162.5, y: 426.5 }, length: 81.00617260431454 },
             ]
         }
     ];
@@ -562,6 +585,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
         border.right = width;
         border.bottom = height;
 
+        // center.x = width / 2;
+        // center.y = height / 2;
+
         //---
         
         if ( animationFrame !== null ) {
@@ -798,6 +824,60 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 // tempPathSegments.push( { type: 'bezier', p0: { x: point0.x, y: point0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
                 // tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
                 // tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+
+            }
+
+        }
+
+    }
+
+    //---
+
+    function showRoute( position ) {
+
+        tempPathSegments = [];
+
+        //---
+
+        const pathIndex = 0;
+
+        const path = pathHolder[ pathIndex ];
+
+        //---
+
+        const point = getPointByPosition( position );
+
+        if ( point !== null ) {
+
+            let routeFound = null;
+            let routeColor = null;
+
+            for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+
+                const route = path.routes[ i ];
+
+                if ( point.x === route.startPoint.x && point.y === route.startPoint.y || point.x === route.endPoint.x && point.y === route.endPoint.y ) {
+
+                    routeFound = route;
+                    routeColor = PATH_COLORS[ i ];
+
+                    break;
+
+                }
+
+            }
+
+            if ( routeFound !== null ) {
+
+                for ( let i = 0, l = routeFound.pathSegments.length; i < l; i ++ ) {
+
+                    const pathSegment = routeFound.pathSegments[ i ];
+
+                    tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+
+                }
 
             }
 
@@ -2306,23 +2386,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const pathIndex = 0;
+        if ( currentPathSegment === null ) {
 
-        const path = pathHolder[ pathIndex ];
+            const pathIndex = 0;
 
-        for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+            const path = pathHolder[ pathIndex ];
 
-            const route = path.routes[ i ];
-    
-            const startPoint = route.startPoint;
-            const endPoint = route.endPoint;
-    
-            if ( startPoint !== null && endPoint !== null ) {
-    
-                findPath( startPoint );
-    
+            for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+
+                const route = path.routes[ i ];
+        
+                const startPoint = route.startPoint;
+                const endPoint = route.endPoint;
+        
+                if ( startPoint !== null && endPoint !== null ) {
+        
+                    findPath( startPoint );
+        
+                }
+        
             }
-    
+
         }
 
     }
@@ -2388,7 +2472,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         } else if ( editorMode === EDITOR_MODE_ENUM.findPath ) {
 
-            findPath( mouseCursor.position );
+            //findPath( mouseCursor.position );
+            showRoute( mouseCursor.position );
 
         } 
         
@@ -2992,7 +3077,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        simulateVehicles();
+        // simulateVehicles();
 
         // const pathIndex = 0;
 
@@ -3038,11 +3123,31 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let vehiclesHolder = [];
     let vehicleTimer = null;
+    let vehcileImageHolder = [];
 
     function initVehicles() {
 
         vehiclesHolder = [];
         vehicleCounter = 0;
+        vehcileImageHolder = [];
+
+        for ( let i = 0, l = 40; i < l; i ++ ) {
+
+            let fileIndex = ( i + 1 ).toString();
+
+            while ( fileIndex.length < 3 ) { fileIndex = '0' + fileIndex; };
+
+            const filePath = './img/car_' + fileIndex + '.png'
+
+            const vehicleImage = new Image();
+
+            vehicleImage.crossOrigin = 'anonymous';
+            vehicleImage.src = filePath;
+
+            vehcileImageHolder.push( vehicleImage );
+
+        }
+
 
         if ( vehicleTimer !== null ) {
 
@@ -3075,7 +3180,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             const routePositionObject = getPointAndAngleOnRouteByT( 0, routeIndex );
 
-            const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, pathIndex, routeIndex, 0.0015, null );
+            const vehicleImage = vehcileImageHolder[ Math.floor( Math.random() * vehcileImageHolder.length ) ];
+            const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, pathIndex, routeIndex, 0.0015, vehicleImage );
 
             vehiclesHolder.push( vehicle );
 
@@ -3112,19 +3218,32 @@ document.addEventListener( 'DOMContentLoaded', () => {
             vehicle.position = routePositionObject.point;
             vehicle.angle = routePositionObject.angle;
 
-            const angleOnRoute0 = vehicle.angle;
-            const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
+            // const angleOnRoute0 = vehicle.angle;
+            // const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
+            const angleOnRoute3 = vehicle.angle + Math.PI * -0.50;
 
-            const length = 20;
+            // const length = 15;
             
-            const sinA0 = Math.sin( angleOnRoute0 );
-            const cosA0 = Math.cos( angleOnRoute0 );
-            const sinA1 = Math.sin( angleOnRoute1 );
-            const cosA1 = Math.cos( angleOnRoute1 );
+            // const sinA0 = Math.sin( angleOnRoute0 );
+            // const cosA0 = Math.cos( angleOnRoute0 );
+            // const sinA1 = Math.sin( angleOnRoute1 );
+            // const cosA1 = Math.cos( angleOnRoute1 );
 
-            drawCircle( vehicle.position, 5, 230, 29, 95, 255 );
-            drawLine( ( sinA0 * length + vehicle.position.x ) | 0, ( -cosA0 * length + vehicle.position.y ) | 0, ( -sinA0 * length + vehicle.position.x ) | 0, ( cosA0 * length + vehicle.position.y ) | 0, 0, 0, 255, 255 );
-            drawLine( ( sinA1 * length + vehicle.position.x ) | 0, ( -cosA1 * length + vehicle.position.y ) | 0, ( -sinA1 * length + vehicle.position.x ) | 0, ( cosA1 * length + vehicle.position.y ) | 0, 255, 255, 255, 255 );
+            // drawCircle( vehicle.position, 5, 230, 29, 95, 255 );
+            // drawLine( ( sinA0 * length + vehicle.position.x ) | 0, ( -cosA0 * length + vehicle.position.y ) | 0, ( -sinA0 * length + vehicle.position.x ) | 0, ( cosA0 * length + vehicle.position.y ) | 0, 0, 0, 255, 255 );
+            // drawLine( ( sinA1 * length + vehicle.position.x ) | 0, ( -cosA1 * length + vehicle.position.y ) | 0, ( -sinA1 * length + vehicle.position.x ) | 0, ( cosA1 * length + vehicle.position.y ) | 0, 255, 255, 255, 255 );
+
+            // context.drawImage( square[ 'tileObj' + tileType ].image, 0, 0, imgWidth, imgHeight, imgX, imgY, imgWidth, imgHeight );
+
+            //context.drawImage( vehicleTestImage, vehicle.position.x - 10, vehicle.position.y - 10, 20, 20 );
+
+            context.save();
+            context.translate( vehicle.position.x, vehicle.position.y );
+            context.rotate( angleOnRoute3 );
+            context.drawImage( vehicle.image, -10, -10, 20, 20 );
+            context.rotate( -angleOnRoute3 );
+            context.translate( -vehicle.position.x, -vehicle.position.y );
+            context.restore();
 
             vehicle.t += vehicle.speed;
 
@@ -3153,6 +3272,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //---
 
         context.putImageData( imageData, 0, 0 );
+
+        //---
+
+        simulateVehicles();
 
         //---
 
