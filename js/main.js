@@ -101,9 +101,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
         {
             id: 0,
             routes: [
-                { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [], length: 0 },
-                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0 },
-                { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0 },
+                { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [], length: 0, complete: true },
+                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0, complete: true },
+                { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0, complete: true },
             ],
             currentPoint: { x: 0, y: 0 },
             points: [
@@ -365,7 +365,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const route = path.routes[ i ];
 
-                output += '    { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, pathSegments: [], length: 0 }';
+                output += '    { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, pathSegments: [], length: 0, complete: true }';
 
                 if ( i < l ) {
 
@@ -762,6 +762,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             pathToEnd.reverse();
 
+            path.routes[ routeIndex ].complete = true;
             path.routes[ routeIndex ].length = 0;
             path.routes[ routeIndex ].pathSegments = [];
 
@@ -828,6 +829,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 // tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
 
             }
+
+        } else {
+
+            console.log( "FOUND NO END" );
+
+            path.routes[ routeIndex ].complete = false;
 
         }
 
@@ -3148,7 +3155,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 const routeIndex = i;
                 const route = path.routes[ routeIndex ];
                 
-                if ( route.startPoint === null || route.endPoint === null ) {
+                if ( route.startPoint === null || route.endPoint === null || route.complete === false ) {
 
                     continue;
 
@@ -3213,6 +3220,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             const vehicle = vehiclesHolder[ i ];
 
+            const route = pathHolder[ vehicle.pathIndex ].routes[ vehicle.routeIndex ];
             const routePositionObject = getPointAndAngleOnRouteByT( vehicle.t, vehicle.routeIndex );
 
             vehicle.position = routePositionObject.point;
@@ -3245,7 +3253,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             context.translate( -vehicle.position.x, -vehicle.position.y );
             context.restore();
 
-            if ( simulationRuns === true ) { 
+            if ( route.complete === true && simulationRuns === true ) { 
 
                 vehicle.t += vehicle.speed;
 
