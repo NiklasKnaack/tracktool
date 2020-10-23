@@ -32,7 +32,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         getPathSegment: 'getPathSegment',
         togglePointWalkable: 'togglePointWalkable',
         movePoint: 'movePoint',
-        findPath: 'findPath'
+        showRoute: 'showRoute'
 
     } );
 
@@ -89,6 +89,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
     // let mousePosStart = { x: 0, y: 0 };
     // let mousePosEnd = { x: 0, y: 0 };
     const mouseCursor = { diameter: 9, color: { r: 255, g: 255, b: 255, a: 255 }, position: { x: 0, y: 0 } };
+
+    let simulationRuns = true;
 
     let currentPathSegment = null;
     let selectedPathSegments = [];
@@ -434,9 +436,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        const _findPath = () => {
+        const _showRoute = () => {
 
-            editorMode = EDITOR_MODE_ENUM.findPath;
+            editorMode = EDITOR_MODE_ENUM.showRoute;
         
         }
 
@@ -458,7 +460,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const _playPauseSimulation = () => {
         
-            getPointOnRouteByT( 0.5, 1 );
+            simulationRuns = !simulationRuns;
         
         }
 
@@ -489,7 +491,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Clear All': _clearAll,
             'Get PathSegment': _getPathSegment,
             'Log Path': _logPath,
-            'Find Path': _findPath,
+            'Show Route': _showRoute,
             'Toggle Debug Mode': _toggleDebugMode,
             'Play/Pause Simulation': _playPauseSimulation,
             '@niklaswebdev': _linkTo
@@ -522,13 +524,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderAnalyze.open();
         folderAnalyze.add( guiSetting, 'Get PathSegment' );
         folderAnalyze.add( guiSetting, 'Log Path' );
-        folderAnalyze.add( guiSetting, 'Find Path' );
+        folderAnalyze.add( guiSetting, 'Show Route' );
         folderAnalyze.add( guiSetting, 'Toggle Debug Mode' );
 
-        // const folderSimulation = gui.addFolder( 'Simulation' );
+        const folderSimulation = gui.addFolder( 'Simulation' );
 
-        // folderSimulation.open();
-        // folderSimulation.add( guiSetting, 'Play/Pause Simulation' );
+        folderSimulation.open();
+        folderSimulation.add( guiSetting, 'Play/Pause Simulation' );
 
         const folderContact = gui.addFolder( 'Contact' );
 
@@ -2327,7 +2329,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             togglePathDirections( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.findPath ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.showRoute ) {
 
             //---
 
@@ -2470,7 +2472,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.findPath ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.showRoute ) {
 
             //findPath( mouseCursor.position );
             showRoute( mouseCursor.position );
@@ -2778,7 +2780,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    function draw() {
+    function drawImageData() {
 
         mouseCursor.position.x = mousePos.x;
         mouseCursor.position.y = mousePos.y;
@@ -3079,45 +3081,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         // simulateVehicles();
 
-        // const pathIndex = 0;
-
-        // const path = pathHolder[ pathIndex ];
-
-        // for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
-
-        //     const routeIndex = i;
-
-        //     const routePositionObject = getPointAndAngleOnRouteByT( tTest, routeIndex );
-
-        //     const angleOnRoute0 = routePositionObject.angle;
-        //     const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
-
-        //     const length = 20;
-            
-        //     const sinA0 = Math.sin( angleOnRoute0 );
-        //     const cosA0 = Math.cos( angleOnRoute0 );
-        //     const sinA1 = Math.sin( angleOnRoute1 );
-        //     const cosA1 = Math.cos( angleOnRoute1 );
-
-        //     drawCircle( routePositionObject.point, 5, 230, 29, 95, 255 );
-        //     drawLine( ( sinA0 * length + routePositionObject.point.x ) | 0, ( -cosA0 * length + routePositionObject.point.y ) | 0, ( -sinA0 * length + routePositionObject.point.x ) | 0, ( cosA0 * length + routePositionObject.point.y ) | 0, 0, 0, 255, 255 );
-        //     drawLine( ( sinA1 * length + routePositionObject.point.x ) | 0, ( -cosA1 * length + routePositionObject.point.y ) | 0, ( -sinA1 * length + routePositionObject.point.x ) | 0, ( cosA1 * length + routePositionObject.point.y ) | 0, 255, 255, 255, 255 );
-
-        // }
-
-        //---
-
-        // tTest += 0.0015;
-
-        // if ( tTest > 1 ) {
-
-        //     tTest = 0;
-
-        // }
-
     }
 
-    // let tTest = 1;
+    function drawContext() {
+
+        simulateVehicles();
+
+    }
 
     //---
 
@@ -3163,27 +3133,31 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function addVehicle() {
 
-        const pathIndex = 0;
+        if ( simulationRuns === true ) { 
 
-        const path = pathHolder[ pathIndex ];
+            const pathIndex = 0;
 
-        for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+            const path = pathHolder[ pathIndex ];
 
-            const routeIndex = i;
-            const route = path.routes[ routeIndex ];
-            
-            if ( route.startPoint === null || route.endPoint === null ) {
+            for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
 
-                continue;
+                const routeIndex = i;
+                const route = path.routes[ routeIndex ];
+                
+                if ( route.startPoint === null || route.endPoint === null ) {
+
+                    continue;
+
+                }
+
+                const routePositionObject = getPointAndAngleOnRouteByT( 0, routeIndex );
+
+                const vehicleImage = vehcileImageHolder[ Math.floor( Math.random() * vehcileImageHolder.length ) ];
+                const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, pathIndex, routeIndex, 0.0015, vehicleImage );
+
+                vehiclesHolder.push( vehicle );
 
             }
-
-            const routePositionObject = getPointAndAngleOnRouteByT( 0, routeIndex );
-
-            const vehicleImage = vehcileImageHolder[ Math.floor( Math.random() * vehcileImageHolder.length ) ];
-            const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, pathIndex, routeIndex, 0.0015, vehicleImage );
-
-            vehiclesHolder.push( vehicle );
 
         }
 
@@ -3245,11 +3219,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
             context.translate( -vehicle.position.x, -vehicle.position.y );
             context.restore();
 
-            vehicle.t += vehicle.speed;
+            if ( simulationRuns === true ) { 
 
-            if ( vehicle.t > 1 ) {
+                vehicle.t += vehicle.speed;
 
-                vehicle.t = 1;
+                if ( vehicle.t > 1 ) {
+
+                    vehicle.t = 1;
+
+                }
 
             }
 
@@ -3267,7 +3245,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        draw();
+        drawImageData();
 
         //---
 
@@ -3275,7 +3253,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        simulateVehicles();
+        drawContext();
 
         //---
 
