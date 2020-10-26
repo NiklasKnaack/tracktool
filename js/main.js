@@ -70,6 +70,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let editorMode = EDITOR_MODE_ENUM.addPathSegment;
 
+    const VEHICLE_INTERVAL = 500;
+
+    let vehiclesHolder = [];
+    let vehicleTimer = null;
+    let vehcileImageHolder = [];
+
     let width = 1024;
     let height = 512;
 
@@ -345,6 +351,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             currentPathSegment = null;
             selectedPathSegments = [];
+
+            vehiclesHolder = [];
+
+            stopVehicleSimulation();
 
             removeDebugElements();
         
@@ -2420,6 +2430,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
         
             }
 
+            //---
+
+            startVehicleSimulation();
+
         }
 
     }
@@ -3102,14 +3116,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    let vehiclesHolder = [];
-    let vehicleTimer = null;
-    let vehcileImageHolder = [];
-
     function initVehicles() {
 
         vehiclesHolder = [];
-        vehicleCounter = 0;
         vehcileImageHolder = [];
 
         for ( let i = 0, l = 40; i < l; i ++ ) {
@@ -3129,16 +3138,29 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        startVehicleSimulation();
+
+    }
+
+    function startVehicleSimulation() {
+
+        stopVehicleSimulation();
+
+        vehicleTimer = setInterval( addVehicle, VEHICLE_INTERVAL );
+
+        addVehicle();
+
+    }
+
+    function stopVehicleSimulation() {
 
         if ( vehicleTimer !== null ) {
 
             clearInterval( vehicleTimer );
 
+            vehicleTimer = null;
+
         }
-
-        vehicleTimer = setInterval( addVehicle, 500 );
-
-        addVehicle();
 
     }
 
