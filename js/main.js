@@ -32,7 +32,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         getPathSegment: 'getPathSegment',
         togglePointWalkable: 'togglePointWalkable',
         movePoint: 'movePoint',
-        showRoute: 'showRoute'
+        showRoute: 'showRoute',
+        addStreetSegment: 'addStreetSegment'
 
     } );
 
@@ -112,6 +113,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0, complete: true },
             ],
             currentPoint: { x: 0, y: 0 },
+            streetSegments: [],
             points: [
                 { x: 170, y: 835, walkable: true, cost: 0, parentPoint: null, visited: false },
                 { x: 180, y: 716, walkable: true, cost: 0, parentPoint: null, visited: false },
@@ -248,6 +250,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
     function initGUI() {
+        
+
+        const _addStreetSegment = () => {
+        
+            editorMode = EDITOR_MODE_ENUM.addStreetSegment;
+        
+        }
     
         const _addPathSegment = () => {
         
@@ -344,12 +353,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 points: [],
                 openSet: [],
                 closedSet: [],
-                segments: []
+                segments: [],
+                streetSegments: []
             }
 
             tempPathSegments = [];
 
             currentPathSegment = null;
+            currentStreetSegment = null;
             selectedPathSegments = [];
 
             vehiclesHolder = [];
@@ -484,6 +495,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         
         const guiSetting = {
                 
+            'Add Street Segment': _addStreetSegment,
             'Add Path Segment': _addPathSegment,
             // 'Allow Path Segment Splitting': allowPathSegmentSplitting,
             'Remove Path Segment': _removePathSegment,
@@ -513,6 +525,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const folderEdit = gui.addFolder( 'Edit' );
 
         folderEdit.open();
+        folderEdit.add( guiSetting, 'Add Street Segment' );
         folderEdit.add( guiSetting, 'Add Path Segment' );
         // folderEdit.add( guiSetting, 'Allow Path Segment Splitting' ).onChange( () => { allowPathSegmentSplitting = guiSetting[ 'Allow Path Segment Splitting' ]; } );
         folderEdit.add( guiSetting, 'Remove Path Segment' );
@@ -1042,6 +1055,61 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
         return point;
+
+    }
+
+    //---
+
+    let currentStreetSegment = null;
+
+    
+
+    function addStreetSegment( position ) {
+
+        const pathIndex = 0;
+
+        const path = pathHolder[ pathIndex ];
+
+        //---
+
+        if ( currentStreetSegment === null ) {
+
+            const streetSegment = {
+
+                id: path.streetSegments.length,
+                pCS: { x: position.x, y: position.y },
+                pCE: null,
+                pCCenter: { x: 0, y: 0 },
+                pCControl: { x: 0, y: 0 },
+                pTS: { x: 0, y: 0 },
+                pTE: { x: 0, y: 0 },
+                pTCenter: { x: 0, y: 0 },
+                pTControl: { x: 0, y: 0 },
+                pBS: { x: 0, y: 0 },
+                pBE: { x: 0, y: 0 },
+                pBCenter: { x: 0, y: 0 },
+                pBControl: { x: 0, y: 0 },
+                length: 0,
+                walkable: true
+    
+            };
+
+            currentStreetSegment = streetSegment;
+
+
+
+
+
+
+            path.streetSegments.push( currentStreetSegment );
+
+        } else {
+
+            currentStreetSegment.pCE = { x: position.x, y: position.y };
+
+            currentStreetSegment = null;
+
+        }
 
     }
 
@@ -2306,7 +2374,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        if ( editorMode === EDITOR_MODE_ENUM.addPathSegment ) {
+        
+
+        if ( editorMode === EDITOR_MODE_ENUM.addStreetSegment ) {
+
+            addStreetSegment( mouseCursor.position );
+
+        } else if ( editorMode === EDITOR_MODE_ENUM.addPathSegment ) {
 
             addPathSegment( mouseCursor.position );
 
@@ -2506,6 +2580,146 @@ document.addEventListener( 'DOMContentLoaded', () => {
             }
 
         }
+
+        if ( editorMode === EDITOR_MODE_ENUM.addStreetSegment ) {
+
+            tempPathSegments = [];
+
+            const streetSegment = currentStreetSegment;
+
+            if ( streetSegment !== null ) {
+
+                if ( streetSegment.pCS !== null && streetSegment.pCE === null ) {
+
+                    // //tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    // tempPathSegments.push( { type: 'bezier', p0: { x: point0.x, y: point0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    // tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    // tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    
+                    const tempPCE = { x: mousePos.x, y: mousePos.y };
+                    
+                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pCS.x, y: streetSegment.pCS.y }, p1: { x: tempPCE.x, y: tempPCE.y }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                    
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCS.x, y: streetSegment.pCS.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                    tempPathSegments.push( { type: 'circfill', position: { x: tempPCE.x, y: tempPCE.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+
+                    const angle = Math.atan2( tempPCE.y - streetSegment.pCS.y, tempPCE.x - streetSegment.pCS.x );
+
+                    const length = 15;
+
+                    const sinA = Math.sin( angle );
+                    const cosA = Math.cos( angle );
+
+                    streetSegment.pTS.x = sinA * length + streetSegment.pCS.x;
+                    streetSegment.pTS.y = -cosA * length + streetSegment.pCS.y;
+                    streetSegment.pBS.x = -sinA * length + streetSegment.pCS.x;
+                    streetSegment.pBS.y = cosA * length + streetSegment.pCS.y;
+
+                    streetSegment.pTE.x = sinA * length + tempPCE.x;
+                    streetSegment.pTE.y = -cosA * length + tempPCE.y;
+                    streetSegment.pBE.x = -sinA * length + tempPCE.x;
+                    streetSegment.pBE.y = cosA * length + tempPCE.y;
+
+                    streetSegment.pCCenter.x = ( streetSegment.pCS.x + tempPCE.x ) / 2;
+                    streetSegment.pCCenter.y = ( streetSegment.pCS.y + tempPCE.y ) / 2;
+                    streetSegment.pCControl.x = streetSegment.pCCenter.x;
+                    streetSegment.pCControl.y = streetSegment.pCCenter.y;
+
+                    streetSegment.pTCenter.x = ( streetSegment.pTS.x + streetSegment.pTE.x ) / 2;
+                    streetSegment.pTCenter.y = ( streetSegment.pTS.y + streetSegment.pTE.y ) / 2;
+                    streetSegment.pTControl.x = streetSegment.pTCenter.x;
+                    streetSegment.pTControl.y = streetSegment.pTCenter.y;
+
+                    streetSegment.pBCenter.x = ( streetSegment.pBS.x + streetSegment.pBE.x ) / 2;
+                    streetSegment.pBCenter.y = ( streetSegment.pBS.y + streetSegment.pBE.y ) / 2;
+                    streetSegment.pBControl.x = streetSegment.pBCenter.x;
+                    streetSegment.pBControl.y = streetSegment.pBCenter.y;
+
+                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                    
+                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                    
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCCenter.x, y: streetSegment.pCCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTCenter.x, y: streetSegment.pTCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBCenter.x, y: streetSegment.pBCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCControl.x, y: streetSegment.pCControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTControl.x, y: streetSegment.pTControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBControl.x, y: streetSegment.pBControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                    
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTS.x, y: streetSegment.pTS.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTE.x, y: streetSegment.pTE.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBS.x, y: streetSegment.pBS.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBE.x, y: streetSegment.pBE.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                    
+                    
+                    
+                    /*
+                    const cX = pathSegment.centerPoint.x;// ( ( pathSegment.p0.x + pathSegment.p1.x ) / 2 );
+                    const cY = pathSegment.centerPoint.y;// ( ( pathSegment.p0.y + pathSegment.p1.y ) / 2 );
+
+                    //pathSegment angle
+                    const angle = Math.atan2( pathSegment.p1.y - pathSegment.p0.y, pathSegment.p1.x - pathSegment.p0.x );
+                    
+                    const length = 10;
+                    
+                    const sinA = Math.sin( angle );
+                    const cosA = Math.cos( angle );
+                    
+                    //drawLine( ( sinA * length + cX ) | 0, ( -cosA * length + cY ) | 0, ( -sinA * length + cX ) | 0, ( cosA * length + cY ) | 0, 100, 100, 100, 255 );
+
+                    */
+
+                    /*
+                    id: path.streetSegments.length,
+                    pCS: { x: position.x, y: position.y },
+                    pCE: null,
+                    pCCenter: { x: 0, y: 0 },
+                    pCControl: { x: 0, y: 0 },
+                    pTS: { x: 0, y: 0 },
+                    pTE: { x: 0, y: 0 },
+                    pTCenter: { x: 0, y: 0 },
+                    pTControl: { x: 0, y: 0 },
+                    pBS: { x: 0, y: 0 },
+                    pBE: { x: 0, y: 0 },
+                    pBCenter: { x: 0, y: 0 },
+                    pBControl: { x: 0, y: 0 },
+                    length: 0,
+                    walkable: true
+                    */
+
+
+                }
+
+                if ( streetSegment.pCE !== null ) {
+
+
+
+                }
+
+            }
+
+        }
+
+
+
+
+        /*
+        pCS: { x: 0, y: 0 },
+                pCE: { x: 0, y: 0 },
+                pCCenter: { x: 0, y: 0 },
+                pCControl: { x: 0, y: 0 },
+                pTS: { x: 0, y: 0 },
+                pTE: { x: 0, y: 0 },
+                pTCenter: { x: 0, y: 0 },
+                pTControl: { x: 0, y: 0 },
+                pBS: { x: 0, y: 0 },
+                pBE: { x: 0, y: 0 },
+                pBCenter: { x: 0, y: 0 },
+                pBControl: { x: 0, y: 0 },
+                */
 
     }
 
@@ -2799,7 +3013,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
     function drawImageData() {
-
+        
         mouseCursor.position.x = mousePos.x;
         mouseCursor.position.y = mousePos.y;
         mouseCursor.color = { r: 255, g: 255, b: 255, a: 255 };
@@ -3058,6 +3272,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 }
 
             }
+
+            for ( let i = 0, l = path.streetSegments.length; i < l; i ++ ) {
+
+                const streetSegment = path.streetSegments[ i ];
+
+                if ( streetSegment.p0 !== null && streetSegment.p1 === null ) {
+
+
+
+                }
+
+                if ( streetSegment.p1 !== null ) {
+
+
+
+                }
+
+
+            }
+
+
+            
         
         } );
         
