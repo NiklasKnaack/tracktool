@@ -1089,8 +1089,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 pBE: { x: 0, y: 0 },
                 pBCenter: { x: 0, y: 0 },
                 pBControl: { x: 0, y: 0 },
-                length: 0,
-                walkable: true
+                walkable: true,
+                modus: 'add'//'new'//'add'
     
             };
 
@@ -2060,41 +2060,41 @@ document.addEventListener( 'DOMContentLoaded', () => {
     
     }
 
-    // function getLinesIntersectionPoint( x1, y1, x2, y2, x3, y3, x4, y4 ) {
+    function getLinesIntersectionPoint( x1, y1, x2, y2, x3, y3, x4, y4 ) {
 
-    //     // Check if none of the lines are of length 0
-    //     if ( ( x1 === x2 && y1 === y2 ) || ( x3 === x4 && y3 === y4 ) ) {
+        // Check if none of the lines are of length 0
+        if ( ( x1 === x2 && y1 === y2 ) || ( x3 === x4 && y3 === y4 ) ) {
 
-    //         return null;
+            return null;
 
-    //     }
+        }
 
-    //     const denominator = ( ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 ) );
+        const denominator = ( ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 ) );
 
-    //     // Lines are parallel
-    //     if ( denominator === 0 ) {
+        // Lines are parallel
+        if ( denominator === 0 ) {
 
-    //         return null;
+            return null;
 
-    //     }
+        }
 
-    //     const ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denominator;
-    //     const ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denominator;
+        const ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denominator;
+        const ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denominator;
 
-    //     // is the intersection along the segments
-    //     if ( ua < 0 || ua > 1 || ub < 0 || ub > 1 ) {
+        // is the intersection along the segments
+        if ( ua < 0 || ua > 1 || ub < 0 || ub > 1 ) {
 
-    //         return null
+            return null
 
-    //     }
+        }
 
-    //     // Return a object with the x and y coordinates of the intersection
-    //     return { 
-    //         x: x1 + ua * ( x2 - x1 ), 
-    //         y: y1 + ua * ( y2 - y1 ) 
-    //     };
+        // Return a object with the x and y coordinates of the intersection
+        return { 
+            x: x1 + ua * ( x2 - x1 ), 
+            y: y1 + ua * ( y2 - y1 ) 
+        };
         
-    // }
+    }
 
     // function showPathSegmentIntersectionPointsWithLine( line, precision = 25 ) {
 
@@ -2278,36 +2278,36 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    // function signedDistanceToLine( p, p0X, p0Y, p1X, p1Y ) {
+    function signedDistanceToLine( p, p0X, p0Y, p1X, p1Y ) {
 
-    //     const p0p1X = p0X - p1X;
-    //     const p0p1Y = p0Y - p1Y;
+        const p0p1X = p0X - p1X;
+        const p0p1Y = p0Y - p1Y;
 
-    //     const l2 = p0p1X * p0p1X + p0p1Y * p0p1Y;
+        const l2 = p0p1X * p0p1X + p0p1Y * p0p1Y;
 
-    //     const pp0X = p.x - p0X;
-    //     const pp0Y = p.y - p0Y;
+        const pp0X = p.x - p0X;
+        const pp0Y = p.y - p0Y;
 
-    //     if ( l2 === 0 ) {
+        if ( l2 === 0 ) {
 
-    //         return pp0X * pp0X + pp0Y * pp0Y;
+            return pp0X * pp0X + pp0Y * pp0Y;
 
-    //     }
+        }
 
-    //     const p1p0X = p1X - p0X;
-    //     const p1p0Y = p1Y - p0Y;
+        const p1p0X = p1X - p0X;
+        const p1p0Y = p1Y - p0Y;
 
-    //     const t = clamp( ( pp0X * p1p0X + pp0Y * p1p0Y ) / l2, 0, 1 );
+        const t = clamp( ( pp0X * p1p0X + pp0Y * p1p0Y ) / l2, 0, 1 );
 
-    //     const ptX = p0X + t * p1p0X;
-    //     const ptY = p0Y + t * p1p0Y;
+        const ptX = p0X + t * p1p0X;
+        const ptY = p0Y + t * p1p0Y;
 
-    //     const pX = p.x - ptX;
-    //     const pY = p.y - ptY;
+        const pX = p.x - ptX;
+        const pY = p.y - ptY;
 
-    //     return Math.sqrt( pX * pX + pY * pY );
+        return Math.sqrt( pX * pX + pY * pY );
 
-    // }
+    }
 
     function signedDistanceToQuadraticBezier( p, p0, p1, pControl, precision = 25 ) {
 
@@ -2333,11 +2333,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    // function clamp( val, min, max ) {
+    function clamp( val, min, max ) {
 
-    //     return Math.min( Math.max( min, val ), max );
+        return Math.min( Math.max( min, val ), max );
 
-    // }
+    }
     
     // function interpolateLine( a, b, frac ) {
 
@@ -2589,113 +2589,242 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( streetSegment !== null ) {
 
-                if ( streetSegment.pCS !== null && streetSegment.pCE === null ) {
+                if ( streetSegment.modus === 'new' ) {
 
-                    // //tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                    // tempPathSegments.push( { type: 'bezier', p0: { x: point0.x, y: point0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                    // tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                    // tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    if ( streetSegment.pCS !== null && streetSegment.pCE === null ) {
+
+                        // //tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                        // tempPathSegments.push( { type: 'bezier', p0: { x: point0.x, y: point0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                        // tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                        // tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                        
+                        const tempPCE = { x: mousePos.x, y: mousePos.y };
+                        
+                        const angle = Math.atan2( tempPCE.y - streetSegment.pCS.y, tempPCE.x - streetSegment.pCS.x );
+    
+                        const pathDistance = 50;
+    
+                        const sinA = Math.sin( angle );
+                        const cosA = Math.cos( angle );
+    
+                        streetSegment.pTS.x = sinA * pathDistance + streetSegment.pCS.x;
+                        streetSegment.pTS.y = -cosA * pathDistance + streetSegment.pCS.y;
+                        streetSegment.pBS.x = -sinA * pathDistance + streetSegment.pCS.x;
+                        streetSegment.pBS.y = cosA * pathDistance + streetSegment.pCS.y;
+    
+                        streetSegment.pTE.x = sinA * pathDistance + tempPCE.x;
+                        streetSegment.pTE.y = -cosA * pathDistance + tempPCE.y;
+                        streetSegment.pBE.x = -sinA * pathDistance + tempPCE.x;
+                        streetSegment.pBE.y = cosA * pathDistance + tempPCE.y;
+    
+                        streetSegment.pCCenter.x = ( streetSegment.pCS.x + tempPCE.x ) / 2;
+                        streetSegment.pCCenter.y = ( streetSegment.pCS.y + tempPCE.y ) / 2;
+                        streetSegment.pCControl.x = streetSegment.pCCenter.x;
+                        streetSegment.pCControl.y = streetSegment.pCCenter.y;
+    
+                        streetSegment.pTCenter.x = ( streetSegment.pTS.x + streetSegment.pTE.x ) / 2;
+                        streetSegment.pTCenter.y = ( streetSegment.pTS.y + streetSegment.pTE.y ) / 2;
+                        streetSegment.pTControl.x = streetSegment.pTCenter.x;
+                        streetSegment.pTControl.y = streetSegment.pTCenter.y;
+    
+                        streetSegment.pBCenter.x = ( streetSegment.pBS.x + streetSegment.pBE.x ) / 2;
+                        streetSegment.pBCenter.y = ( streetSegment.pBS.y + streetSegment.pBE.y ) / 2;
+                        streetSegment.pBControl.x = streetSegment.pBCenter.x;
+                        streetSegment.pBControl.y = streetSegment.pBCenter.y;
+
+                        tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pCS.x, y: streetSegment.pCS.y }, p1: { x: tempPCE.x, y: tempPCE.y }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCS.x, y: streetSegment.pCS.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempPathSegments.push( { type: 'circfill', position: { x: tempPCE.x, y: tempPCE.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+    
+                        tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        
+                        tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                        tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                        
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCCenter.x, y: streetSegment.pCCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTCenter.x, y: streetSegment.pTCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBCenter.x, y: streetSegment.pBCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+    
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCControl.x, y: streetSegment.pCControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTControl.x, y: streetSegment.pTControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBControl.x, y: streetSegment.pBControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                        
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTS.x, y: streetSegment.pTS.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTE.x, y: streetSegment.pTE.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBS.x, y: streetSegment.pBS.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBE.x, y: streetSegment.pBE.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                        
+                        
+                        
+                        /*
+                        const cX = pathSegment.centerPoint.x;// ( ( pathSegment.p0.x + pathSegment.p1.x ) / 2 );
+                        const cY = pathSegment.centerPoint.y;// ( ( pathSegment.p0.y + pathSegment.p1.y ) / 2 );
+    
+                        //pathSegment angle
+                        const angle = Math.atan2( pathSegment.p1.y - pathSegment.p0.y, pathSegment.p1.x - pathSegment.p0.x );
+                        
+                        const pathDistance = 10;
+                        
+                        const sinA = Math.sin( angle );
+                        const cosA = Math.cos( angle );
+                        
+                        //drawLine( ( sinA * pathDistance + cX ) | 0, ( -cosA * pathDistance + cY ) | 0, ( -sinA * pathDistance + cX ) | 0, ( cosA * pathDistance + cY ) | 0, 100, 100, 100, 255 );
+    
+                        */
+    
+                        /*
+                        id: path.streetSegments.length,
+                        pCS: { x: position.x, y: position.y },
+                        pCE: null,
+                        pCCenter: { x: 0, y: 0 },
+                        pCControl: { x: 0, y: 0 },
+                        pTS: { x: 0, y: 0 },
+                        pTE: { x: 0, y: 0 },
+                        pTCenter: { x: 0, y: 0 },
+                        pTControl: { x: 0, y: 0 },
+                        pBS: { x: 0, y: 0 },
+                        pBE: { x: 0, y: 0 },
+                        pBCenter: { x: 0, y: 0 },
+                        pBControl: { x: 0, y: 0 },
+                        length: 0,
+                        walkable: true
+                        */
+    
+    
+                    }
+    
+                    if ( streetSegment.pCE !== null ) {
+    
+    
+    
+                    }
+
+                } else if ( streetSegment.modus === 'add' ) {
+
+                    if ( streetSegment.pCS !== null && streetSegment.pCE === null ) {
+
+                        const scanDistance = 10000;
+                        const pathDistance = 50;
+
+                        const tempPCE = { x: mousePos.x, y: mousePos.y };
+
+                        //---
+
+                        // rechts = Math.PI * 0.00;
+                        // unten  = Math.PI * 0.50;
+                        // links  = Math.PI * 1.00;
+                        // oben   = Math.PI * 1.50;
+
+                        const angleStart = Math.PI * 0.98;
+                        
+                        const sinStart = Math.sin( angleStart );
+                        const cosStart = Math.cos( angleStart );
+
+                        streetSegment.pTS.x = sinStart * pathDistance + streetSegment.pCS.x;
+                        streetSegment.pTS.y = -cosStart * pathDistance + streetSegment.pCS.y;
+                        streetSegment.pBS.x = -sinStart * pathDistance + streetSegment.pCS.x;
+                        streetSegment.pBS.y = cosStart * pathDistance + streetSegment.pCS.y;
+
+                        tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+
+                        //---
+
+                        const angleEnd = Math.atan2( tempPCE.y - streetSegment.pCControl.y, tempPCE.x - streetSegment.pCControl.x );
+
+                        const sinEnd = Math.sin( angleEnd );
+                        const cosEnd = Math.cos( angleEnd );
+    
+                        streetSegment.pTE.x = sinEnd * pathDistance + tempPCE.x;
+                        streetSegment.pTE.y = -cosEnd * pathDistance + tempPCE.y;
+                        streetSegment.pBE.x = -sinEnd * pathDistance + tempPCE.x;
+                        streetSegment.pBE.y = cosEnd * pathDistance + tempPCE.y;
                     
-                    const tempPCE = { x: mousePos.x, y: mousePos.y };
-                    
-                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pCS.x, y: streetSegment.pCS.y }, p1: { x: tempPCE.x, y: tempPCE.y }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                    
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCS.x, y: streetSegment.pCS.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                    tempPathSegments.push( { type: 'circfill', position: { x: tempPCE.x, y: tempPCE.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        
+                        //---
 
-                    const angle = Math.atan2( tempPCE.y - streetSegment.pCS.y, tempPCE.x - streetSegment.pCS.x );
+                        const angleAdjacent = angleStart + Math.PI * 0.50;
+                        
+                        const sinAdjacent = Math.sin( angleAdjacent );
+                        const cosAdjacent = Math.cos( angleAdjacent );
 
-                    const length = 15;
+                        const lineAdjacent = { p0: { x: sinAdjacent * scanDistance + streetSegment.pCS.x, y: -cosAdjacent * scanDistance + streetSegment.pCS.y }, p1: { x: -sinAdjacent * scanDistance + streetSegment.pCS.x, y: cosAdjacent * scanDistance + streetSegment.pCS.y } };
 
-                    const sinA = Math.sin( angle );
-                    const cosA = Math.cos( angle );
+                        tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent.p0.x, y: lineAdjacent.p0.y }, p1: { x: lineAdjacent.p1.x, y: lineAdjacent.p1.y }, color: { r: 55, g: 55, b: 155, a: 255 } } );
+                        
+                        //---
 
-                    streetSegment.pTS.x = sinA * length + streetSegment.pCS.x;
-                    streetSegment.pTS.y = -cosA * length + streetSegment.pCS.y;
-                    streetSegment.pBS.x = -sinA * length + streetSegment.pCS.x;
-                    streetSegment.pBS.y = cosA * length + streetSegment.pCS.y;
+                        const angleOpposite = angleStart;
+                        
+                        const sinOpposite = Math.sin( angleOpposite );
+                        const cosOpposite = Math.cos( angleOpposite );
 
-                    streetSegment.pTE.x = sinA * length + tempPCE.x;
-                    streetSegment.pTE.y = -cosA * length + tempPCE.y;
-                    streetSegment.pBE.x = -sinA * length + tempPCE.x;
-                    streetSegment.pBE.y = cosA * length + tempPCE.y;
+                        const lineOpposite = { p0: { x: sinOpposite * scanDistance + tempPCE.x, y: -cosOpposite * scanDistance + tempPCE.y }, p1: { x: -sinOpposite * scanDistance + tempPCE.x, y: cosOpposite * scanDistance + tempPCE.y } };
 
-                    streetSegment.pCCenter.x = ( streetSegment.pCS.x + tempPCE.x ) / 2;
-                    streetSegment.pCCenter.y = ( streetSegment.pCS.y + tempPCE.y ) / 2;
-                    streetSegment.pCControl.x = streetSegment.pCCenter.x;
-                    streetSegment.pCControl.y = streetSegment.pCCenter.y;
+                        tempPathSegments.push( { type: 'line', p0: { x: lineOpposite.p0.x, y: lineOpposite.p0.y }, p1: { x: lineOpposite.p1.x, y: lineOpposite.p1.y }, color: { r: 55, g: 155, b: 55, a: 255 } } );
+                        
+                        //---
 
-                    streetSegment.pTCenter.x = ( streetSegment.pTS.x + streetSegment.pTE.x ) / 2;
-                    streetSegment.pTCenter.y = ( streetSegment.pTS.y + streetSegment.pTE.y ) / 2;
-                    streetSegment.pTControl.x = streetSegment.pTCenter.x;
-                    streetSegment.pTControl.y = streetSegment.pTCenter.y;
+                        const lineHypotenuseCenterPoint = { x: tempPCE.x + ( streetSegment.pCS.x - tempPCE.x ) / 2, y: tempPCE.y + ( streetSegment.pCS.y - tempPCE.y ) / 2 };
 
-                    streetSegment.pBCenter.x = ( streetSegment.pBS.x + streetSegment.pBE.x ) / 2;
-                    streetSegment.pBCenter.y = ( streetSegment.pBS.y + streetSegment.pBE.y ) / 2;
-                    streetSegment.pBControl.x = streetSegment.pBCenter.x;
-                    streetSegment.pBControl.y = streetSegment.pBCenter.y;
+                        tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint, diameter: 5, color: { r: 255, g: 55, b: 55, a: 255 } } );
+                        
+                        //---
 
-                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                    
-                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
-                    tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 0, g: 255, b: 0, a: 255 } } );
-                    
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCCenter.x, y: streetSegment.pCCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTCenter.x, y: streetSegment.pTCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBCenter.x, y: streetSegment.pBCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                        const angleIntersection = Math.atan2( tempPCE.y - streetSegment.pCS.y, tempPCE.x - streetSegment.pCS.x );
 
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCControl.x, y: streetSegment.pCControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTControl.x, y: streetSegment.pTControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBControl.x, y: streetSegment.pBControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
-                    
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTS.x, y: streetSegment.pTS.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTE.x, y: streetSegment.pTE.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBS.x, y: streetSegment.pBS.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
-                    tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBE.x, y: streetSegment.pBE.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
-                    
-                    
-                    
-                    /*
-                    const cX = pathSegment.centerPoint.x;// ( ( pathSegment.p0.x + pathSegment.p1.x ) / 2 );
-                    const cY = pathSegment.centerPoint.y;// ( ( pathSegment.p0.y + pathSegment.p1.y ) / 2 );
+                        const sinIntersection = Math.sin( angleIntersection );
+                        const cosIntersection = Math.cos( angleIntersection );
+ 
+                        const lineIntersection = { p0: { x: sinIntersection * scanDistance + lineHypotenuseCenterPoint.x, y: -cosIntersection * scanDistance + lineHypotenuseCenterPoint.y }, p1: { x: -sinIntersection * scanDistance + lineHypotenuseCenterPoint.x, y: cosIntersection * scanDistance + lineHypotenuseCenterPoint.y } };
 
-                    //pathSegment angle
-                    const angle = Math.atan2( pathSegment.p1.y - pathSegment.p0.y, pathSegment.p1.x - pathSegment.p0.x );
-                    
-                    const length = 10;
-                    
-                    const sinA = Math.sin( angle );
-                    const cosA = Math.cos( angle );
-                    
-                    //drawLine( ( sinA * length + cX ) | 0, ( -cosA * length + cY ) | 0, ( -sinA * length + cX ) | 0, ( cosA * length + cY ) | 0, 100, 100, 100, 255 );
+                        tempPathSegments.push( { type: 'line', p0: { x: lineIntersection.p0.x | 0, y: lineIntersection.p0.y | 0 }, p1: { x: lineIntersection.p1.x | 0, y: lineIntersection.p1.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
 
-                    */
+                        //---
 
-                    /*
-                    id: path.streetSegments.length,
-                    pCS: { x: position.x, y: position.y },
-                    pCE: null,
-                    pCCenter: { x: 0, y: 0 },
-                    pCControl: { x: 0, y: 0 },
-                    pTS: { x: 0, y: 0 },
-                    pTE: { x: 0, y: 0 },
-                    pTCenter: { x: 0, y: 0 },
-                    pTControl: { x: 0, y: 0 },
-                    pBS: { x: 0, y: 0 },
-                    pBE: { x: 0, y: 0 },
-                    pBCenter: { x: 0, y: 0 },
-                    pBControl: { x: 0, y: 0 },
-                    length: 0,
-                    walkable: true
-                    */
+                        const distLineAdjacent = signedDistanceToLine( lineHypotenuseCenterPoint, lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y );
+                        const distLineOpposite = signedDistanceToLine( lineHypotenuseCenterPoint, lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y );
 
+                        let intersectionPoint = null;
 
-                }
+                        if ( distLineAdjacent < distLineOpposite ) {
 
-                if ( streetSegment.pCE !== null ) {
+                            intersectionPoint = getLinesIntersectionPoint( lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
 
+                        } else {
 
+                            intersectionPoint = getLinesIntersectionPoint( lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
+
+                        }
+
+                        tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 5, color: { r: 255, g: 55, b: 55, a: 255 } } );
+                        
+                        streetSegment.pCControl.x = intersectionPoint.x;
+                        streetSegment.pCControl.y = intersectionPoint.y;
+                        streetSegment.pCCenter = interpolateQuadraticBezier( streetSegment.pCS, intersectionPoint, tempPCE, 0.50 );
+
+                        //---
+
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCCenter.x, y: streetSegment.pCCenter.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+
+                        tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pCS.x, y: streetSegment.pCS.y }, p1: { x: tempPCE.x, y: tempPCE.y }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        
+                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pCS.x, y: streetSegment.pCS.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempPathSegments.push( { type: 'circfill', position: { x: tempPCE.x, y: tempPCE.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+    
+                        //---
+
+                        tempPathSegments.push( { type: 'bezier', p0: { x: streetSegment.pCS.x, y: streetSegment.pCS.y }, controlPoint: { x: streetSegment.pCControl.x, y: streetSegment.pCControl.y }, p1: { x: tempPCE.x, y: tempPCE.y }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+
+                    }
+
+                    if ( streetSegment.pCE !== null ) {
+    
+    
+    
+                    }
 
                 }
 
