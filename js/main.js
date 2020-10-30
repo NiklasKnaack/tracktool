@@ -2589,23 +2589,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( streetSegment !== null ) {
 
+                //neues street element ohne verbindung zu einem bestehendem street element
                 if ( streetSegment.modus === 'new' ) {
 
                     if ( streetSegment.pCS !== null && streetSegment.pCE === null ) {
 
-                        // //tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                        // tempPathSegments.push( { type: 'bezier', p0: { x: point0.x, y: point0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                        // tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                        // tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                        
-                        const tempPCE = { x: mousePos.x, y: mousePos.y };
-                        
-                        const angle = Math.atan2( tempPCE.y - streetSegment.pCS.y, tempPCE.x - streetSegment.pCS.x );
-    
                         const pathDistance = 50;
+
+                        const tempPCE = { x: mousePos.x, y: mousePos.y };
+
+                        //---
+                        
+                        const angleStart = Math.atan2( tempPCE.y - streetSegment.pCS.y, tempPCE.x - streetSegment.pCS.x );
     
-                        const sinA = Math.sin( angle );
-                        const cosA = Math.cos( angle );
+                        const sinA = Math.sin( angleStart );
+                        const cosA = Math.cos( angleStart );
     
                         streetSegment.pTS.x = sinA * pathDistance + streetSegment.pCS.x;
                         streetSegment.pTS.y = -cosA * pathDistance + streetSegment.pCS.y;
@@ -2655,52 +2653,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTE.x, y: streetSegment.pTE.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
                         tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBS.x, y: streetSegment.pBS.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
                         tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBE.x, y: streetSegment.pBE.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
-                        
-                        
-                        
-                        /*
-                        const cX = pathSegment.centerPoint.x;// ( ( pathSegment.p0.x + pathSegment.p1.x ) / 2 );
-                        const cY = pathSegment.centerPoint.y;// ( ( pathSegment.p0.y + pathSegment.p1.y ) / 2 );
-    
-                        //pathSegment angle
-                        const angle = Math.atan2( pathSegment.p1.y - pathSegment.p0.y, pathSegment.p1.x - pathSegment.p0.x );
-                        
-                        const pathDistance = 10;
-                        
-                        const sinA = Math.sin( angle );
-                        const cosA = Math.cos( angle );
-                        
-                        //drawLine( ( sinA * pathDistance + cX ) | 0, ( -cosA * pathDistance + cY ) | 0, ( -sinA * pathDistance + cX ) | 0, ( cosA * pathDistance + cY ) | 0, 100, 100, 100, 255 );
-    
-                        */
-    
-                        /*
-                        id: path.streetSegments.length,
-                        pCS: { x: position.x, y: position.y },
-                        pCE: null,
-                        pCCenter: { x: 0, y: 0 },
-                        pCControl: { x: 0, y: 0 },
-                        pTS: { x: 0, y: 0 },
-                        pTE: { x: 0, y: 0 },
-                        pTCenter: { x: 0, y: 0 },
-                        pTControl: { x: 0, y: 0 },
-                        pBS: { x: 0, y: 0 },
-                        pBE: { x: 0, y: 0 },
-                        pBCenter: { x: 0, y: 0 },
-                        pBControl: { x: 0, y: 0 },
-                        length: 0,
-                        walkable: true
-                        */
-    
-    
+
                     }
     
                     if ( streetSegment.pCE !== null ) {
     
-    
+                        //---
     
                     }
-
+                
+                //neues street element mit verbindung zu einem bestehendem street element
                 } else if ( streetSegment.modus === 'add' ) {
 
                     if ( streetSegment.pCS !== null && streetSegment.pCE === null ) {
@@ -2717,6 +2679,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         // links  = Math.PI * 1.00;
                         // oben   = Math.PI * 1.50;
 
+                        //angleStart muss noch vom dem verbundenen street element übernommen werden
                         const angleStart = Math.PI * 0.98;
                         
                         const sinStart = Math.sin( angleStart );
@@ -2822,7 +2785,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     if ( streetSegment.pCE !== null ) {
     
-    
+                        //---
     
                     }
 
@@ -2831,24 +2794,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
             }
 
         }
-
-
-
-
-        /*
-        pCS: { x: 0, y: 0 },
-                pCE: { x: 0, y: 0 },
-                pCCenter: { x: 0, y: 0 },
-                pCControl: { x: 0, y: 0 },
-                pTS: { x: 0, y: 0 },
-                pTE: { x: 0, y: 0 },
-                pTCenter: { x: 0, y: 0 },
-                pTControl: { x: 0, y: 0 },
-                pBS: { x: 0, y: 0 },
-                pBE: { x: 0, y: 0 },
-                pBCenter: { x: 0, y: 0 },
-                pBControl: { x: 0, y: 0 },
-                */
 
     }
 
