@@ -1099,8 +1099,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     { p0: { x: 0, y: 0 }, p1: { x: 0, y: 0 }, centerPoint: { x: 0, y: 0 }, controlPoint: { x: 0, y: 0 } },
                     { p0: { x: 0, y: 0 }, p1: { x: 0, y: 0 }, centerPoint: { x: 0, y: 0 }, controlPoint: { x: 0, y: 0 } },
                     { p0: { x: 0, y: 0 }, p1: { x: 0, y: 0 }, centerPoint: { x: 0, y: 0 }, controlPoint: { x: 0, y: 0 } },
-                    { p0: { x: 0, y: 0 }, p1: { x: 0, y: 0 }, centerPoint: { x: 0, y: 0 }, controlPoint: { x: 0, y: 0 } },
-                    { p0: { x: 0, y: 0 }, p1: { x: 0, y: 0 }, centerPoint: { x: 0, y: 0 }, controlPoint: { x: 0, y: 0 } }
+                    // { p0: { x: 0, y: 0 }, p1: { x: 0, y: 0 }, centerPoint: { x: 0, y: 0 }, controlPoint: { x: 0, y: 0 } },
+                    // { p0: { x: 0, y: 0 }, p1: { x: 0, y: 0 }, centerPoint: { x: 0, y: 0 }, controlPoint: { x: 0, y: 0 } }
                 ],
 
                 pathSegment: [
@@ -2111,11 +2111,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denominator;
 
         // is the intersection along the segments
-        if ( ua < 0 || ua > 1 || ub < 0 || ub > 1 ) {
+        // if ( ua < 0 || ua > 1 || ub < 0 || ub > 1 ) {
 
-            return null
+        //     return null
 
-        }
+        // }
 
         // Return a object with the x and y coordinates of the intersection
         return { 
@@ -2703,6 +2703,82 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                         //---
 
+                        const buildStreetSegmentLane = ( lane, sinStart, cosStart, sinEnd, cosEnd, sinAdjacent, cosAdjacent, sinOpposite, cosOpposite, sinIntersection, cosIntersection ) => {
+
+                            //---
+
+                            tempPathSegments.push( { type: 'line', p0: { x: lane.p0.x, y: lane.p0.y }, p1: { x: lane.p1.x, y: lane.p1.y }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+                        
+                            //---
+
+                            const lineAdjacent = { p0: { x: sinAdjacent * scanDistance + lane.p0.x, y: -cosAdjacent * scanDistance + lane.p0.y }, p1: { x: -sinAdjacent * scanDistance + lane.p0.x, y: cosAdjacent * scanDistance + lane.p0.y } };
+
+                            tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent.p0.x, y: lineAdjacent.p0.y }, p1: { x: lineAdjacent.p1.x, y: lineAdjacent.p1.y }, color: { r: 25, g: 25, b: 75, a: 255 } } );
+                        
+                            const lineOpposite = { p0: { x: sinOpposite * scanDistance + lane.p1.x, y: -cosOpposite * scanDistance + lane.p1.y }, p1: { x: -sinOpposite * scanDistance + lane.p1.x, y: cosOpposite * scanDistance + lane.p1.y } };
+
+                            tempPathSegments.push( { type: 'line', p0: { x: lineOpposite.p0.x, y: lineOpposite.p0.y }, p1: { x: lineOpposite.p1.x, y: lineOpposite.p1.y }, color: { r: 25, g: 75, b: 25, a: 255 } } );
+                            
+                            //----
+
+                            const lineHypotenuseCenterPoint = { x: lane.p1.x + ( lane.p0.x - lane.p1.x ) / 2, y: lane.p1.y + ( lane.p0.y - lane.p1.y ) / 2 };
+
+                            tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint, diameter: 3, color: { r: 155, g: 55, b: 55, a: 255 } } );
+
+                            //---
+
+                            const lineIntersection = { p0: { x: sinIntersection * scanDistance + lineHypotenuseCenterPoint.x, y: -cosIntersection * scanDistance + lineHypotenuseCenterPoint.y }, p1: { x: -sinIntersection * scanDistance + lineHypotenuseCenterPoint.x, y: cosIntersection * scanDistance + lineHypotenuseCenterPoint.y } };
+
+                            tempPathSegments.push( { type: 'line', p0: { x: lineIntersection.p0.x | 0, y: lineIntersection.p0.y | 0 }, p1: { x: lineIntersection.p1.x | 0, y: lineIntersection.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+
+                            //---
+
+                            const distLineAdjacent = signedDistanceToLine( lineHypotenuseCenterPoint, lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y );
+                            const distLineOpposite = signedDistanceToLine( lineHypotenuseCenterPoint, lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y );
+
+                            let intersectionPoint = null;
+
+                            if ( distLineAdjacent <= distLineOpposite ) {
+
+                                intersectionPoint = getLinesIntersectionPoint( lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
+
+                            } else {
+
+                                intersectionPoint = getLinesIntersectionPoint( lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
+
+                            }
+
+                            tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 155, g: 0, b: 0, a: 255 } } );
+                            
+                            lane.controlPoint.x = intersectionPoint.x;
+                            lane.controlPoint.y = intersectionPoint.y;
+                            lane.centerPoint = interpolateQuadraticBezier( lane.p0, intersectionPoint, lane.p1, 0.50 );
+
+                            //---
+
+                            tempPathSegments.push( { type: 'circfill', position: { x: lane.centerPoint.x, y: lane.centerPoint.y }, diameter: 3, color: { r: 55, g: 55, b: 55, a: 255 } } );
+        
+                            //---
+
+                            tempPathSegments.push( { type: 'bezier', p0: { x: lane.p0.x, y: lane.p0.y }, controlPoint: { x: lane.controlPoint.x, y: lane.controlPoint.y }, p1: { x: lane.p1.x, y: lane.p1.y }, color: { r: 255, g: 55, b: 55, a: 255 } } );
+
+
+                            //---
+
+                            tempPathSegments.push( { type: 'line', p0: { x: lane.p0.x | 0, y: lane.p0.y | 0 }, p1: { x: streetSegment.p0.x | 0, y: streetSegment.p0.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                            tempPathSegments.push( { type: 'line', p0: { x: lane.p1.x | 0, y: lane.p1.y | 0 }, p1: { x: tempP1.x | 0, y: tempP1.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+
+                            //---
+
+                            tempPathSegments.push( { type: 'circfill', position: lane.p0, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                            tempPathSegments.push( { type: 'circfill', position: lane.p1, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
+
+                        }
+
+
+
+                        //---
+
                         // rechts = Math.PI * 0.00;
                         // unten  = Math.PI * 0.50;
                         // links  = Math.PI * 1.00;
@@ -2763,14 +2839,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                             const laneDistance = Math.abs( laneIndex ) * pathDistance;
 
-                            laneIndex++;
-
-                            if ( laneIndex === 0 ) {
-
-                                laneIndex++;
-
-                            }
-
                             //---
 
                             if ( i <= lanePositionSwitch ) {
@@ -2791,6 +2859,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                             //---
 
+                            // const sinStart = Math.sin( angleStart );
+                            // const cosStart = Math.cos( angleStart );
+                            // const sinEnd = Math.sin( angleEnd );
+                            // const cosEnd = Math.cos( angleEnd );
+                            // const sinAdjacent = Math.sin( angleAdjacent );
+                            // const cosAdjacent = Math.cos( angleAdjacent );
+                            // const sinOpposite = Math.sin( angleOpposite );
+                            // const cosOpposite = Math.cos( angleOpposite );
+                            // const sinIntersection = Math.sin( angleIntersection );
+                            // const cosIntersection = Math.cos( angleIntersection );
+
+                            buildStreetSegmentLane( lane, sinStart, cosStart, sinEnd, cosEnd, sinAdjacent, cosAdjacent, sinOpposite, cosOpposite, sinIntersection, cosIntersection );
+
+                            //---
+
                             if ( i === 0 ) {
 
                                 //---
@@ -2805,94 +2888,218 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                             //---
 
-                            tempPathSegments.push( { type: 'line', p0: { x: lane.p0.x, y: lane.p0.y }, p1: { x: lane.p1.x, y: lane.p1.y }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+                            // tempPathSegments.push( { type: 'line', p0: { x: lane.p0.x, y: lane.p0.y }, p1: { x: lane.p1.x, y: lane.p1.y }, color: { r: 55, g: 55, b: 55, a: 255 } } );
                         
-                            //---
+                            // //---
 
-                            const lineAdjacent = { p0: { x: sinAdjacent * scanDistance + lane.p0.x, y: -cosAdjacent * scanDistance + lane.p0.y }, p1: { x: -sinAdjacent * scanDistance + lane.p0.x, y: cosAdjacent * scanDistance + lane.p0.y } };
+                            // const lineAdjacent = { p0: { x: sinAdjacent * scanDistance + lane.p0.x, y: -cosAdjacent * scanDistance + lane.p0.y }, p1: { x: -sinAdjacent * scanDistance + lane.p0.x, y: cosAdjacent * scanDistance + lane.p0.y } };
 
-                            tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent.p0.x, y: lineAdjacent.p0.y }, p1: { x: lineAdjacent.p1.x, y: lineAdjacent.p1.y }, color: { r: 25, g: 25, b: 75, a: 255 } } );
+                            // tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent.p0.x, y: lineAdjacent.p0.y }, p1: { x: lineAdjacent.p1.x, y: lineAdjacent.p1.y }, color: { r: 25, g: 25, b: 75, a: 255 } } );
                         
-                            const lineOpposite = { p0: { x: sinOpposite * scanDistance + lane.p1.x, y: -cosOpposite * scanDistance + lane.p1.y }, p1: { x: -sinOpposite * scanDistance + lane.p1.x, y: cosOpposite * scanDistance + lane.p1.y } };
+                            // const lineOpposite = { p0: { x: sinOpposite * scanDistance + lane.p1.x, y: -cosOpposite * scanDistance + lane.p1.y }, p1: { x: -sinOpposite * scanDistance + lane.p1.x, y: cosOpposite * scanDistance + lane.p1.y } };
 
-                            tempPathSegments.push( { type: 'line', p0: { x: lineOpposite.p0.x, y: lineOpposite.p0.y }, p1: { x: lineOpposite.p1.x, y: lineOpposite.p1.y }, color: { r: 25, g: 75, b: 25, a: 255 } } );
+                            // tempPathSegments.push( { type: 'line', p0: { x: lineOpposite.p0.x, y: lineOpposite.p0.y }, p1: { x: lineOpposite.p1.x, y: lineOpposite.p1.y }, color: { r: 25, g: 75, b: 25, a: 255 } } );
                             
-                            //----
+                            // //----
 
-                            const lineHypotenuseCenterPoint = { x: lane.p1.x + ( lane.p0.x - lane.p1.x ) / 2, y: lane.p1.y + ( lane.p0.y - lane.p1.y ) / 2 };
+                            // const lineHypotenuseCenterPoint = { x: lane.p1.x + ( lane.p0.x - lane.p1.x ) / 2, y: lane.p1.y + ( lane.p0.y - lane.p1.y ) / 2 };
 
-                            tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint, diameter: 3, color: { r: 155, g: 55, b: 55, a: 255 } } );
+                            // tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint, diameter: 3, color: { r: 155, g: 55, b: 55, a: 255 } } );
+
+                            // //---
+
+                            // const lineIntersection = { p0: { x: sinIntersection * scanDistance + lineHypotenuseCenterPoint.x, y: -cosIntersection * scanDistance + lineHypotenuseCenterPoint.y }, p1: { x: -sinIntersection * scanDistance + lineHypotenuseCenterPoint.x, y: cosIntersection * scanDistance + lineHypotenuseCenterPoint.y } };
+
+                            // tempPathSegments.push( { type: 'line', p0: { x: lineIntersection.p0.x | 0, y: lineIntersection.p0.y | 0 }, p1: { x: lineIntersection.p1.x | 0, y: lineIntersection.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+
+                            // //---
+
+                            // const distLineAdjacent = signedDistanceToLine( lineHypotenuseCenterPoint, lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y );
+                            // const distLineOpposite = signedDistanceToLine( lineHypotenuseCenterPoint, lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y );
+
+                            // let intersectionPoint = null;
+
+                            // if ( distLineAdjacent < distLineOpposite ) {
+
+                            //     intersectionPoint = getLinesIntersectionPoint( lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
+
+                            // } else {
+
+                            //     intersectionPoint = getLinesIntersectionPoint( lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
+
+                            // }
+
+                            // tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 155, g: 0, b: 0, a: 255 } } );
+                            
+                            // lane.controlPoint.x = intersectionPoint.x;
+                            // lane.controlPoint.y = intersectionPoint.y;
+                            // lane.centerPoint = interpolateQuadraticBezier( lane.p0, intersectionPoint, lane.p1, 0.50 );
+
+                            // //---
+
+                            // tempPathSegments.push( { type: 'circfill', position: { x: lane.centerPoint.x, y: lane.centerPoint.y }, diameter: 3, color: { r: 55, g: 55, b: 55, a: 255 } } );
+        
+                            // //---
+
+                            // tempPathSegments.push( { type: 'bezier', p0: { x: lane.p0.x, y: lane.p0.y }, controlPoint: { x: lane.controlPoint.x, y: lane.controlPoint.y }, p1: { x: lane.p1.x, y: lane.p1.y }, color: { r: 255, g: 55, b: 55, a: 255 } } );
+
+
+                            // //---
+
+                            // tempPathSegments.push( { type: 'line', p0: { x: lane.p0.x | 0, y: lane.p0.y | 0 }, p1: { x: streetSegment.p0.x | 0, y: streetSegment.p0.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                            // tempPathSegments.push( { type: 'line', p0: { x: lane.p1.x | 0, y: lane.p1.y | 0 }, p1: { x: tempP1.x | 0, y: tempP1.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+
+                            // //---
+
+                            // tempPathSegments.push( { type: 'circfill', position: lane.p0, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                            // tempPathSegments.push( { type: 'circfill', position: lane.p1, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
 
                             //---
 
-                            const lineIntersection = { p0: { x: sinIntersection * scanDistance + lineHypotenuseCenterPoint.x, y: -cosIntersection * scanDistance + lineHypotenuseCenterPoint.y }, p1: { x: -sinIntersection * scanDistance + lineHypotenuseCenterPoint.x, y: cosIntersection * scanDistance + lineHypotenuseCenterPoint.y } };
+                            //nur wenn es mehr als eine lane gibt
+                            if ( l > 1 ) {
 
-                            tempPathSegments.push( { type: 'line', p0: { x: lineIntersection.p0.x | 0, y: lineIntersection.p0.y | 0 }, p1: { x: lineIntersection.p1.x | 0, y: lineIntersection.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+                                //erst ab lane 1, damit auf lane 0 zurückgergriffen werden kann
+                                if ( i > 0 && i !== lanePositionSwitch + 1 ) {
 
-                            //---
+                                    const laneTemp = streetSegment.lanes[ i - 1 ];
 
-                            const distLineAdjacent = signedDistanceToLine( lineHypotenuseCenterPoint, lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y );
-                            const distLineOpposite = signedDistanceToLine( lineHypotenuseCenterPoint, lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y );
+                                    const l0 = { p0: { x: lane.p0.x, y: lane.p0.y }, p1: { x: laneTemp.p1.x, y: laneTemp.p1.y }, centerPoint: { x: 0, y: 0 }, controlPoint: { x: 0, y: 0 } };
+                                    const l1 = { p0: { x: laneTemp.p0.x, y: laneTemp.p0.y }, p1: { x: lane.p1.x, y: lane.p1.y }, centerPoint: { x: 0, y: 0 }, controlPoint: { x: 0, y: 0 } };
 
-                            let intersectionPoint = null;
+                                    tempPathSegments.push( { type: 'line', p0: { x: l0.p0.x | 0, y: l0.p0.y | 0 }, p1: { x: l0.p1.x | 0, y: l0.p1.y | 0 }, color: { r: 155, g: 155, b: 55, a: 255 } } );
+                                    tempPathSegments.push( { type: 'line', p0: { x: l1.p0.x | 0, y: l1.p0.y | 0 }, p1: { x: l1.p1.x | 0, y: l1.p1.y | 0 }, color: { r: 55, g: 155, b: 155, a: 255 } } );
 
-                            if ( distLineAdjacent < distLineOpposite ) {
+                                    // buildStreetSegmentLane( l0, sinStart, cosStart, sinEnd, cosEnd, sinAdjacent, cosAdjacent, sinOpposite, cosOpposite, sinIntersection, cosIntersection );
+                                    // buildStreetSegmentLane( l1, sinStart, cosStart, sinEnd, cosEnd, sinAdjacent, cosAdjacent, sinOpposite, cosOpposite, sinIntersection, cosIntersection );
 
-                                intersectionPoint = getLinesIntersectionPoint( lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
 
-                            } else {
 
-                                intersectionPoint = getLinesIntersectionPoint( lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
+
+                                    const center0 = { x: ( laneTemp.p0.x + lane.p0.x ) / 2, y: ( laneTemp.p0.y + lane.p0.y ) / 2 };
+                                    const center1 = { x: ( laneTemp.p1.x + lane.p1.x ) / 2, y: ( laneTemp.p1.y + lane.p1.y ) / 2 };
+
+                                    tempPathSegments.push( { type: 'circfill', position: center0, diameter: 3, color: { r: 55, g: 255, b: 55, a: 255 } } );
+                                    tempPathSegments.push( { type: 'circfill', position: center1, diameter: 3, color: { r: 55, g: 255, b: 55, a: 255 } } );
+
+
+
+
+                                    const lineAdjacent0 = { p0: { x: sinAdjacent * scanDistance + center0.x, y: -cosAdjacent * scanDistance + center0.y }, p1: { x: -sinAdjacent * scanDistance + center0.x, y: cosAdjacent * scanDistance + center0.y } };
+                                    const lineAdjacent1 = { p0: { x: sinAdjacent * scanDistance + center0.x, y: -cosAdjacent * scanDistance + center0.y }, p1: { x: -sinAdjacent * scanDistance + center0.x, y: cosAdjacent * scanDistance + center0.y } };
+
+                                    // const lineAdjacent0 = { p0: { x: sinAdjacent * scanDistance + l0.p0.x, y: -cosAdjacent * scanDistance + l0.p0.y }, p1: { x: -sinAdjacent * scanDistance + l0.p0.x, y: cosAdjacent * scanDistance + l0.p0.y } };
+                                    // const lineAdjacent1 = { p0: { x: sinAdjacent * scanDistance + l1.p0.x, y: -cosAdjacent * scanDistance + l1.p0.y }, p1: { x: -sinAdjacent * scanDistance + l1.p0.x, y: cosAdjacent * scanDistance + l1.p0.y } };
+
+                                    tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent0.p0.x, y: lineAdjacent0.p0.y }, p1: { x: lineAdjacent0.p1.x, y: lineAdjacent0.p1.y }, color: { r: 25, g: 25, b: 255, a: 255 } } );
+                                    tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent1.p0.x, y: lineAdjacent1.p0.y }, p1: { x: lineAdjacent1.p1.x, y: lineAdjacent1.p1.y }, color: { r: 25, g: 25, b: 255, a: 255 } } );
+                                
+                                    const lineOpposite0 = { p0: { x: sinOpposite * scanDistance + center1.x, y: -cosOpposite * scanDistance + center1.y }, p1: { x: -sinOpposite * scanDistance + center1.x, y: cosOpposite * scanDistance + center1.y } };
+                                    const lineOpposite1 = { p0: { x: sinOpposite * scanDistance + center1.x, y: -cosOpposite * scanDistance + center1.y }, p1: { x: -sinOpposite * scanDistance + center1.x, y: cosOpposite * scanDistance + center1.y } };
+
+                                    tempPathSegments.push( { type: 'line', p0: { x: lineOpposite0.p0.x, y: lineOpposite0.p0.y }, p1: { x: lineOpposite0.p1.x, y: lineOpposite0.p1.y }, color: { r: 25, g: 255, b: 25, a: 255 } } );
+                                    tempPathSegments.push( { type: 'line', p0: { x: lineOpposite1.p0.x, y: lineOpposite1.p0.y }, p1: { x: lineOpposite1.p1.x, y: lineOpposite1.p1.y }, color: { r: 25, g: 255, b: 25, a: 255 } } );
+                                    
+                                    
+
+
+
+                                    //----
+
+                                    const angleIntersection0 = Math.atan2( l0.p1.y - l0.p0.y, l0.p1.x - l0.p0.x );
+                                    const sinIntersection0 = Math.sin( angleIntersection0 );
+                                    const cosIntersection0 = Math.cos( angleIntersection0 );
+
+                                    const lineHypotenuseCenterPoint0 = { x: l0.p1.x + ( l0.p0.x - l0.p1.x ) / 2, y: l0.p1.y + ( l0.p0.y - l0.p1.y ) / 2 };
+
+                                    tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint0, diameter: 3, color: { r: 255, g: 55, b: 55, a: 255 } } );
+
+                                    const lineIntersection0 = { p0: { x: sinIntersection0 * scanDistance + lineHypotenuseCenterPoint0.x, y: -cosIntersection0 * scanDistance + lineHypotenuseCenterPoint0.y }, p1: { x: -sinIntersection0 * scanDistance + lineHypotenuseCenterPoint0.x, y: cosIntersection0 * scanDistance + lineHypotenuseCenterPoint0.y } };
+
+                                    tempPathSegments.push( { type: 'line', p0: { x: lineIntersection0.p0.x | 0, y: lineIntersection0.p0.y | 0 }, p1: { x: lineIntersection0.p1.x | 0, y: lineIntersection0.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+
+                                    let intersectionPoint0 = null;
+                                    let intersectionPoint00 = getLinesIntersectionPoint( lineAdjacent0.p0.x, lineAdjacent0.p0.y, lineAdjacent0.p1.x, lineAdjacent0.p1.y, lineIntersection0.p0.x, lineIntersection0.p0.y, lineIntersection0.p1.x, lineIntersection0.p1.y );
+                                    let intersectionPoint01 = getLinesIntersectionPoint( lineOpposite0.p0.x, lineOpposite0.p0.y, lineOpposite0.p1.x, lineOpposite0.p1.y, lineIntersection0.p0.x, lineIntersection0.p0.y, lineIntersection0.p1.x, lineIntersection0.p1.y );
+
+                                    const distintersectionPoint00 = getDistance( intersectionPoint00, lineHypotenuseCenterPoint0 );
+                                    const distintersectionPoint01 = getDistance( intersectionPoint01, lineHypotenuseCenterPoint0 );
+
+                                    if ( distintersectionPoint00 <= distintersectionPoint01 ) {
+
+                                        intersectionPoint0 = intersectionPoint00;
+
+                                    } else {
+
+                                        intersectionPoint0 = intersectionPoint01;
+
+                                    }
+
+                                    tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint0.x, y: intersectionPoint0.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                                    
+                                    l0.controlPoint.x = intersectionPoint0.x;
+                                    l0.controlPoint.y = intersectionPoint0.y;
+                                    l0.centerPoint = interpolateQuadraticBezier( l0.p0, intersectionPoint0, l0.p1, 0.50 );
+
+                                    //---
+
+                                    const angleIntersection1 = Math.atan2( l1.p1.y - l1.p0.y, l1.p1.x - l1.p0.x );
+                                    const sinIntersection1 = Math.sin( angleIntersection1 );
+                                    const cosIntersection1 = Math.cos( angleIntersection1 );
+
+                                    const lineHypotenuseCenterPoint1 = { x: l1.p1.x + ( l1.p0.x - l1.p1.x ) / 2, y: l1.p1.y + ( l1.p0.y - l1.p1.y ) / 2 };
+
+                                    tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint1, diameter: 3, color: { r: 155, g: 55, b: 55, a: 255 } } );
+
+                                    const lineIntersection1 = { p0: { x: sinIntersection1 * scanDistance + lineHypotenuseCenterPoint1.x, y: -cosIntersection1 * scanDistance + lineHypotenuseCenterPoint1.y }, p1: { x: -sinIntersection1 * scanDistance + lineHypotenuseCenterPoint1.x, y: cosIntersection1 * scanDistance + lineHypotenuseCenterPoint1.y } };
+    
+                                    tempPathSegments.push( { type: 'line', p0: { x: lineIntersection1.p0.x | 0, y: lineIntersection1.p0.y | 0 }, p1: { x: lineIntersection1.p1.x | 0, y: lineIntersection1.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+
+                                    let intersectionPoint1 = null;
+                                    let intersectionPoint10 = getLinesIntersectionPoint( lineAdjacent1.p0.x, lineAdjacent1.p0.y, lineAdjacent1.p1.x, lineAdjacent1.p1.y, lineIntersection1.p0.x, lineIntersection1.p0.y, lineIntersection1.p1.x, lineIntersection1.p1.y );
+                                    let intersectionPoint11 = getLinesIntersectionPoint( lineOpposite1.p0.x, lineOpposite1.p0.y, lineOpposite1.p1.x, lineOpposite1.p1.y, lineIntersection1.p0.x, lineIntersection1.p0.y, lineIntersection1.p1.x, lineIntersection1.p1.y );
+
+                                    const distIntersectionPoint10 = getDistance( intersectionPoint10, lineHypotenuseCenterPoint1 );
+                                    const distIntersectionPoint11 = getDistance( intersectionPoint11, lineHypotenuseCenterPoint1 );
+
+                                    if ( distIntersectionPoint10 <= distIntersectionPoint11 ) {
+
+                                        intersectionPoint1 = intersectionPoint10;
+
+                                    } else {
+
+                                        intersectionPoint1 = intersectionPoint11;
+
+                                    }
+
+                                    tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint1.x, y: intersectionPoint1.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                                    
+                                    l1.controlPoint.x = intersectionPoint1.x;
+                                    l1.controlPoint.y = intersectionPoint1.y;
+                                    l1.centerPoint = interpolateQuadraticBezier( l1.p0, intersectionPoint1, l1.p1, 0.50 );
+
+                                    //---
+
+                                    tempPathSegments.push( { type: 'bezier', p0: { x: l0.p0.x, y: l0.p0.y }, controlPoint: { x: l0.controlPoint.x, y: l0.controlPoint.y }, p1: { x: l0.p1.x, y: l0.p1.y }, color: { r: 200, g: 200, b: 200, a: 255 } } );
+                                    tempPathSegments.push( { type: 'bezier', p0: { x: l1.p0.x, y: l1.p0.y }, controlPoint: { x: l1.controlPoint.x, y: l1.controlPoint.y }, p1: { x: l1.p1.x, y: l1.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+
+                                }
 
                             }
 
-                            tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 155, g: 0, b: 0, a: 255 } } );
+                            //---
+
+                            laneIndex++;
+
+                            if ( laneIndex === 0 ) {
+
+                                laneIndex++;
+
+                            }
+
                             
-                            lane.controlPoint.x = intersectionPoint.x;
-                            lane.controlPoint.y = intersectionPoint.y;
-                            lane.centerPoint = interpolateQuadraticBezier( lane.p0, intersectionPoint, lane.p1, 0.50 );
-
-                            //---
-
-                            tempPathSegments.push( { type: 'circfill', position: { x: lane.centerPoint.x, y: lane.centerPoint.y }, diameter: 3, color: { r: 55, g: 55, b: 55, a: 255 } } );
-        
-                            //---
-
-                            tempPathSegments.push( { type: 'bezier', p0: { x: lane.p0.x, y: lane.p0.y }, controlPoint: { x: lane.controlPoint.x, y: lane.controlPoint.y }, p1: { x: lane.p1.x, y: lane.p1.y }, color: { r: 55, g: 55, b: 55, a: 255 } } );
-
 
                         }
-
-                        
-
-
-
-
-
-                        //---
-
-                        
-
-
-
-                        for ( let i = 0, l = streetSegment.lanes.length; i < l; i++ ) {
-
-                            const lane = streetSegment.lanes[ i ];
-
-                            //---
-
-                            tempPathSegments.push( { type: 'line', p0: { x: lane.p0.x | 0, y: lane.p0.y | 0 }, p1: { x: streetSegment.p0.x | 0, y: streetSegment.p0.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                            tempPathSegments.push( { type: 'line', p0: { x: lane.p1.x | 0, y: lane.p1.y | 0 }, p1: { x: tempP1.x | 0, y: tempP1.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-
-                            //---
-
-                            tempPathSegments.push( { type: 'circfill', position: lane.p0, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
-                            tempPathSegments.push( { type: 'circfill', position: lane.p1, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
-                            
-                        }
-
-
-
 
                         //---
 
