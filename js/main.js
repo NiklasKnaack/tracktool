@@ -1305,8 +1305,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     const pBL = interpolateQuadraticBezier( streetBorder1.p0, streetBorder1.controlPoint, streetBorder1.p1, iC - iCStep );
                     const pBR = interpolateQuadraticBezier( streetBorder1.p0, streetBorder1.controlPoint, streetBorder1.p1, iC );
 
+                    //https://stackoverflow.com/questions/9536257/how-to-anti-alias-clip-edges-in-html5-canvas-under-chrome-windows
+                    // _context.globalCompositeOperation = 'destination-in';
+                    // _context.globalCompositeOperation = 'source-atop';
                     _context.save();
                     // _context.globalAlpha = 1.0;
+                    
                     _context.beginPath();
                     _context.moveTo( pTL.x - minX, pTL.y - minY );
                     _context.lineTo( pTR.x - minX, pTR.y - minY );
@@ -1326,6 +1330,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     _context.fillRect( 0, 0, streetSegment.boundingClientRect.width, streetSegment.boundingClientRect.height );
 
                     _context.restore();
+                    // _context.globalCompositeOperation = 'source-over';
 
                 }
 
