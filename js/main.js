@@ -1251,7 +1251,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( streetSegment.p0 !== null && streetSegment.p1 !== null ) {
 
-            const precision = 1000;
+            const precision = 100;
 
             context.setLineDash( [] );
 
