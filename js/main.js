@@ -1209,11 +1209,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    let imageTexture = null;
+    // let imageTexture = null;
+    let canvasTexture = null;
 
     function drawStreetSegmentTexture() {
 
-        const canvasTexture = document.createElement( 'canvas' );
+        canvasTexture = document.createElement( 'canvas' );
 
         canvasTexture.width = 256;
         canvasTexture.height = 256;
@@ -1242,8 +1243,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         contextTexture.putImageData( imageData, 0, 0 );
 
-        imageTexture = new Image( 256, 256 );
-        imageTexture.src = canvasTexture.toDataURL();
+        // imageTexture = new Image( 256, 256 );
+        // imageTexture.src = canvasTexture.toDataURL();
 
     }
 
@@ -1321,7 +1322,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     
                     _context.clip();
                     //_context.drawImage( imageTexture, 0, 0, 256, 256 );
-                    _context.fillStyle = _context.createPattern( imageTexture, 'repeat' );
+                    _context.fillStyle = _context.createPattern( canvasTexture, 'repeat' );
                     _context.fillRect( 0, 0, streetSegment.boundingClientRect.width, streetSegment.boundingClientRect.height );
 
                     _context.restore();
