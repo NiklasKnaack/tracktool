@@ -1215,8 +1215,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const canvasTexture = document.createElement( 'canvas' );
 
-        canvasTexture.width = 2048;
-        canvasTexture.height = 2048;
+        canvasTexture.width = 256;
+        canvasTexture.height = 256;
 
         // canvasTexture.style.position = 'absolute';
         // canvasTexture.style.left = '0px';
@@ -1226,7 +1226,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const contextTexture = canvasTexture.getContext( '2d' );
 
-        const imageData = contextTexture.getImageData ( 0, 0, 2048, 2048 );
+        const imageData = contextTexture.getImageData ( 0, 0, 256, 256 );
         const data = imageData.data;
 
         for ( let i = 0, l = data.length; i < l; i += 4 ) {
@@ -1242,7 +1242,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         contextTexture.putImageData( imageData, 0, 0 );
 
-        imageTexture = new Image( 2048, 2048 );
+        imageTexture = new Image( 256, 256 );
         imageTexture.src = canvasTexture.toDataURL();
 
     }
@@ -1320,7 +1320,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     // _context.fill( 'evenodd' );
                     
                     _context.clip();
-                    _context.drawImage( imageTexture, 0, 0, 2048, 2048 );
+                    //_context.drawImage( imageTexture, 0, 0, 256, 256 );
+                    _context.fillStyle = _context.createPattern( imageTexture, 'repeat' );
+                    _context.fillRect( 0, 0, streetSegment.boundingClientRect.width, streetSegment.boundingClientRect.height );
+
                     _context.restore();
 
                 }
