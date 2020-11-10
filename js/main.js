@@ -66,7 +66,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
         { r: 254, g: 138, b: 113, a: 255 },
         { r: 131, g: 208, b: 201, a: 255 },
         { r: 253, g: 244, b: 152, a: 255 },
-        { r: 123, g: 192, b:  67, a: 255 }
+        { r: 123, g: 192, b:  67, a: 255 },
+        { r: 255, g:   0, b:   0, a: 255 },
+        { r:   0, g: 255, b:   0, a: 255 },
+        { r:   0, g:   0, b: 255, a: 255 },
     ];
 
     let editorMode = EDITOR_MODE_ENUM.addPathSegment;
