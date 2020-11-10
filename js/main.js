@@ -1321,8 +1321,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     // _context.strokeStyle = 'rgba( 63, 59, 58, 1.00 )';
                     // _context.stroke(); 
-                    // _context.fillStyle = 'rgba( 63, 59, 58, 1.00 )';
-                    // _context.fill( 'evenodd' );
+                    _context.fillStyle = 'rgba( 63, 59, 58, 1.00 )';
+                    _context.fill( 'evenodd' );
                     
                     _context.clip();
                     //_context.drawImage( imageTexture, 0, 0, 256, 256 );
