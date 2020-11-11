@@ -1066,6 +1066,42 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
+    function getStreetSegmentsByPoint( p ) {
+
+        const pathIndex = 0;
+
+        const path = pathHolder[ pathIndex ];
+
+        //---
+
+        const result = [];
+
+        for ( let i = 0, l = path.streetSegments.length; i < l; i ++ ) {
+
+            const streetSegment = path.streetSegments[ i ];
+
+            if ( p.x === streetSegment.p0.x && p.y === streetSegment.p0.y ) {
+
+                result.push( streetSegment );
+
+            }
+
+            if ( streetSegment.p1 !== null ) {
+
+                if ( p.x === streetSegment.p1.x && p.y === streetSegment.p1.y ) {
+
+                    result.push( streetSegment );
+
+                }
+
+            }
+
+        }
+
+        return result;
+
+    }
+
     function addStreetSegment( position ) {
 
         const pathIndex = 0;
@@ -1076,7 +1112,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const walkable = true;
         const direction = '><';
-        const modus = 'add';//'new'
+        //const modus = 'add';//'new'
 
         const laneChange = true;
         const laneDistance = 18;
@@ -1084,6 +1120,34 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //---
 
         if ( currentStreetSegment === null ) {
+
+            const connectedStreetSegments = getStreetSegmentsByPoint( position );
+
+            let modus = null;
+            let angle0 = 0;
+
+            if ( connectedStreetSegments.length > 0 ) {
+
+                const connectedStreetSegment = connectedStreetSegments[ 0 ];
+
+                modus = 'add';
+                angle0 = connectedStreetSegment.angle1;
+
+            } else {
+
+                modus = 'add';//'new';
+                angle0 = Math.PI * 0.98;
+
+                // rechts = Math.PI * 0.00;
+                // unten  = Math.PI * 0.50;
+                // links  = Math.PI * 1.00;
+                // oben   = Math.PI * 1.50;
+
+            }
+
+            //console.log( '--->>> ', getStreetSegmentsByPoint( position ) );
+
+
 
             const streetSegment = {
 
@@ -1093,12 +1157,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 p1: null,
                 centerPoint: { x: 0, y: 0 },
                 controlPoint: { x: 0, y: 0 },
+                angle0: angle0,
+                angle1: 0,
 
                 lanes: [
                     getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
+                    getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
+                    getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
+                    getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
                     // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
                     // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
                     // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
@@ -1111,6 +1177,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 walkable: walkable,
                 direction: direction,
+                modus: modus,
+
                 modus: modus,
 
                 laneChange: laneChange,
@@ -1260,10 +1328,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
             //---
             //boundingClientRect
 
-            const minX = Math.min( streetBorder0.p0.x, streetBorder0.p1.x, streetBorder1.p0.x, streetBorder1.p1.x ) - 50;
-            const maxX = Math.max( streetBorder0.p0.x, streetBorder0.p1.x, streetBorder1.p0.x, streetBorder1.p1.x ) + 50;
-            const minY = Math.min( streetBorder0.p0.y, streetBorder0.p1.y, streetBorder1.p0.y, streetBorder1.p1.y ) - 50;
-            const maxY = Math.max( streetBorder0.p0.y, streetBorder0.p1.y, streetBorder1.p0.y, streetBorder1.p1.y ) + 50;
+            const minX = Math.min( streetBorder0.p0.x, streetBorder0.p1.x, streetBorder1.p0.x, streetBorder1.p1.x ) - 100;
+            const maxX = Math.max( streetBorder0.p0.x, streetBorder0.p1.x, streetBorder1.p0.x, streetBorder1.p1.x ) + 100;
+            const minY = Math.min( streetBorder0.p0.y, streetBorder0.p1.y, streetBorder1.p0.y, streetBorder1.p1.y ) - 100;
+            const maxY = Math.max( streetBorder0.p0.y, streetBorder0.p1.y, streetBorder1.p0.y, streetBorder1.p1.y ) + 100;
 
             streetSegment.boundingClientRect.x = minX;
             streetSegment.boundingClientRect.y = minY;
@@ -2989,7 +3057,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         // oben   = Math.PI * 1.50;
 
                         //angleStart muss noch vom dem verbundenen street element übernommen werden
-                        const angleStart = Math.PI * 0.98;
+                        // const angleStart = Math.PI * 0.98;
+                        const angleStart = streetSegment.angle0;
                         const angleEnd = Math.atan2( tempP1.y - streetSegment.controlPoint.y, tempP1.x - streetSegment.controlPoint.x );
                         const angleAdjacent = angleStart + Math.PI * 0.50;
                         const angleOpposite = angleStart;
@@ -3005,6 +3074,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         const cosOpposite = Math.cos( angleOpposite );
                         const sinIntersection = Math.sin( angleIntersection );
                         const cosIntersection = Math.cos( angleIntersection );
+
+                        streetSegment.angle1 = angleEnd;
 
                         //---
                         //center line/bezier
@@ -3925,6 +3996,47 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         //console.log( 'p1: ', pathSegment.p1.x, pathSegment.p1.y, mousePos.x, mousePos.y );
 
                     }
+
+                }
+
+            }
+
+            //---
+
+            for ( let i = 0, l = path.streetSegments.length; i < l; i ++ ) {
+
+                const streetSegment = path.streetSegments[ i ];
+
+                if ( streetSegment.p0 !== null && streetSegment.p1 !== null ) {
+
+                    const distancep0 = getDistance( mousePos, streetSegment.p0 );
+                    const distancep1 = getDistance( mousePos, streetSegment.p1 );
+
+                    if ( distancep0 <= SNAP_TO_DISTANCE ) {
+
+                        mouseCursor.position.x = streetSegment.p0.x;
+                        mouseCursor.position.y = streetSegment.p0.y;
+                        mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
+
+                        //console.log( 'p0: ', pathSegment.p0.x, pathSegment.p0.y, mousePos.x, mousePos.y );
+
+                    } else if ( distancep1 <= SNAP_TO_DISTANCE ) {
+
+                        mouseCursor.position.x = streetSegment.p1.x;
+                        mouseCursor.position.y = streetSegment.p1.y;
+                        mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
+
+                        //console.log( 'p1: ', pathSegment.p1.x, pathSegment.p1.y, mousePos.x, mousePos.y );
+
+                    }
+
+                    //---
+
+                    drawCircle( streetSegment.p0, 3, 124, 252, 0, 255 );
+                    drawCircleOutline( streetSegment.p0, 6, 124, 252, 0, 255 );
+
+                    drawCircle( streetSegment.p1, 3, 124, 252, 0, 255 );
+                    drawCircleOutline( streetSegment.p1, 6, 124, 252, 0, 255 );
 
                 }
 
