@@ -640,7 +640,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function findPath( position ) {
 
-        console.log( '\n\n\n\n\n\n\nfindPath()' );
+        console.log( '\n\n\n\n\n\n\nfindPath() test1' );
 
         tempPathSegments = [];
 
@@ -666,6 +666,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        console.log( 'findPath() test2' );
+
         //---
 
         path.currentPoint = null;
@@ -680,6 +682,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             return;
 
         }
+
+        console.log( 'findPath() test3' );
 
         for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
 
@@ -702,11 +706,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        console.log( 'findPath() test4' );
+
         if ( path.currentPoint === null ) {
 
             return;
 
         }
+
+        console.log( 'findPath() test5' );
 
         path.currentPoint.cost = 0;
 
@@ -734,6 +742,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             //---
 
             const nextPathSegments = getNextPathSegmentsByPoint( path.currentPoint, path.segments );
+
+            console.log( 'nextPathSegments.length: ', nextPathSegments.length );
 
             if ( nextPathSegments.length > 0 ) {
 
@@ -769,9 +779,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        console.log( 'findPath() test6' );
+
+        //console.log( 'path.openSet.length: ', path.openSet.length );
+
         //---
 
         const routeEndPoint = getPointByPosition( path.routes[ routeIndex ].endPoint );
+
+        console.log( 'routeEndPoint: ', routeEndPoint );
+        console.log( 'routeEndPoint.parentPoint: ', routeEndPoint.parentPoint );
 
         if ( routeEndPoint.parentPoint !== null ) {
 
@@ -1082,7 +1099,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( p.x === streetSegment.p0.x && p.y === streetSegment.p0.y ) {
 
-                result.push( streetSegment );
+                result.push( { streetSegment: streetSegment, side: 0 } );
 
             }
 
@@ -1090,7 +1107,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( p.x === streetSegment.p1.x && p.y === streetSegment.p1.y ) {
 
-                    result.push( streetSegment );
+                    result.push( { streetSegment: streetSegment, side: 1 } );
 
                 }
 
@@ -1125,13 +1142,26 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             let modus = null;
             let angle0 = 0;
+            let lanesCount = 4;
+            let lanes = [];
 
             if ( connectedStreetSegments.length > 0 ) {
 
                 const connectedStreetSegment = connectedStreetSegments[ 0 ];
 
                 modus = 'add';
-                angle0 = connectedStreetSegment.angle1;
+                angle0 = connectedStreetSegment.streetSegment[ 'angle' + connectedStreetSegment.side.toString() ];
+
+                for ( let i = 0, l = connectedStreetSegment.streetSegment.lanes.length; i < l; i ++ ) {
+
+                    const connectedLane = connectedStreetSegment.streetSegment.lanes[ i ];
+                    const connectedLanePoint = connectedLane[ 'p' + connectedStreetSegment.side.toString() ];
+
+                    const lane = getNewStreetSegmentLane( { x: connectedLanePoint.x, y: connectedLanePoint.y }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } );
+
+                    lanes.push( lane );
+
+                }
 
             } else {
 
@@ -1142,6 +1172,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 // unten  = Math.PI * 0.50;
                 // links  = Math.PI * 1.00;
                 // oben   = Math.PI * 1.50;
+
+                for ( let i = 0, l = lanesCount; i < l; i ++ ) {
+
+                    const lane = getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } );
+
+                    lanes.push( lane );
+
+                }
 
             }
 
@@ -1159,17 +1197,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 controlPoint: { x: 0, y: 0 },
                 angle0: angle0,
                 angle1: 0,
-
-                lanes: [
-                    getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                    // getNewStreetSegmentLane( { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 } ),
-                ],
+                lanes: lanes,
                 centerLanes: [],
                 crossLanes: [],
                 pathSegments: [],
@@ -3153,15 +3181,29 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                 //start und end punkte seitlich der mittellinie platzieren
                                 if ( i <= lanePositionSwitch ) {
 
-                                    lane.p0.x = sinStart * laneDistance + streetSegment.p0.x;
-                                    lane.p0.y = -cosStart * laneDistance + streetSegment.p0.y;
+                                    if ( lane.p0.x === 0 && lane.p0.y === 0 ) {
+
+                                        lane.p0.x = sinStart * laneDistance + streetSegment.p0.x;
+                                        lane.p0.y = -cosStart * laneDistance + streetSegment.p0.y;
+
+                                    }
+
+                                    // lane.p0.x = sinStart * laneDistance + streetSegment.p0.x;
+                                    // lane.p0.y = -cosStart * laneDistance + streetSegment.p0.y;
                                     lane.p1.x = sinEnd * laneDistance + tempP1.x;
                                     lane.p1.y = -cosEnd * laneDistance + tempP1.y;
 
                                 } else {
 
-                                    lane.p0.x = -sinStart * laneDistance + streetSegment.p0.x;
-                                    lane.p0.y = cosStart * laneDistance + streetSegment.p0.y;
+                                    if ( lane.p0.x === 0 && lane.p0.y === 0 ) {
+
+                                        lane.p0.x = -sinStart * laneDistance + streetSegment.p0.x;
+                                        lane.p0.y = cosStart * laneDistance + streetSegment.p0.y;
+                                        
+                                    }
+
+                                    // lane.p0.x = -sinStart * laneDistance + streetSegment.p0.x;
+                                    // lane.p0.y = cosStart * laneDistance + streetSegment.p0.y;
                                     lane.p1.x = -sinEnd * laneDistance + tempP1.x;
                                     lane.p1.y = cosEnd * laneDistance + tempP1.y;
 
