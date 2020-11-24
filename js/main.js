@@ -1696,26 +1696,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( p0Found !== null ) {
 
-            //setPathSegmentPointNeighbours( getPointByPosition( p0Found ) );
-
             path.points.splice( path.points.findIndex( ( point ) => point.x === p0Found.x && point.y === p0Found.y ), 1 );
 
         }
 
         if ( p1Found !== null ) {
 
-            //setPathSegmentPointNeighbours( getPointByPosition( p1Found ) );
-
             path.points.splice( path.points.findIndex( ( point ) => point.x === p1Found.x && point.y === p1Found.y ), 1 );
 
         }
 
-        //setPathSegmentPointNeighbours( getPointByPosition( currentPathSegment.p0 ) );
-        //setPathSegmentPointNeighbours( getPointByPosition( currentPathSegment.p1 ) );
+        //---
 
         for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
 
             path.segments[ i ].id = i;
+
+        }
+
+        for ( let i = 0, l = path.points.length; i < l; i ++ ) {
+
+            setPathSegmentPointNeighbours( path.points[ i ] );
 
         }
 
