@@ -114,8 +114,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             id: 0,
             routes: [
                 { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [], length: 0, complete: true },
-                // { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0, complete: true },
-                // { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0, complete: true },
+                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0, complete: true },
+                { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0, complete: true },
             ],
             currentPoint: { x: 0, y: 0 },
             streetPoints: [],
@@ -243,7 +243,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( startPoint !== null && endPoint !== null ) {
 
-            findPath( startPoint );
+            findPath( route );
 
         }
 
@@ -643,7 +643,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
-    function findPath( position ) {
+    function findPath( route ) {
 
         // console.log( '\n\n\n\n\n\n\nfindPath() test1' );
 
@@ -656,6 +656,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const path = pathHolder[ pathIndex ];
 
         //---
+        //get cost value function for MinHeap Sort
 
         const getCost = ( node ) => {
     
@@ -664,11 +665,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
         //---
+        //create new MinHeap
 
         path.openSet = new MinHeap( getCost );
 
-        // path.closedSet = [];
-        path.segmentsStartToEnd = [];
+        //---
+        //reset all points
 
         for ( let i = 0, l = path.points.length; i < l; i ++ ) {
 
@@ -680,47 +682,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        // console.log( 'findPath() test2' );
-
         //---
-
-        path.currentPoint = null;
-
-        let routeIndex = 0;
-        let routeColor = null;
-
-        const pointFound = getPointByPosition( position );
-
-        if ( pointFound === null ) {
-
-            return;
-
-        }
-
-        // console.log( 'findPath() test3' );
-
-        for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
-
-            const route = path.routes[ i ];
-
-            if ( route.startPoint === null || route.endPoint === null ) {
-
-                continue;
-
-            }
-
-            if ( route.startPoint.x === pointFound.x && route.startPoint.y === pointFound.y || route.endPoint.x === pointFound.x && route.endPoint.y === pointFound.y ) {
-
-                path.currentPoint = getPointByPosition( route.startPoint );
-
-                routeIndex = i;
-                routeColor = PATH_COLORS[ i ];
-
-            }
-
-        }
-
-        // console.log( 'findPath() test4' );
+        
+        path.currentPoint = getPointByPosition( route.startPoint );
 
         if ( path.currentPoint === null ) {
 
@@ -728,34 +692,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        // console.log( 'findPath() test5' );
-
         path.currentPoint.cost = 0;
 
         //path.openSet.push( path.currentPoint );
         path.openSet.insert( path.currentPoint );
 
-        // console.log( '--------------------------------------------' );
-        // console.log( 'path.openSet: ', path.openSet.length );
-        // console.log( 'path.openSet: ', path.openSet.length() );
-        // console.log( '--------------------------------------------' );
-        //path.openSet.insert( path.currentPoint );
-
         //---
 
-        //while ( path.openSet.length > 0 ) {
         while ( path.openSet.length > 0 ) {
 
             //console.log( '______________________________________', path.openSet.length, path.openSet.length() );
 
             // path.currentPoint = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
-            //const cP = path.openSet.remove();
-            //const cP = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
             path.currentPoint = path.openSet.extract();
-
-            //console.log( '______________________________________', path.currentPoint.x, path.currentPoint.y, path.currentPoint.cost, cP.x, cP.y, cP.cost );
-            //path.currentPoint = path.openSet.remove();
-            //console.log( '|-> ', path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) ), path.openSet.remove(), ' <-|' );
             path.currentPoint.visited = true;
 
             // for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
@@ -763,10 +712,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
             //     console.log( '--->>> ', path.openSet[ i ].x, path.openSet[ i ].y, path.openSet[ i ].visited, path.openSet[ i ].cost);
 
             // }
-
-            // console.log( path.currentPoint );
-            // console.log( 'path.currentPoint: ', path.currentPoint.x, path.currentPoint.y, path.currentPoint.visited );
-            // console.log( path.endPoint );
 
             //---
 
@@ -801,60 +746,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-
-            //---
-            /*
-            const nextPathSegments = getNextPathSegmentsByPoint( path.currentPoint, path.segments );
-
-            // console.log( 'nextPathSegments.length: ', nextPathSegments.length );
-
-            if ( nextPathSegments.length > 0 ) {
-
-                const nextPoints = getNextPointsByPointAndPathSegments( path.currentPoint, nextPathSegments );
-
-                // console.log( '--_>>> ', nextPoints.length );
-                //console.log( 'nextPathSegments.length: ', nextPathSegments.length, 'nextPoints.length: ', nextPoints.length );
-
-                for ( let i = 0, l = nextPathSegments.length; i < l; i ++ ) {
-
-                    const nextPathSegment = nextPathSegments[ i ];
-                    const nextPoint = getPointByPosition( nextPoints[ i ] );
-                    
-                    if ( nextPoint.visited === false && nextPoint.walkable === true ) {
-
-                        //const nextDistance = path.currentPoint.cost + getDistance( nextPoint, path.currentPoint );
-                        //get real bezier length precomputed
-                        const nextDistance = path.currentPoint.cost + nextPathSegment.length;
-
-                        if ( nextDistance < nextPoint.cost ) {
-
-                            nextPoint.parentPoint = path.currentPoint;
-
-                            nextPoint.cost = nextDistance;
-
-                        }
-
-                        path.openSet.push( nextPoint );
-
-                    }
-
-                }
-
-            }
-            */
-            //---
-
             //path.openSet.splice( path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y ), 1 );
 
         }
-
-        // console.log( 'findPath() test6' );
 
         //console.log( 'path.openSet.length: ', path.openSet.length );
 
         //---
 
-        const routeEndPoint = getPointByPosition( path.routes[ routeIndex ].endPoint );
+        const routeEndPoint = getPointByPosition( route.endPoint );
+
+        //const routeEndPoint = getPointByPosition( path.routes[ routeIndex ].endPoint );
 
         // console.log( 'routeEndPoint: ', routeEndPoint );
         // console.log( 'routeEndPoint.parentPoint: ', routeEndPoint.parentPoint );
@@ -869,17 +771,23 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             while ( currentPoint !== null ) {
 
-                pathToEnd.push( currentPoint );
+                pathToEnd.unshift( currentPoint );
+                //pathToEnd.push( currentPoint );
 
                 currentPoint = currentPoint.parentPoint;
 
             }
 
-            pathToEnd.reverse();
+            // if ( pathToEnd[ pathToEnd.length - 1 ].x !== route.endPoint.x || pathToEnd[ pathToEnd.length - 1 ].y !== route.endPoint.y ) {
 
-            path.routes[ routeIndex ].complete = true;
-            path.routes[ routeIndex ].length = 0;
-            path.routes[ routeIndex ].pathSegments = [];
+            //     //console.log( "FOUND" );
+            //     return;
+
+            // }
+
+            route.complete = true;
+            route.length = 0;
+            route.pathSegments = [];
 
             for ( let i = 0, l = pathToEnd.length - 1; i < l; i ++ ) {
 
@@ -890,7 +798,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 //---
 
-                path.routes[ routeIndex ].length += pathSegment.length;
+                route.length += pathSegment.length;
 
                 //---
 
@@ -902,7 +810,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( i === 0 ) {
 
-                    if ( pathSegment.p0.x === path.routes[ routeIndex ].startPoint.x && pathSegment.p0.y === path.routes[ routeIndex ].startPoint.y ) {
+                    if ( pathSegment.p0.x === route.startPoint.x && pathSegment.p0.y === route.startPoint.y ) {
 
                         newPathSegment.p0 = { x: pathSegment.p0.x, y: pathSegment.p0.y };
                         newPathSegment.p1 = { x: pathSegment.p1.x, y: pathSegment.p1.y };
@@ -916,7 +824,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 } else {
 
-                    const predecessorNewPathSegment = path.routes[ routeIndex ].pathSegments[ path.routes[ routeIndex ].pathSegments.length - 1 ];
+                    const predecessorNewPathSegment = route.pathSegments[ route.pathSegments.length - 1 ];
 
                     if ( pathSegment.p0.x === predecessorNewPathSegment.p1.x && pathSegment.p0.y === predecessorNewPathSegment.p1.y ) {
 
@@ -932,7 +840,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 }
 
-                path.routes[ routeIndex ].pathSegments.push( newPathSegment );
+                route.pathSegments.push( newPathSegment );
 
                 //---
 
@@ -1788,15 +1696,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( p0Found !== null ) {
 
+            //setPathSegmentPointNeighbours( getPointByPosition( p0Found ) );
+
             path.points.splice( path.points.findIndex( ( point ) => point.x === p0Found.x && point.y === p0Found.y ), 1 );
 
         }
 
         if ( p1Found !== null ) {
 
+            //setPathSegmentPointNeighbours( getPointByPosition( p1Found ) );
+
             path.points.splice( path.points.findIndex( ( point ) => point.x === p1Found.x && point.y === p1Found.y ), 1 );
 
         }
+
+        //setPathSegmentPointNeighbours( getPointByPosition( currentPathSegment.p0 ) );
+        //setPathSegmentPointNeighbours( getPointByPosition( currentPathSegment.p1 ) );
 
         for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
 
@@ -3045,7 +2960,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( startPoint !== null && endPoint !== null ) {
 
-                    findPath( startPoint );
+                    findPath( route );
 
                 }
 
@@ -3120,7 +3035,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         } else if ( editorMode === EDITOR_MODE_ENUM.showRoute ) {
 
-            //findPath( mouseCursor.position );
             showRoute( mouseCursor.position );
 
         }

@@ -109,7 +109,7 @@ class MinHeap {
 
             }
             
-            if ( !( leftChildIndex >= this.heap.length ) && !( rightChildIndex >= this.heap.length ) ) {         
+            if ( leftChildIndex >= this.heap.length === false && rightChildIndex >= this.heap.length === false ) {         
                 
                 lowest = this.selector( this.heap[ rightChildIndex ] ) < this.selector( this.heap[ leftChildIndex ]) ? rightChildIndex : leftChildIndex;         
                 
