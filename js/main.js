@@ -114,8 +114,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             id: 0,
             routes: [
                 { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [], length: 0, complete: true },
-                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0, complete: true },
-                { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0, complete: true },
+                // { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0, complete: true },
+                // { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0, complete: true },
             ],
             currentPoint: { x: 0, y: 0 },
             streetPoints: [],
@@ -666,7 +666,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //---
 
         path.openSet = [];
-        //path.openSet = new MinHeap( getCost );
+        path.openSetHeap = new MinHeap( getCost );
+
         // path.closedSet = [];
         path.segmentsStartToEnd = [];
 
@@ -733,16 +734,24 @@ document.addEventListener( 'DOMContentLoaded', () => {
         path.currentPoint.cost = 0;
 
         path.openSet.push( path.currentPoint );
+        // path.openSetHeap.insert( path.currentPoint );
+
+        // console.log( '--------------------------------------------' );
+        // console.log( 'path.openSet: ', path.openSet.length );
+        // console.log( 'path.openSetHeap: ', path.openSetHeap.length() );
+        // console.log( '--------------------------------------------' );
         //path.openSet.insert( path.currentPoint );
 
         //---
 
         while ( path.openSet.length > 0 ) {
+        //while ( path.openSetHeap.length() > 0 ) {
 
-            // console.log( '______________________________________', path.openSet.length );
+            console.log( '______________________________________', path.openSet.length, path.openSetHeap.length() );
 
             path.currentPoint = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
-            //path.currentPoint = path.openSet.remove();
+            //path.currentPoint = path.openSetHeap.remove();
+            //console.log( '|-> ', path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) ), path.openSetHeap.remove(), ' <-|' );
             path.currentPoint.visited = true;
 
             // for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
@@ -780,6 +789,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         }
 
                         path.openSet.push( neighbourPoint );
+                        //path.openSetHeap.insert( path.currentPoint );
 
                     }
 
