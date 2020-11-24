@@ -645,7 +645,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function findPath( position ) {
 
-        console.log( '\n\n\n\n\n\n\nfindPath() test1' );
+        // console.log( '\n\n\n\n\n\n\nfindPath() test1' );
 
         tempPathSegments = [];
 
@@ -665,8 +665,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        path.openSet = [];
-        path.openSetHeap = new MinHeap( getCost );
+        path.openSet = new MinHeap( getCost );
 
         // path.closedSet = [];
         path.segmentsStartToEnd = [];
@@ -681,7 +680,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        console.log( 'findPath() test2' );
+        // console.log( 'findPath() test2' );
 
         //---
 
@@ -698,7 +697,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        console.log( 'findPath() test3' );
+        // console.log( 'findPath() test3' );
 
         for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
 
@@ -721,7 +720,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        console.log( 'findPath() test4' );
+        // console.log( 'findPath() test4' );
 
         if ( path.currentPoint === null ) {
 
@@ -729,29 +728,34 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        console.log( 'findPath() test5' );
+        // console.log( 'findPath() test5' );
 
         path.currentPoint.cost = 0;
 
-        path.openSet.push( path.currentPoint );
-        // path.openSetHeap.insert( path.currentPoint );
+        //path.openSet.push( path.currentPoint );
+        path.openSet.insert( path.currentPoint );
 
         // console.log( '--------------------------------------------' );
         // console.log( 'path.openSet: ', path.openSet.length );
-        // console.log( 'path.openSetHeap: ', path.openSetHeap.length() );
+        // console.log( 'path.openSet: ', path.openSet.length() );
         // console.log( '--------------------------------------------' );
         //path.openSet.insert( path.currentPoint );
 
         //---
 
+        //while ( path.openSet.length > 0 ) {
         while ( path.openSet.length > 0 ) {
-        //while ( path.openSetHeap.length() > 0 ) {
 
-            console.log( '______________________________________', path.openSet.length, path.openSetHeap.length() );
+            //console.log( '______________________________________', path.openSet.length, path.openSet.length() );
 
-            path.currentPoint = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
-            //path.currentPoint = path.openSetHeap.remove();
-            //console.log( '|-> ', path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) ), path.openSetHeap.remove(), ' <-|' );
+            // path.currentPoint = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
+            //const cP = path.openSet.remove();
+            //const cP = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
+            path.currentPoint = path.openSet.extract();
+
+            //console.log( '______________________________________', path.currentPoint.x, path.currentPoint.y, path.currentPoint.cost, cP.x, cP.y, cP.cost );
+            //path.currentPoint = path.openSet.remove();
+            //console.log( '|-> ', path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) ), path.openSet.remove(), ' <-|' );
             path.currentPoint.visited = true;
 
             // for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
@@ -788,8 +792,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                         }
 
-                        path.openSet.push( neighbourPoint );
-                        //path.openSetHeap.insert( path.currentPoint );
+                        //path.openSet.push( neighbourPoint );
+                        path.openSet.insert( neighbourPoint );
 
                     }
 
@@ -840,11 +844,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
             */
             //---
 
-            path.openSet.splice( path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y ), 1 );
+            //path.openSet.splice( path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y ), 1 );
 
         }
 
-        console.log( 'findPath() test6' );
+        // console.log( 'findPath() test6' );
 
         //console.log( 'path.openSet.length: ', path.openSet.length );
 
@@ -852,12 +856,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const routeEndPoint = getPointByPosition( path.routes[ routeIndex ].endPoint );
 
-        console.log( 'routeEndPoint: ', routeEndPoint );
-        console.log( 'routeEndPoint.parentPoint: ', routeEndPoint.parentPoint );
+        // console.log( 'routeEndPoint: ', routeEndPoint );
+        // console.log( 'routeEndPoint.parentPoint: ', routeEndPoint.parentPoint );
 
         if ( routeEndPoint.parentPoint !== null ) {
 
-            console.log( 'FOUND END' );
+            // console.log( 'FOUND END' );
 
             const pathToEnd = [];
 

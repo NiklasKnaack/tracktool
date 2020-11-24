@@ -22,17 +22,11 @@ class MinHeap {
 
     }
 
-    length() {
+    get length() {
 
         return this.heap.length;
 
     }
-
-    // getDataCopy() {
-
-    //     return [ ...this.heap ];
-
-    // }
 
     insert( node ) {      
         
@@ -66,7 +60,7 @@ class MinHeap {
         
     }
 
-    remove() {
+    extract() {
 
         if ( this.heap.length === 0 ) {
 
