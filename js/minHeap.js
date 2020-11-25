@@ -54,7 +54,7 @@ class MinHeap {
             
             i = parentIndex;
             
-            parentVal = this.selector( this.heap[ Math.max( Math.floor( ( i + 1 ) / 2 - 1 ), 0 ) ] );
+            parentVal = this.selector( this.heap[ Math.max( i, 0 ) ] );
             
         }   
         
