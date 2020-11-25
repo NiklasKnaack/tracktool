@@ -74,7 +74,7 @@ class MinHeap {
             
         }
         
-        const ret = this.heap[ 0 ];
+        const result = this.heap[ 0 ];
         
         let temp = this.heap.pop();      
         
@@ -129,7 +129,7 @@ class MinHeap {
             
         }
         
-        return ret;   
+        return result;   
         
     }
 
