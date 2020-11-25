@@ -238,12 +238,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const route = pathHolder[ 0 ].routes[ i ];
 
-        const startPoint = route.startPoint;
-        const endPoint = route.endPoint;
+        if ( route.startPoint !== null && route.endPoint !== null ) {
 
-        if ( startPoint !== null && endPoint !== null ) {
-
-            findPath( route );
+            // findPath( route );
+            findPathAsync( route );
 
         }
 
@@ -643,6 +641,24 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
+    async function findPathAsync( route ) {
+
+        // findPath( route );
+
+        try {
+            // var result = await findPath( route );
+            await findPath( route );
+            // document.getElementById('output5').innerText = result;
+
+        } catch( err ) {
+
+            // document.getElementById('output5').innerText = 'Error: ' + err;
+            console.log( 'Error: ' + err );
+
+        }
+
+    }
+
     function findPath( route ) {
 
         // console.log( '\n\n\n\n\n\n\nfindPath() test1' );
@@ -788,20 +804,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 let newPathSegment = {};
 
                 //newPathSegment.id = pathSegment.id;
-                newPathSegment.controlPoint = { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y };
+                newPathSegment.controlPoint = pathSegment.controlPoint;
                 newPathSegment.length = pathSegment.length;
+                newPathSegment.p0 = null;
+                newPathSegment.p1 = null;
 
                 if ( i === 0 ) {
 
                     if ( pathSegment.p0.x === route.startPoint.x && pathSegment.p0.y === route.startPoint.y ) {
 
-                        newPathSegment.p0 = { x: pathSegment.p0.x, y: pathSegment.p0.y };
-                        newPathSegment.p1 = { x: pathSegment.p1.x, y: pathSegment.p1.y };
+                        newPathSegment.p0 = pathSegment.p0;
+                        newPathSegment.p1 = pathSegment.p1;
 
                     } else {
 
-                        newPathSegment.p0 = { x: pathSegment.p1.x, y: pathSegment.p1.y };
-                        newPathSegment.p1 = { x: pathSegment.p0.x, y: pathSegment.p0.y };
+                        newPathSegment.p0 = pathSegment.p1;
+                        newPathSegment.p1 = pathSegment.p0;
 
                     }
 
@@ -811,13 +829,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     if ( pathSegment.p0.x === predecessorNewPathSegment.p1.x && pathSegment.p0.y === predecessorNewPathSegment.p1.y ) {
 
-                        newPathSegment.p0 = { x: pathSegment.p0.x, y: pathSegment.p0.y };
-                        newPathSegment.p1 = { x: pathSegment.p1.x, y: pathSegment.p1.y };
+                        newPathSegment.p0 = pathSegment.p0;
+                        newPathSegment.p1 = pathSegment.p1;
 
                     } else {
 
-                        newPathSegment.p0 = { x: pathSegment.p1.x, y: pathSegment.p1.y };
-                        newPathSegment.p1 = { x: pathSegment.p0.x, y: pathSegment.p0.y };
+                        newPathSegment.p0 = pathSegment.p1;
+                        newPathSegment.p1 = pathSegment.p0;
 
                     }
 
@@ -2941,12 +2959,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const route = path.routes[ i ];
 
-                const startPoint = route.startPoint;
-                const endPoint = route.endPoint;
+                if ( route.startPoint !== null && route.endPoint !== null ) {
 
-                if ( startPoint !== null && endPoint !== null ) {
-
-                    findPath( route );
+                    // findPath( route );
+                    findPathAsync( route );
 
                 }
 
