@@ -135,10 +135,12 @@ class MinHeap {
 
     swap( i, parentIndex ) {
 
-        const temp = this.heap[ i ];
+        let temp = this.heap[ i ];
 
         this.heap[ i ] = this.heap[ parentIndex ];
         this.heap[ parentIndex ] = temp;
+
+        temp = null;
 
     }
     
