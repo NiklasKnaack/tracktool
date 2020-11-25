@@ -694,7 +694,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         path.currentPoint.cost = 0;
 
-        //path.openSet.push( path.currentPoint );
         path.openSet.insert( path.currentPoint );
 
         //---
@@ -737,7 +736,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                         }
 
-                        //path.openSet.push( neighbourPoint );
                         path.openSet.insert( neighbourPoint );
 
                     }
@@ -750,16 +748,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        //console.log( 'path.openSet.length: ', path.openSet.length );
-
         //---
 
         const routeEndPoint = getPointByPosition( route.endPoint );
-
-        //const routeEndPoint = getPointByPosition( path.routes[ routeIndex ].endPoint );
-
-        // console.log( 'routeEndPoint: ', routeEndPoint );
-        // console.log( 'routeEndPoint.parentPoint: ', routeEndPoint.parentPoint );
 
         if ( routeEndPoint.parentPoint !== null ) {
 
@@ -772,18 +763,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
             while ( currentPoint !== null ) {
 
                 pathToEnd.unshift( currentPoint );
-                //pathToEnd.push( currentPoint );
 
                 currentPoint = currentPoint.parentPoint;
 
             }
-
-            // if ( pathToEnd[ pathToEnd.length - 1 ].x !== route.endPoint.x || pathToEnd[ pathToEnd.length - 1 ].y !== route.endPoint.y ) {
-
-            //     //console.log( "FOUND" );
-            //     return;
-
-            // }
 
             route.complete = true;
             route.length = 0;
@@ -857,7 +840,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             console.log( "FOUND NO END" );
 
-            path.routes[ routeIndex ].complete = false;
+            //path.routes[ routeIndex ].complete = false;
+
+            route.complete = false;
 
         }
 
