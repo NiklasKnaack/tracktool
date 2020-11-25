@@ -75,10 +75,8 @@ class MinHeap {
         }
         
         const result = this.heap[ 0 ];
-        
-        let temp = this.heap.pop();      
-        
-        this.heap[ 0 ] = temp; 
+
+        this.heap[ 0 ] = this.heap.pop();   
         
         let i = 0;
 
