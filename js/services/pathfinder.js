@@ -12,12 +12,23 @@ class Pathfinder {
 
         this._callback = null;
         this._worker = null;
+
+        this._perfNow0 = 0;
+        this._perfNow1 = 0;
         
-        this.init();
+        this.resetWorker();
 
     }
 
-    init() {
+    resetWorker() {
+
+        if ( this._worker !== null ) {
+
+            this._worker.terminate();
+            this._worker.removeEventListener( 'message', this.resultHandler );
+            this._worker.removeEventListener( 'error', this.errorHandler );
+
+        }
 
         this._worker = new Worker( './js/services/pathsearch.js' );
         this._worker.addEventListener( 'message', this.resultHandler.bind( this ), false );
@@ -27,23 +38,28 @@ class Pathfinder {
 
     computeRoutes( graph = {}, callback = null ) {
 
-        this._callback = callback;
+        this._perfNow0 = performance.now();
 
+        this.resetWorker();
+
+        this._callback = callback;
         this._worker.postMessage( graph );
 
     }
 
     resultHandler( event ) {
 
-        const routes = event.data;
+        const graphRoutes = event.data;
 
-        if ( routes.length === 0 || this._callback === null ) {
+        if ( graphRoutes.length === 0 || this._callback === null ) {
 
             return;
 
         }
 
-        this._callback( routes );
+        this._perfNow1 = performance.now();
+
+        this._callback( graphRoutes, this._perfNow1 - this._perfNow0 );
 
     }
 

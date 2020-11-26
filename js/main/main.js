@@ -236,9 +236,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     setAllGraphSegmentPointNeighbours();
 
-    pathfinder.computeRoutes( graphHolder[ 0 ], ( routes ) => {
+    pathfinder.computeRoutes( graphHolder[ 0 ], ( routes, time ) => {
 
         graphHolder[ 0 ].routes = routes;
+
+        console.log( 'Der Aufruf von computeRoutes dauerte ' + time + ' Millisekunden.' );
 
     } );
 
@@ -2727,9 +2729,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            pathfinder.computeRoutes( graph, ( routes ) => {
+            pathfinder.computeRoutes( graph, ( routes, time ) => {
 
                 graph.routes = routes;
+
+                console.log( 'Der Aufruf von computeRoutes dauerte ' + time + ' Millisekunden.' );
         
             } );
 
@@ -4225,7 +4229,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 const routeIndex = i;
                 const route = graph.routes[ routeIndex ];
 
-                if ( route.startPoint === null || route.endPoint === null || route.complete === false ) {
+                if ( route.startPoint === null || route.endPoint === null || route.complete === false || route.graphSegments.length === 0 ) {
 
                     continue;
 
