@@ -5,6 +5,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
     console.clear();
     console.log( 'Track Tool' );
 
+    const pathfinder = new Pathfinder();
+    pathfinder.test();
+
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
     let stats = null;
@@ -240,8 +243,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( route.startPoint !== null && route.endPoint !== null ) {
 
-            // findPath( route );
-            findPathAsync( route );
+            findPath( route );
+            //findPathAsync( route );
 
         }
 
@@ -641,23 +644,23 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
-    async function findPathAsync( route ) {
+    // async function findPathAsync( route ) {
 
-        // findPath( route );
+    //     // findPath( route );
 
-        try {
-            // var result = await findPath( route );
-            await findPath( route );
-            // document.getElementById('output5').innerText = result;
+    //     try {
+    //         // var result = await findPath( route );
+    //         await findPath( route );
+    //         // document.getElementById('output5').innerText = result;
 
-        } catch( err ) {
+    //     } catch( err ) {
 
-            // document.getElementById('output5').innerText = 'Error: ' + err;
-            console.log( 'Error: ' + err );
+    //         // document.getElementById('output5').innerText = 'Error: ' + err;
+    //         console.log( 'Error: ' + err );
 
-        }
+    //     }
 
-    }
+    // }
 
     function findPath( route ) {
 
@@ -2961,8 +2964,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( route.startPoint !== null && route.endPoint !== null ) {
 
-                    // findPath( route );
-                    findPathAsync( route );
+                    findPath( route );
+                    //findPathAsync( route );
 
                 }
 
