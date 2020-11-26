@@ -5,9 +5,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
     console.clear();
     console.log( 'Track Tool' );
 
-    const pathfinder = new Pathfinder();
-    //pathfinder.computeRoutes( {} );
-
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
     let stats = null;
@@ -21,18 +18,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     const EDITOR_MODE_ENUM = Object.freeze( {
 
-        addPathSegment: 'addPathSegment',
-        removePathSegment: 'removePathSegment',
-        bendPathSegment: 'bendPathSegment',
-        straightenPathSegment: 'straightenPathSegment',
-        splitPathSegment: 'splitPathSegment',
-        splitPathSegmentAt: 'splitPathSegmentAt',
-        togglePathWalkable: 'togglePathWalkable',
-        togglePathDirections: 'togglePathDirections',
+        addGraphSegment: 'addGraphSegment',
+        removeGraphSegment: 'removeGraphSegment',
+        bendGraphSegment: 'bendGraphSegment',
+        straightenGraphSegment: 'straightenGraphSegment',
+        splitGraphSegment: 'splitGraphSegment',
+        splitGraphSegmentAt: 'splitGraphSegmentAt',
+        toggleGraphWalkable: 'toggleGraphWalkable',
+        toggleGraphDirections: 'toggleGraphDirections',
         addStartPoint: 'addStartPoint',
         addEndPoint: 'addEndPoint',
         removeStartEndPoints: 'removeStartEndPoints',
-        getPathSegment: 'getPathSegment',
+        getGraphSegment: 'getGraphSegment',
         togglePointWalkable: 'togglePointWalkable',
         movePoint: 'movePoint',
         showRoute: 'showRoute',
@@ -40,8 +37,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     } );
 
-    const PATH_DIRECTIONS = [ '><', '>', '<' ];
-    const PATH_SEGMENT_CURVE_ACCURACY = 5;
+    const GRAPH_SEGMENT_DIRECTIONS = [ '><', '>', '<' ];
+    const GRAPH_SEGMENT_CURVE_ACCURACY = 5;
 
     const PATH_COLORS = [
         { r: 255, g: 213, b:   0, a: 255 },
@@ -75,9 +72,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
         { r:   0, g:   0, b: 255, a: 255 },
     ];
 
-    let editorMode = EDITOR_MODE_ENUM.addPathSegment;
+    let editorMode = EDITOR_MODE_ENUM.addGraphSegment;
 
     const VEHICLE_INTERVAL = 500;
+
+    const pathfinder = new Pathfinder();
 
     let vehiclesHolder = [];
     let vehicleTimer = null;
@@ -105,68 +104,68 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let simulationRuns = false;
 
-    let currentPathSegment = null;
-    let selectedPathSegments = [];
-    // let allowPathSegmentSplitting = true;
-    let tempPathSegments = [];
+    let currentGraphSegment = null;
+    let selectedGraphSegments = [];
+    // let allowGraphSegmentSplitting = true;
+    let tempGraphSegments = [];
 
     let currentStreetSegment = null;
 
-    let pathHolder = [
+    let graphHolder = [
         {
             id: 0,
             routes: [
-                { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [], length: 0, complete: false },
-                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0, complete: false },
-                { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0, complete: false },
+                { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, graphSegments: [], length: 0, complete: false },
+                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, graphSegments: [], length: 0, complete: false },
+                { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, graphSegments: [], length: 0, complete: false },
             ],
             currentPoint: { x: 0, y: 0 },
             streetPoints: [],
             streetSegments: [],
             points: [
-                { x: 170, y: 835, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 180, y: 716, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 153, y: 584, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 203, y: 427, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 170, y: 263, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 191, y: 70, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 347, y: 63, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 362, y: 232, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 363, y: 325, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 383, y: 418, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 370, y: 567, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 396, y: 689, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 385, y: 798, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 413, y: 890, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 578, y: 898, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 578, y: 757, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 568, y: 646, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 578, y: 501, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 562, y: 369, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 593, y: 249, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 548, y: 127, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 606, y: 41, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 715, y: 51, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 725, y: 147, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 722, y: 271, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 753, y: 390, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 745, y: 547, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 801, y: 683, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 758, y: 766, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 785, y: 877, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 868, y: 784, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 60, y: 218, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 57, y: 582, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 91, y: 741, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 952, y: 416, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 645, y: 341, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 270, y: 465, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 266, y: 915, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 867, y: 157, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 906, y: 57, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 874, y: 547, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 938, y: 757, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
-                { x: 122, y: 426, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourPathsegments: [], neighbourPoints: [] },
+                { x: 170, y: 835, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 180, y: 716, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 153, y: 584, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 203, y: 427, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 170, y: 263, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 191, y: 70, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 347, y: 63, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 362, y: 232, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 363, y: 325, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 383, y: 418, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 370, y: 567, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 396, y: 689, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 385, y: 798, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 413, y: 890, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 578, y: 898, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 578, y: 757, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 568, y: 646, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 578, y: 501, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 562, y: 369, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 593, y: 249, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 548, y: 127, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 606, y: 41, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 715, y: 51, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 725, y: 147, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 722, y: 271, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 753, y: 390, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 745, y: 547, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 801, y: 683, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 758, y: 766, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 785, y: 877, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 868, y: 784, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 60, y: 218, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 57, y: 582, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 91, y: 741, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 952, y: 416, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 645, y: 341, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 270, y: 465, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 266, y: 915, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 867, y: 157, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 906, y: 57, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 874, y: 547, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 938, y: 757, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
+                { x: 122, y: 426, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
             ],
             openSet: [],
             closedSet: [],
@@ -235,11 +234,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
     ];
 
-    setAllPathSegmentPointNeighbours();
+    setAllGraphSegmentPointNeighbours();
 
-    pathfinder.computeRoutes( pathHolder[ 0 ], ( routes ) => {
+    pathfinder.computeRoutes( graphHolder[ 0 ], ( routes ) => {
 
-        pathHolder[ 0 ].routes = routes;
+        graphHolder[ 0 ].routes = routes;
 
     } );
 
@@ -260,51 +259,51 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        const _addPathSegment = () => {
+        const _addGraphSegment = () => {
 
-            editorMode = EDITOR_MODE_ENUM.addPathSegment;
-
-        }
-
-        const _removePathSegment = () => {
-
-            editorMode = EDITOR_MODE_ENUM.removePathSegment;
+            editorMode = EDITOR_MODE_ENUM.addGraphSegment;
 
         }
 
-        const _bendPathSegment = () => {
+        const _removeGraphSegment = () => {
 
-            editorMode = EDITOR_MODE_ENUM.bendPathSegment;
-
-        }
-
-        const _straightenPathSegment = () => {
-
-            editorMode = EDITOR_MODE_ENUM.straightenPathSegment;
+            editorMode = EDITOR_MODE_ENUM.removeGraphSegment;
 
         }
 
-        const _splitPathSegment = () => {
+        const _bendGraphSegment = () => {
 
-            editorMode = EDITOR_MODE_ENUM.splitPathSegment;
-
-        }
-
-        const _splitPathSegmentAt = () => {
-
-            editorMode = EDITOR_MODE_ENUM.splitPathSegmentAt;
+            editorMode = EDITOR_MODE_ENUM.bendGraphSegment;
 
         }
 
-        const _togglePathWalkable = () => {
+        const _straightenGraphSegment = () => {
 
-            editorMode = EDITOR_MODE_ENUM.togglePathWalkable;
+            editorMode = EDITOR_MODE_ENUM.straightenGraphSegment;
 
         }
 
-        const _togglePathDirections = () => {
+        const _splitGraphSegment = () => {
 
-            editorMode = EDITOR_MODE_ENUM.togglePathDirections;
+            editorMode = EDITOR_MODE_ENUM.splitGraphSegment;
+
+        }
+
+        const _splitGraphSegmentAt = () => {
+
+            editorMode = EDITOR_MODE_ENUM.splitGraphSegmentAt;
+
+        }
+
+        const _toggleGraphWalkable = () => {
+
+            editorMode = EDITOR_MODE_ENUM.toggleGraphWalkable;
+
+        }
+
+        const _toggleGraphDirections = () => {
+
+            editorMode = EDITOR_MODE_ENUM.toggleGraphDirections;
 
         }
 
@@ -338,18 +337,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        const _getPathSegment = () => {
+        const _getGraphSegment = () => {
 
-            editorMode = EDITOR_MODE_ENUM.getPathSegment;
+            editorMode = EDITOR_MODE_ENUM.getGraphSegment;
 
         }
 
         const _clearAll = () => {
 
-            const pathIndex = 0;
+            const graphIndex = 0;
 
-            pathHolder[ pathIndex ] = {
-                id: pathIndex,
+            graphHolder[ graphIndex ] = {
+                id: graphIndex,
                 routes: [],
                 currentPoint: null,
                 points: [],
@@ -359,11 +358,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 streetSegments: []
             }
 
-            tempPathSegments = [];
+            tempGraphSegments = [];
 
-            currentPathSegment = null;
+            currentGraphSegment = null;
             currentStreetSegment = null;
-            selectedPathSegments = [];
+            selectedGraphSegments = [];
 
             vehiclesHolder = [];
 
@@ -373,22 +372,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        const _logPath = () => {
+        const _logGraph = () => {
 
-            const pathIndex = 0;
+            const graphIndex = 0;
 
-            const path = pathHolder[ pathIndex ];
+            const graph = graphHolder[ graphIndex ];
 
             let output = '';
 
-            output += 'id: ' + pathIndex + ',\n';
+            output += 'id: ' + graphIndex + ',\n';
             output += 'routes: [' + '\n';
 
-            for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
-                const route = path.routes[ i ];
+                const route = graph.routes[ i ];
 
-                output += '    { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, pathSegments: [], length: 0, complete: false }';
+                output += '    { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, graphSegments: [], length: 0, complete: false }';
 
                 if ( i < l ) {
 
@@ -404,18 +403,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             output += '],' + '\n';
 
-            //output += 'currentPoint: ' + '{ x: ' + path.currentPoint.x + ', y: ' + path.currentPoint.y + ' },' + '\n';
+            //output += 'currentPoint: ' + '{ x: ' + graph.currentPoint.x + ', y: ' + graph.currentPoint.y + ' },' + '\n';
             output += 'currentPoint: ' + '{ x: 0, y: 0 },' + '\n';
             output += 'streetPoints: ' + '[],' + '\n';
             output += 'streetSegments: ' + '[],' + '\n';
 
             output += 'points: [' + '\n';
 
-            for ( let i = 0, l = path.points.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
 
-                const point = path.points[ i ];
+                const point = graph.points[ i ];
 
-                output += '    { x: ' + point.x + ', y: ' + point.y + ', walkable: ' + point.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ', neighbourPathsegments: ' + '[]' + ', neighbourPoints: ' + '[]' + ' }';
+                output += '    { x: ' + point.x + ', y: ' + point.y + ', walkable: ' + point.walkable + ', cost: ' + '0' + ', parentPoint: ' + 'null' + ', visited: ' + 'false' + ', neighbourGraphsegments: ' + '[]' + ', neighbourPoints: ' + '[]' + ' }';
 
                 if ( i < l ) {
 
@@ -434,11 +433,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
             output += 'closedSet: [],' + '\n';
             output += 'segments: [' + '\n';
 
-            for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-                const pathSegment = path.segments[ i ];
+                const graphSegment = graph.segments[ i ];
 
-                output += '    { id: ' + pathSegment.id + ', p0: ' + '{ x: ' + pathSegment.p0.x + ', y: ' + pathSegment.p0.y + ' }' + ', p1: ' + '{ x: ' + pathSegment.p1.x + ', y: ' + pathSegment.p1.y + ' }' + ', walkable: ' +  pathSegment.walkable + ', direction: "' +  pathSegment.direction + '", centerPoint: ' + '{ x: ' + pathSegment.centerPoint.x + ', y: ' + pathSegment.centerPoint.y + ' }' + ', controlPoint: { x: ' + pathSegment.controlPoint.x + ', y: ' + pathSegment.controlPoint.y + ' }, length: ' + pathSegment.length + ' }';
+                output += '    { id: ' + graphSegment.id + ', p0: ' + '{ x: ' + graphSegment.p0.x + ', y: ' + graphSegment.p0.y + ' }' + ', p1: ' + '{ x: ' + graphSegment.p1.x + ', y: ' + graphSegment.p1.y + ' }' + ', walkable: ' +  graphSegment.walkable + ', direction: "' +  graphSegment.direction + '", centerPoint: ' + '{ x: ' + graphSegment.centerPoint.x + ', y: ' + graphSegment.centerPoint.y + ' }' + ', controlPoint: { x: ' + graphSegment.controlPoint.x + ', y: ' + graphSegment.controlPoint.y + ' }, length: ' + graphSegment.length + ' }';
 
                 if ( i < l ) {
 
@@ -501,23 +500,23 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const guiSetting = {
 
             'Add Street Segment': _addStreetSegment,
-            'Add Path Segment': _addPathSegment,
-            // 'Allow Path Segment Splitting': allowPathSegmentSplitting,
-            'Remove Path Segment': _removePathSegment,
-            'Bend Path Segment': _bendPathSegment,
-            'Straighten Path Segment': _straightenPathSegment,
-            'Split Path Segment': _splitPathSegment,
-            'Split Path Segment At': _splitPathSegmentAt,
-            'Toggle Path Walkable': _togglePathWalkable,
-            'Toggle Path Directions': _togglePathDirections,
+            'Add Graph Segment': _addGraphSegment,
+            // 'Allow Graph Segment Splitting': allowGraphSegmentSplitting,
+            'Remove Graph Segment': _removeGraphSegment,
+            'Bend Graph Segment': _bendGraphSegment,
+            'Straighten Graph Segment': _straightenGraphSegment,
+            'Split Graph Segment': _splitGraphSegment,
+            'Split Graph Segment At': _splitGraphSegmentAt,
+            'Toggle Graph Walkable': _toggleGraphWalkable,
+            'Toggle Graph Directions': _toggleGraphDirections,
             'Move Point': _movePoint,
             'Add Start Point': _addStartPoint,
             'Add End Point': _addEndPoint,
             'Remove Start & End Points': _removeStartEndPoints,
             'Toggle Walkable Point': _setToggleWalkable,
             'Clear All': _clearAll,
-            'Get PathSegment': _getPathSegment,
-            'Log Path': _logPath,
+            'Get GraphSegment': _getGraphSegment,
+            'Log Graph': _logGraph,
             'Show Route': _showRoute,
             'Toggle Debug Mode': _toggleDebugMode,
             'Play/Pause Simulation': _playPauseSimulation,
@@ -531,15 +530,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         folderEdit.open();
         folderEdit.add( guiSetting, 'Add Street Segment' );
-        folderEdit.add( guiSetting, 'Add Path Segment' );
-        // folderEdit.add( guiSetting, 'Allow Path Segment Splitting' ).onChange( () => { allowPathSegmentSplitting = guiSetting[ 'Allow Path Segment Splitting' ]; } );
-        folderEdit.add( guiSetting, 'Remove Path Segment' );
-        folderEdit.add( guiSetting, 'Bend Path Segment' );
-        folderEdit.add( guiSetting, 'Straighten Path Segment' );
-        folderEdit.add( guiSetting, 'Split Path Segment' );
-        folderEdit.add( guiSetting, 'Split Path Segment At' );
-        folderEdit.add( guiSetting, 'Toggle Path Walkable' );
-        folderEdit.add( guiSetting, 'Toggle Path Directions' );
+        folderEdit.add( guiSetting, 'Add Graph Segment' );
+        // folderEdit.add( guiSetting, 'Allow Graph Segment Splitting' ).onChange( () => { allowGraphSegmentSplitting = guiSetting[ 'Allow Graph Segment Splitting' ]; } );
+        folderEdit.add( guiSetting, 'Remove Graph Segment' );
+        folderEdit.add( guiSetting, 'Bend Graph Segment' );
+        folderEdit.add( guiSetting, 'Straighten Graph Segment' );
+        folderEdit.add( guiSetting, 'Split Graph Segment' );
+        folderEdit.add( guiSetting, 'Split Graph Segment At' );
+        folderEdit.add( guiSetting, 'Toggle Graph Walkable' );
+        folderEdit.add( guiSetting, 'Toggle Graph Directions' );
         folderEdit.add( guiSetting, 'Move Point' );
         folderEdit.add( guiSetting, 'Add Start Point' );
         folderEdit.add( guiSetting, 'Add End Point' );
@@ -550,8 +549,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const folderAnalyze = gui.addFolder( 'Analyze' );
 
         folderAnalyze.open();
-        folderAnalyze.add( guiSetting, 'Get PathSegment' );
-        folderAnalyze.add( guiSetting, 'Log Path' );
+        folderAnalyze.add( guiSetting, 'Get GraphSegment' );
+        folderAnalyze.add( guiSetting, 'Log Graph' );
         folderAnalyze.add( guiSetting, 'Show Route' );
         folderAnalyze.add( guiSetting, 'Toggle Debug Mode' );
 
@@ -641,13 +640,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function showRoute( position ) {
 
-        tempPathSegments = [];
+        tempGraphSegments = [];
 
         //---
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
@@ -658,9 +657,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
             let routeFound = null;
             let routeColor = null;
 
-            for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
-                const route = path.routes[ i ];
+                const route = graph.routes[ i ];
 
                 if ( point.x === route.startPoint.x && point.y === route.startPoint.y || point.x === route.endPoint.x && point.y === route.endPoint.y ) {
 
@@ -675,13 +674,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( routeFound !== null ) {
 
-                for ( let i = 0, l = routeFound.pathSegments.length; i < l; i ++ ) {
+                for ( let i = 0, l = routeFound.graphSegments.length; i < l; i ++ ) {
 
-                    const pathSegment = routeFound.pathSegments[ i ];
+                    const graphSegment = routeFound.graphSegments[ i ];
 
-                    tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                    tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                    tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    tempGraphSegments.push( { type: 'circ', position: { x: graphSegment.p0.x, y: graphSegment.p0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
+                    tempGraphSegments.push( { type: 'circ', position: { x: graphSegment.p1.x, y: graphSegment.p1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
 
                 }
 
@@ -693,69 +692,69 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    function setAllPathSegmentPointNeighbours() {
+    function setAllGraphSegmentPointNeighbours() {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
-        for ( let i = 0, l = path.points.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
 
-            const point = path.points[ i ];
+            const point = graph.points[ i ];
 
-            setPathSegmentPointNeighbours( point );
+            setGraphSegmentPointNeighbours( point );
 
         }
 
     }
 
-    function setPathSegmentPointNeighbours( point ) {
+    function setGraphSegmentPointNeighbours( point ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
-        const neighbourPathSegments = getNextPathSegmentsByPoint( point, path.segments );
+        const neighbourGraphSegments = getNextGraphSegmentsByPoint( point, graph.segments );
 
-        if ( neighbourPathSegments.length > 0 ) {
+        if ( neighbourGraphSegments.length > 0 ) {
 
-            const neighbourPoints = getNextPointsByPointAndPathSegments( point, neighbourPathSegments );
+            const neighbourPoints = getNextPointsByPointAndGraphSegments( point, neighbourGraphSegments );
 
-            point.neighbourPathsegments = neighbourPathSegments;
+            point.neighbourGraphsegments = neighbourGraphSegments;
             point.neighbourPoints = neighbourPoints;
 
         }
 
     }
 
-    // function getPathSegmentByPoints( p0, p1 ) {
+    // function getGraphSegmentByPoints( p0, p1 ) {
 
-    //     const pathIndex = 0;
+    //     const graphIndex = 0;
 
-    //     const path = pathHolder[ pathIndex ];
+    //     const graph = graphHolder[ graphIndex ];
 
     //     //---
 
     //     let result = null;
 
-    //     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+    //     for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-    //         const pathSegment = path.segments[ i ];
+    //         const graphSegment = graph.segments[ i ];
 
     //         let p0Found = false;
     //         let p1Found = false;
 
-    //         if ( pathSegment.p0.x === p0.x && pathSegment.p0.y === p0.y || pathSegment.p1.x === p0.x && pathSegment.p1.y === p0.y ) {
+    //         if ( graphSegment.p0.x === p0.x && graphSegment.p0.y === p0.y || graphSegment.p1.x === p0.x && graphSegment.p1.y === p0.y ) {
 
     //             p0Found = true;
 
     //         }
 
-    //         if ( pathSegment.p0.x === p1.x && pathSegment.p0.y === p1.y || pathSegment.p1.x === p1.x && pathSegment.p1.y === p1.y ) {
+    //         if ( graphSegment.p0.x === p1.x && graphSegment.p0.y === p1.y || graphSegment.p1.x === p1.x && graphSegment.p1.y === p1.y ) {
 
     //             p1Found = true;
 
@@ -763,7 +762,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //         if ( p0Found === true && p1Found === true ) {
 
-    //             result = pathSegment;
+    //             result = graphSegment;
 
     //         }
 
@@ -773,7 +772,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     // }
 
-    function getPathSegmentPoint( position, walkable = true, cost = 0, parentPoint = null, visited = false, neighbourPathsegments = [], neighbourPoints = [] ) {
+    function getGraphSegmentPoint( position, walkable = true, cost = 0, parentPoint = null, visited = false, neighbourGraphsegments = [], neighbourPoints = [] ) {
 
         const point = {
 
@@ -783,7 +782,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             cost: cost,
             parentPoint: parentPoint,
             visited: visited,
-            neighbourPathsegments: neighbourPathsegments,
+            neighbourGraphsegments: neighbourGraphsegments,
             neighbourPoints: neighbourPoints,
 
         };
@@ -792,23 +791,23 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function getNextPathSegmentsByPoint( point, pathSegments ) {
+    function getNextGraphSegmentsByPoint( point, graphSegments ) {
 
-        const pathSegmentsFound = [];
+        const graphSegmentsFound = [];
 
-        for ( let i = 0, l = pathSegments.length; i < l; i ++ ) {
+        for ( let i = 0, l = graphSegments.length; i < l; i ++ ) {
 
-            const pathSegment = pathSegments[ i ];
+            const graphSegment = graphSegments[ i ];
 
-            if ( pathSegment.walkable === true ) {
+            if ( graphSegment.walkable === true ) {
 
-                if ( point.x === pathSegment.p0.x && point.y === pathSegment.p0.y ) {
+                if ( point.x === graphSegment.p0.x && point.y === graphSegment.p0.y ) {
 
-                    pathSegmentsFound.push( pathSegment );
+                    graphSegmentsFound.push( graphSegment );
 
-                } else if ( point.x === pathSegment.p1.x && point.y === pathSegment.p1.y ) {
+                } else if ( point.x === graphSegment.p1.x && point.y === graphSegment.p1.y ) {
 
-                    pathSegmentsFound.push( pathSegment );
+                    graphSegmentsFound.push( graphSegment );
 
                 }
 
@@ -816,31 +815,31 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        return pathSegmentsFound;
+        return graphSegmentsFound;
 
     }
 
-    function getNextPointsByPointAndPathSegments( point, nextPathSegments ) {
+    function getNextPointsByPointAndGraphSegments( point, nextGraphSegments ) {
 
         const pointsFound = [];
 
-        for ( let i = 0, l = nextPathSegments.length; i < l; i ++ ) {
+        for ( let i = 0, l = nextGraphSegments.length; i < l; i ++ ) {
 
-            const nextPathSegment = nextPathSegments[ i ];
+            const nextGraphSegment = nextGraphSegments[ i ];
 
-            if ( point.x === nextPathSegment.p0.x && point.y === nextPathSegment.p0.y ) {
+            if ( point.x === nextGraphSegment.p0.x && point.y === nextGraphSegment.p0.y ) {
 
-                if ( nextPathSegment.direction === '><' || nextPathSegment.direction === '>' ) {
+                if ( nextGraphSegment.direction === '><' || nextGraphSegment.direction === '>' ) {
 
-                    pointsFound.push( nextPathSegment.p1 );
+                    pointsFound.push( nextGraphSegment.p1 );
 
                 }
 
-            } else if ( point.x === nextPathSegment.p1.x && point.y === nextPathSegment.p1.y ) {
+            } else if ( point.x === nextGraphSegment.p1.x && point.y === nextGraphSegment.p1.y ) {
 
-                if ( nextPathSegment.direction === '><' || nextPathSegment.direction === '<' ) {
+                if ( nextGraphSegment.direction === '><' || nextGraphSegment.direction === '<' ) {
 
-                    pointsFound.push( nextPathSegment.p0 );
+                    pointsFound.push( nextGraphSegment.p0 );
 
                 }
 
@@ -854,17 +853,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function getPointByPosition( position ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
         let point = null;
 
-        for ( let i = 0, l = path.points.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
 
-            const p = path.points[ i ];
+            const p = graph.points[ i ];
 
             if ( p.x === position.x && p.y === position.y ) {
 
@@ -884,17 +883,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function getStreetSegmentsByPoint( p ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
         const result = [];
 
-        for ( let i = 0, l = path.streetSegments.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
 
-            const streetSegment = path.streetSegments[ i ];
+            const streetSegment = graph.streetSegments[ i ];
 
             if ( p.x === streetSegment.p0.x && p.y === streetSegment.p0.y ) {
 
@@ -920,9 +919,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function addStreetSegment( position ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
@@ -988,7 +987,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             const streetSegment = {
 
-                id: path.streetSegments.length,
+                id: graph.streetSegments.length,
 
                 p0: { x: position.x, y: position.y },
                 p1: null,
@@ -999,7 +998,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 lanes: lanes,
                 centerLanes: [],
                 crossLanes: [],
-                pathSegments: [],
+                graphSegments: [],
                 borders: [],
 
                 walkable: walkable,
@@ -1018,7 +1017,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             currentStreetSegment = streetSegment;
 
-            path.streetSegments.push( currentStreetSegment );
+            graph.streetSegments.push( currentStreetSegment );
 
         } else {
 
@@ -1028,69 +1027,69 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            const convertLaneToPathSegment = ( lane ) => {
+            const convertLaneToGraphSegment = ( lane ) => {
 
-                const p0 = getPathSegmentPoint( lane.p0 );
-                const p0Array = path.points.find( ( point ) => point.x === lane.p0.x && point.y === lane.p0.y );
-                const p1 = getPathSegmentPoint( lane.p1 );
-                const p1Array = path.points.find( ( point ) => point.x === lane.p1.x && point.y === lane.p1.y );
+                const p0 = getGraphSegmentPoint( lane.p0 );
+                const p0Array = graph.points.find( ( point ) => point.x === lane.p0.x && point.y === lane.p0.y );
+                const p1 = getGraphSegmentPoint( lane.p1 );
+                const p1Array = graph.points.find( ( point ) => point.x === lane.p1.x && point.y === lane.p1.y );
 
-                let pathSegmentPoint0 = p0Array;
-                let pathSegmentPoint1 = p1Array;
+                let graphSegmentPoint0 = p0Array;
+                let graphSegmentPoint1 = p1Array;
 
-                if ( typeof pathSegmentPoint0 === 'undefined' ) {
+                if ( typeof graphSegmentPoint0 === 'undefined' ) {
 
-                    pathSegmentPoint0 = p0;
+                    graphSegmentPoint0 = p0;
     
-                    path.points.push( pathSegmentPoint0 );
-    
-                }
-    
-                if ( typeof pathSegmentPoint1 === 'undefined' ) {
-    
-                    pathSegmentPoint1 = p1;
-    
-                    path.points.push( pathSegmentPoint1 );
+                    graph.points.push( graphSegmentPoint0 );
     
                 }
+    
+                if ( typeof graphSegmentPoint1 === 'undefined' ) {
+    
+                    graphSegmentPoint1 = p1;
+    
+                    graph.points.push( graphSegmentPoint1 );
+    
+                }
 
-                const pathSegment = {
+                const graphSegment = {
 
-                    id: path.segments.length,
-                    p0: { x: pathSegmentPoint0.x, y: pathSegmentPoint0.y },
-                    p1: { x: pathSegmentPoint1.x, y: pathSegmentPoint1.y },
+                    id: graph.segments.length,
+                    p0: { x: graphSegmentPoint0.x, y: graphSegmentPoint0.y },
+                    p1: { x: graphSegmentPoint1.x, y: graphSegmentPoint1.y },
                     controlPoint: { x: lane.controlPoint.x, y: lane.controlPoint.y },
                     centerPoint: { x: lane.centerPoint.x, y: lane.centerPoint.y },
-                    length: getPathSegmentLength( lane.p0, lane.p1, lane.controlPoint ),
+                    length: getGraphSegmentLength( lane.p0, lane.p1, lane.controlPoint ),
                     walkable: currentStreetSegment.walkable,
                     direction: currentStreetSegment.direction,
 
                 };
 
-                setPathSegmentPointNeighbours( getPointByPosition( pathSegment.p0 ) );
-                setPathSegmentPointNeighbours( getPointByPosition( pathSegment.p1 ) );
+                setGraphSegmentPointNeighbours( getPointByPosition( graphSegment.p0 ) );
+                setGraphSegmentPointNeighbours( getPointByPosition( graphSegment.p1 ) );
 
-                return pathSegment;
+                return graphSegment;
 
             };
 
             for ( let i = 0, l = currentStreetSegment.lanes.length; i < l; i ++ ) {
 
                 const lane = currentStreetSegment.lanes[ i ];
-                const pathSegment = convertLaneToPathSegment( lane );
+                const graphSegment = convertLaneToGraphSegment( lane );
 
-                currentStreetSegment.pathSegments.push( pathSegment );
-                path.segments.push( pathSegment );
+                currentStreetSegment.graphSegments.push( graphSegment );
+                graph.segments.push( graphSegment );
 
             }
 
             for ( let i = 0, l = currentStreetSegment.crossLanes.length; i < l; i ++ ) {
 
                 const lane = currentStreetSegment.crossLanes[ i ];
-                const pathSegment = convertLaneToPathSegment( lane );
+                const graphSegment = convertLaneToGraphSegment( lane );
 
-                currentStreetSegment.pathSegments.push( pathSegment );
-                path.segments.push( pathSegment );
+                currentStreetSegment.graphSegments.push( graphSegment );
+                graph.segments.push( graphSegment );
 
             }
 
@@ -1104,7 +1103,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            tempPathSegments = [];
+            tempGraphSegments = [];
 
         }
 
@@ -1193,13 +1192,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     _context.save();
                     // _context.globalAlpha = 1.0;
                     
-                    _context.beginPath();
+                    _context.beginGraph();
                     _context.moveTo( pTL.x - minX, pTL.y - minY );
                     _context.lineTo( pTR.x - minX, pTR.y - minY );
                     _context.lineTo( pBR.x - minX, pBR.y - minY );
                     _context.lineTo( pBL.x - minX, pBL.y - minY );
                     // _context.lineWidth = 2;
-                    _context.closePath();
+                    _context.closeGraph();
 
                     // _context.strokeStyle = 'rgba( 63, 59, 58, 1.00 )';
                     // _context.stroke(); 
@@ -1218,14 +1217,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            _context.beginPath();
+            _context.beginGraph();
             _context.moveTo( streetBorder0.p0.x - minX, streetBorder0.p0.y - minY );
             _context.quadraticCurveTo( streetBorder0.controlPoint.x - minX, streetBorder0.controlPoint.y - minY, streetBorder0.p1.x - minX, streetBorder0.p1.y - minY );
             _context.lineWidth = 2;
             _context.strokeStyle = 'rgba( 135, 135, 135, 1.00 )';
             _context.stroke();
 
-            _context.beginPath();
+            _context.beginGraph();
             _context.moveTo( streetBorder1.p0.x - minX, streetBorder1.p0.y - minY );
             _context.quadraticCurveTo( streetBorder1.controlPoint.x - minX, streetBorder1.controlPoint.y - minY, streetBorder1.p1.x - minX, streetBorder1.p1.y - minY );
             _context.lineWidth = 2;
@@ -1234,14 +1233,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( streetSegment.lanes.length > 1 ) {
 
-                _context.beginPath();
+                _context.beginGraph();
                 _context.moveTo( streetSegment.p0.x - minX, streetSegment.p0.y - minY );
                 _context.quadraticCurveTo( streetSegment.controlPoint.x - minX, streetSegment.controlPoint.y - minY, streetSegment.p1.x - minX, streetSegment.p1.y - minY );
                 _context.lineWidth = 6;
                 _context.strokeStyle = 'rgba( 135, 135, 135, 1.00 )';
                 _context.stroke();
 
-                _context.beginPath();
+                _context.beginGraph();
                 _context.moveTo( streetSegment.p0.x - minX, streetSegment.p0.y - minY );
                 _context.quadraticCurveTo( streetSegment.controlPoint.x - minX, streetSegment.controlPoint.y - minY, streetSegment.p1.x - minX, streetSegment.p1.y - minY );
                 _context.lineWidth = 2;
@@ -1254,7 +1253,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             streetSegment.centerLanes.forEach( ( centerLane ) => {
 
                 _context.setLineDash( [ 8, 18 ] );
-                _context.beginPath();
+                _context.beginGraph();
                 _context.moveTo( centerLane.p0.x - minX, centerLane.p0.y - minY );
                 _context.quadraticCurveTo( centerLane.controlPoint.x - minX, centerLane.controlPoint.y - minY, centerLane.p1.x - minX, centerLane.p1.y - minY );
                 _context.lineWidth = 3;
@@ -1274,15 +1273,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function drawStreetSegments() {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
-        for ( let i = 0, l = path.streetSegments.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
 
-            const streetSegment = path.streetSegments[ i ];
+            const streetSegment = graph.streetSegments[ i ];
 
             if ( streetSegment.p0 !== null && streetSegment.p1 !== null ) {
 
@@ -1319,41 +1318,41 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    function addPathSegment( position ) {
+    function addGraphSegment( position ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
-        if ( currentPathSegment === null ) {
+        if ( currentGraphSegment === null ) {
 
-            const pathSegmentPointNew = getPathSegmentPoint( position );
-            const pathSegmentPointArray = path.points.find( ( point ) => point.x === position.x && point.y === position.y );
+            const graphSegmentPointNew = getGraphSegmentPoint( position );
+            const graphSegmentPointArray = graph.points.find( ( point ) => point.x === position.x && point.y === position.y );
 
-            let pathSegmentPoint = pathSegmentPointArray;
+            let graphSegmentPoint = graphSegmentPointArray;
 
-            if ( typeof pathSegmentPoint === 'undefined' ) {
+            if ( typeof graphSegmentPoint === 'undefined' ) {
 
-                pathSegmentPoint = pathSegmentPointNew;
+                graphSegmentPoint = graphSegmentPointNew;
 
-                path.points.push( pathSegmentPoint );
+                graph.points.push( graphSegmentPoint );
 
             }
 
-            currentPathSegment = {};
-            currentPathSegment.id = path.segments.length;
-            currentPathSegment.p0 = { x: unifyNumber( pathSegmentPoint.x ), y: unifyNumber( pathSegmentPoint.y ) };
-            currentPathSegment.p1 = null;
-            // currentPathSegment.p1 = { x: position.x, y: position.y };
-            // currentPathSegment.centerPoint = getPathSegmentCenter( currentPathSegment );
-            // currentPathSegment.controlPoint = getPathSegmentCenter( currentPathSegment );
-            // currentPathSegment.length = getPathSegmentLength( currentPathSegment.p0, currentPathSegment.p1, currentPathSegment.controlPoint ); //getDistance( currentPathSegment.p0, currentPathSegment.p1 );
-            // currentPathSegment.walkable = true;
-            // currentPathSegment.direction = '><';
+            currentGraphSegment = {};
+            currentGraphSegment.id = graph.segments.length;
+            currentGraphSegment.p0 = { x: unifyNumber( graphSegmentPoint.x ), y: unifyNumber( graphSegmentPoint.y ) };
+            currentGraphSegment.p1 = null;
+            // currentGraphSegment.p1 = { x: position.x, y: position.y };
+            // currentGraphSegment.centerPoint = getGraphSegmentCenter( currentGraphSegment );
+            // currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
+            // currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
+            // currentGraphSegment.walkable = true;
+            // currentGraphSegment.direction = '><';
 
-            path.segments.push( currentPathSegment );
+            graph.segments.push( currentGraphSegment );
 
-            setPathSegmentPointNeighbours( getPointByPosition( currentPathSegment.p0 ) );
+            setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p0 ) );
 
             if ( debugMode === true ) {
 
@@ -1363,32 +1362,32 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         } else {
 
-            const pathSegmentPointNew = getPathSegmentPoint( position );
-            const pathSegmentPointArray = path.points.find( ( point ) => point.x === position.x && point.y === position.y );
+            const graphSegmentPointNew = getGraphSegmentPoint( position );
+            const graphSegmentPointArray = graph.points.find( ( point ) => point.x === position.x && point.y === position.y );
 
-            let pathSegmentPoint = pathSegmentPointArray;
+            let graphSegmentPoint = graphSegmentPointArray;
 
-            if ( typeof pathSegmentPoint === 'undefined' ) {
+            if ( typeof graphSegmentPoint === 'undefined' ) {
 
-                pathSegmentPoint = pathSegmentPointNew;
+                graphSegmentPoint = graphSegmentPointNew;
 
-                path.points.push( pathSegmentPoint );
+                graph.points.push( graphSegmentPoint );
 
             }
 
-            currentPathSegment.p1 = { x: unifyNumber( pathSegmentPoint.x ), y: unifyNumber( pathSegmentPoint.y ) };
-            currentPathSegment.centerPoint = getPathSegmentCenter( currentPathSegment );
-            currentPathSegment.controlPoint = getPathSegmentCenter( currentPathSegment );
-            currentPathSegment.length = getPathSegmentLength( currentPathSegment.p0, currentPathSegment.p1, currentPathSegment.controlPoint ); //getDistance( currentPathSegment.p0, currentPathSegment.p1 );
-            currentPathSegment.walkable = true;
-            currentPathSegment.direction = '><';
+            currentGraphSegment.p1 = { x: unifyNumber( graphSegmentPoint.x ), y: unifyNumber( graphSegmentPoint.y ) };
+            currentGraphSegment.centerPoint = getGraphSegmentCenter( currentGraphSegment );
+            currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
+            currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
+            currentGraphSegment.walkable = true;
+            currentGraphSegment.direction = '><';
 
-            setPathSegmentPointNeighbours( getPointByPosition( currentPathSegment.p0 ) );
-            setPathSegmentPointNeighbours( getPointByPosition( currentPathSegment.p1 ) );
+            setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p0 ) );
+            setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p1 ) );
 
-            // if ( allowPathSegmentSplitting === true ) {
+            // if ( allowGraphSegmentSplitting === true ) {
 
-            //     const intersections = getPathSegmentsIntersections( currentPathSegment, 100 );
+            //     const intersections = getGraphSegmentsIntersections( currentGraphSegment, 100 );
 
             //     for ( let i = 0, l = intersections.length; i < l; i ++ ) {
 
@@ -1396,11 +1395,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //         console.log( intersection );
 
-            //         const t0 = getTOfQuadraticBezierFromIntersectionPoint( intersection.pathSegment0, intersection.point );
-            //         const t1 = getTOfQuadraticBezierFromIntersectionPoint( intersection.pathSegment1, intersection.point );
+            //         const t0 = getTOfQuadraticBezierFromIntersectionPoint( intersection.graphSegment0, intersection.point );
+            //         const t1 = getTOfQuadraticBezierFromIntersectionPoint( intersection.graphSegment1, intersection.point );
 
-            //         splitPathSegment( intersection.pathSegment0, t0 );
-            //         splitPathSegment( intersection.pathSegment1, t1 );
+            //         splitGraphSegment( intersection.graphSegment0, t0 );
+            //         splitGraphSegment( intersection.graphSegment1, t1 );
 
             //     }
 
@@ -1409,54 +1408,54 @@ document.addEventListener( 'DOMContentLoaded', () => {
             if ( debugMode === true ) {
 
                 addDebugElement( position.x, position.y, position.x.toFixed( 0 ).toString() + ', ' + position.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
-                addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.id.toString(), 'white', -4, -6, null );
+                addDebugElement( currentGraphSegment.centerPoint.x, currentGraphSegment.centerPoint.y, currentGraphSegment.id.toString(), 'white', -4, -6, null );
 
-                addDebugElement( currentPathSegment.centerPoint.x, currentPathSegment.centerPoint.y, currentPathSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
+                addDebugElement( currentGraphSegment.centerPoint.x, currentGraphSegment.centerPoint.y, currentGraphSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
 
             }
 
-            currentPathSegment = null;
+            currentGraphSegment = null;
 
         }
 
     }
 
-    function removePathSegmentByPosition( position ) {
+    function removeGraphSegmentByPosition( position ) {
 
-        const pathSegment = getPathSegmentByPosition( position );
+        const graphSegment = getGraphSegmentByPosition( position );
 
-        if ( pathSegment !== null ) {
+        if ( graphSegment !== null ) {
 
-            removePathSegment( pathSegment );
+            removeGraphSegment( graphSegment );
 
         }
 
     }
 
-    function removePathSegment( pathSegment ) {
+    function removeGraphSegment( graphSegment ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
-        let p0Found = getPointByPosition( pathSegment.p0 );
-        let p1Found = getPointByPosition( pathSegment.p1 );
+        let p0Found = getPointByPosition( graphSegment.p0 );
+        let p1Found = getPointByPosition( graphSegment.p1 );
 
-        for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-            const pS = path.segments[ i ];
+            const pS = graph.segments[ i ];
 
-            if ( pS.id !== pathSegment.id ) {
+            if ( pS.id !== graphSegment.id ) {
 
-                if ( pathSegment.p0.x === pS.p0.x && pathSegment.p0.y === pS.p0.y || pathSegment.p0.x === pS.p1.x && pathSegment.p0.y === pS.p1.y ) {
+                if ( graphSegment.p0.x === pS.p0.x && graphSegment.p0.y === pS.p0.y || graphSegment.p0.x === pS.p1.x && graphSegment.p0.y === pS.p1.y ) {
 
                     p0Found = null;
 
                 }
 
-                if ( pathSegment.p1.x === pS.p0.x && pathSegment.p1.y === pS.p0.y || pathSegment.p1.x === pS.p1.x && pathSegment.p1.y === pS.p1.y ) {
+                if ( graphSegment.p1.x === pS.p0.x && graphSegment.p1.y === pS.p0.y || graphSegment.p1.x === pS.p1.x && graphSegment.p1.y === pS.p1.y ) {
 
                     p1Found = null;
 
@@ -1466,58 +1465,31 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        path.segments.splice( path.segments.findIndex( ( pS ) => pS.id === pathSegment.id ), 1 );
+        graph.segments.splice( graph.segments.findIndex( ( pS ) => pS.id === graphSegment.id ), 1 );
 
         if ( p0Found !== null ) {
 
-            path.points.splice( path.points.findIndex( ( point ) => point.x === p0Found.x && point.y === p0Found.y ), 1 );
+            graph.points.splice( graph.points.findIndex( ( point ) => point.x === p0Found.x && point.y === p0Found.y ), 1 );
 
         }
 
         if ( p1Found !== null ) {
 
-            path.points.splice( path.points.findIndex( ( point ) => point.x === p1Found.x && point.y === p1Found.y ), 1 );
+            graph.points.splice( graph.points.findIndex( ( point ) => point.x === p1Found.x && point.y === p1Found.y ), 1 );
 
         }
 
         //---
 
-        for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-            path.segments[ i ].id = i;
-
-        }
-
-        for ( let i = 0, l = path.points.length; i < l; i ++ ) {
-
-            setPathSegmentPointNeighbours( path.points[ i ] );
+            graph.segments[ i ].id = i;
 
         }
 
-        //---
+        for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
 
-        if ( debugMode === true ) {
-
-            rebuildDebugElements();
-
-        }
-
-        tempPathSegments = [];
-
-    }
-
-    function bendPathSegment( position ) {
-
-        const pathSegment = currentPathSegment;
-
-        if ( pathSegment !== null ) {
-
-            pathSegment.controlPoint.x = position.x;
-            pathSegment.controlPoint.y = position.y;
-
-            pathSegment.centerPoint = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 0.50 );
-
-            pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );
+            setGraphSegmentPointNeighbours( graph.points[ i ] );
 
         }
 
@@ -1529,35 +1501,24 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        tempPathSegments = [];
-
-        tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
-        tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p1.x, y: pathSegment.p1.y }, p1: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
-        tempPathSegments.push( { type: 'circfill', position: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
-        tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+        tempGraphSegments = [];
 
     }
 
-    function straightenPathSegmentByPosition( position ) {
+    function bendGraphSegment( position ) {
 
-        const pathSegment = getPathSegmentByPosition( position );
+        const graphSegment = currentGraphSegment;
 
-        if ( pathSegment !== null ) {
+        if ( graphSegment !== null ) {
 
-            straightenPathSegment( pathSegment );
+            graphSegment.controlPoint.x = position.x;
+            graphSegment.controlPoint.y = position.y;
+
+            graphSegment.centerPoint = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 0.50 );
+
+            graphSegment.length = getGraphSegmentLength( graphSegment.p0, graphSegment.p1, graphSegment.controlPoint );
 
         }
-
-    }
-
-    function straightenPathSegment( pathSegment ) {
-
-        const centerPoint = getPathSegmentCenter( pathSegment );
-
-        pathSegment.centerPoint = centerPoint;
-        pathSegment.controlPoint = centerPoint;
-
-        pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );
 
         //---
 
@@ -1567,80 +1528,118 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        tempPathSegments = [];
+        tempGraphSegments = [];
+
+        tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, p1: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+        tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p1.x, y: graphSegment.p1.y }, p1: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+        tempGraphSegments.push( { type: 'circfill', position: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
+        tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
 
     }
 
-    function splitPathSegmentByPosition( position, t = 0.50 ) {
+    function straightenGraphSegmentByPosition( position ) {
 
-        const pathSegment = getPathSegmentByPosition( position );
+        const graphSegment = getGraphSegmentByPosition( position );
 
-        if ( pathSegment !== null ) {
+        if ( graphSegment !== null ) {
 
-            splitPathSegment( pathSegment, t );
+            straightenGraphSegment( graphSegment );
 
         }
 
     }
 
-    function splitPathSegment( pathSegment, t = 0.50 ) {
+    function straightenGraphSegment( graphSegment ) {
 
-        const pathIndex = 0;
+        const centerPoint = getGraphSegmentCenter( graphSegment );
 
-        const path = pathHolder[ pathIndex ];
+        graphSegment.centerPoint = centerPoint;
+        graphSegment.controlPoint = centerPoint;
 
-        //---
-
-        const newPathSegment0 = trimPathSegment( pathSegment, t, false );
-        const newPathSegment1 = trimPathSegment( pathSegment, t, true );
-
-        const newPathSegments = [ newPathSegment0, newPathSegment1 ];
+        graphSegment.length = getGraphSegmentLength( graphSegment.p0, graphSegment.p1, graphSegment.controlPoint );
 
         //---
 
-        removePathSegment( pathSegment );
+        if ( debugMode === true ) {
+
+            rebuildDebugElements();
+
+        }
+
+        tempGraphSegments = [];
+
+    }
+
+    function splitGraphSegmentByPosition( position, t = 0.50 ) {
+
+        const graphSegment = getGraphSegmentByPosition( position );
+
+        if ( graphSegment !== null ) {
+
+            splitGraphSegment( graphSegment, t );
+
+        }
+
+    }
+
+    function splitGraphSegment( graphSegment, t = 0.50 ) {
+
+        const graphIndex = 0;
+
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
-        for ( let i = 0, l = newPathSegments.length; i < l; i ++ ) {
+        const newGraphSegment0 = trimGraphSegment( graphSegment, t, false );
+        const newGraphSegment1 = trimGraphSegment( graphSegment, t, true );
 
-            const newPathSegment = newPathSegments[ i ];
+        const newGraphSegments = [ newGraphSegment0, newGraphSegment1 ];
 
-            newPathSegment.id = path.segments.length;
+        //---
 
-            const pathSegment0Point0New = getPathSegmentPoint( newPathSegment.p0 );
-            const pathSegment0Point0Array = path.points.find( ( point ) => point.x === newPathSegment.p0.x && point.y === newPathSegment.p0.y );
-            const pathSegment0Point1New = getPathSegmentPoint( newPathSegment.p1 );
-            const pathSegment0Point1Array = path.points.find( ( point ) => point.x === newPathSegment.p1.x && point.y === newPathSegment.p1.y );
+        removeGraphSegment( graphSegment );
 
-            let pathSegmentPoint0 = pathSegment0Point0Array;
-            let pathSegmentPoint1 = pathSegment0Point1Array;
+        //---
 
-            if ( typeof pathSegmentPoint0 === 'undefined' ) {
+        for ( let i = 0, l = newGraphSegments.length; i < l; i ++ ) {
 
-                pathSegmentPoint0 = pathSegment0Point0New;
+            const newGraphSegment = newGraphSegments[ i ];
 
-                path.points.push( pathSegmentPoint0 );
+            newGraphSegment.id = graph.segments.length;
+
+            const graphSegment0Point0New = getGraphSegmentPoint( newGraphSegment.p0 );
+            const graphSegment0Point0Array = graph.points.find( ( point ) => point.x === newGraphSegment.p0.x && point.y === newGraphSegment.p0.y );
+            const graphSegment0Point1New = getGraphSegmentPoint( newGraphSegment.p1 );
+            const graphSegment0Point1Array = graph.points.find( ( point ) => point.x === newGraphSegment.p1.x && point.y === newGraphSegment.p1.y );
+
+            let graphSegmentPoint0 = graphSegment0Point0Array;
+            let graphSegmentPoint1 = graphSegment0Point1Array;
+
+            if ( typeof graphSegmentPoint0 === 'undefined' ) {
+
+                graphSegmentPoint0 = graphSegment0Point0New;
+
+                graph.points.push( graphSegmentPoint0 );
 
             }
 
-            if ( typeof pathSegmentPoint1 === 'undefined' ) {
+            if ( typeof graphSegmentPoint1 === 'undefined' ) {
 
-                pathSegmentPoint1 = pathSegment0Point1New;
+                graphSegmentPoint1 = graphSegment0Point1New;
 
-                path.points.push( pathSegmentPoint1 );
+                graph.points.push( graphSegmentPoint1 );
 
             }
 
-            newPathSegment.centerPoint = interpolateQuadraticBezier( newPathSegment.p0, newPathSegment.controlPoint, newPathSegment.p1, 0.50 );
-            newPathSegment.length = getPathSegmentLength( newPathSegment.p0, newPathSegment.p1, newPathSegment.controlPoint ); //getDistance( newPathSegment0.p0, newPathSegment0.p1 );
-            newPathSegment.walkable = true;
-            newPathSegment.direction = '><';
+            newGraphSegment.centerPoint = interpolateQuadraticBezier( newGraphSegment.p0, newGraphSegment.controlPoint, newGraphSegment.p1, 0.50 );
+            newGraphSegment.length = getGraphSegmentLength( newGraphSegment.p0, newGraphSegment.p1, newGraphSegment.controlPoint ); //getDistance( newGraphSegment0.p0, newGraphSegment0.p1 );
+            newGraphSegment.walkable = true;
+            newGraphSegment.direction = '><';
 
-            path.segments.push( newPathSegment );
+            graph.segments.push( newGraphSegment );
 
-            setPathSegmentPointNeighbours( getPointByPosition( pathSegmentPoint0 ) );
-            setPathSegmentPointNeighbours( getPointByPosition( pathSegmentPoint1 ) );
+            setGraphSegmentPointNeighbours( getPointByPosition( graphSegmentPoint0 ) );
+            setGraphSegmentPointNeighbours( getPointByPosition( graphSegmentPoint1 ) );
 
         }
 
@@ -1652,34 +1651,34 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        tempPathSegments = [];
+        tempGraphSegments = [];
 
     }
 
-    function trimPathSegment ( pathSegment, t = 0.50, fromStart = false ) {
+    function trimGraphSegment ( graphSegment, t = 0.50, fromStart = false ) {
 
 		let startPoint;
         let endPoint;
 
 		if ( fromStart ) {
 
-			endPoint = pathSegment.p0;
-			startPoint = pathSegment.p1;
+			endPoint = graphSegment.p0;
+			startPoint = graphSegment.p1;
             t = 1 - t;
 
 		} else {
 
-			startPoint = pathSegment.p0;
-            endPoint = pathSegment.p1;
+			startPoint = graphSegment.p0;
+            endPoint = graphSegment.p1;
 
         }
 
-		const dscx = pathSegment.controlPoint.x - startPoint.x;
-		const dscy = pathSegment.controlPoint.y - startPoint.y;
-		const dcex = endPoint.x - pathSegment.controlPoint.x;
-        const dcey = endPoint.y - pathSegment.controlPoint.y;
+		const dscx = graphSegment.controlPoint.x - startPoint.x;
+		const dscy = graphSegment.controlPoint.y - startPoint.y;
+		const dcex = endPoint.x - graphSegment.controlPoint.x;
+        const dcey = endPoint.y - graphSegment.controlPoint.y;
 
-        const newPathSegment = {
+        const newGraphSegment = {
 
             p0: startPoint,
             controlPoint: { x: startPoint.x + dscx * t, y: startPoint.y + dscy * t },
@@ -1687,48 +1686,48 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         };
 
-		let dx = pathSegment.controlPoint.x + dcex * t - newPathSegment.controlPoint.x;
-        let dy = pathSegment.controlPoint.y + dcey * t - newPathSegment.controlPoint.y;
+		let dx = graphSegment.controlPoint.x + dcex * t - newGraphSegment.controlPoint.x;
+        let dy = graphSegment.controlPoint.y + dcey * t - newGraphSegment.controlPoint.y;
 
 		if ( fromStart ) {
 
-            newPathSegment.p0 = {
+            newGraphSegment.p0 = {
 
-                x: unifyNumber( newPathSegment.controlPoint.x + dx * t ),
-                y: unifyNumber( newPathSegment.controlPoint.y + dy * t )
+                x: unifyNumber( newGraphSegment.controlPoint.x + dx * t ),
+                y: unifyNumber( newGraphSegment.controlPoint.y + dy * t )
 
             };
 
 		} else {
 
-            newPathSegment.p1 = {
+            newGraphSegment.p1 = {
 
-                x: unifyNumber( newPathSegment.controlPoint.x + dx * t ),
-                y: unifyNumber( newPathSegment.controlPoint.y + dy * t )
+                x: unifyNumber( newGraphSegment.controlPoint.x + dx * t ),
+                y: unifyNumber( newGraphSegment.controlPoint.y + dy * t )
 
             };
 
         }
 
         console.log( '-----------------------------------------------------------------' );
-        console.log( newPathSegment );
+        console.log( newGraphSegment );
         console.log( '-----------------------------------------------------------------' );
 
-        return newPathSegment;
+        return newGraphSegment;
 
 	}
 
     //---
 
-    function addStartPointToPath( position ) {
+    function addStartPointToGraph( position ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
-        const route = { startPoint: null, endPoint: null, pathSegments: [] };
+        const route = { startPoint: null, endPoint: null, graphSegments: [] };
 
         const startPoint = getPointByPosition( position );
 
@@ -1741,7 +1740,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             };
 
-            path.routes.push( route );
+            graph.routes.push( route );
 
         }
 
@@ -1755,19 +1754,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function addEndPointToPath( position ) {
+    function addEndPointToGraph( position ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
         let routeIndex = 0;
 
-        for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
-            const route = path.routes[ i ];
+            const route = graph.routes[ i ];
 
             if ( route.endPoint === null ) {
 
@@ -1779,7 +1778,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        const route = path.routes[ routeIndex ];
+        const route = graph.routes[ routeIndex ];
 
         const endPoint = getPointByPosition( position );
 
@@ -1805,17 +1804,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function removeStartEndPoints( position ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
         let routeIndex = 0;
 
-        for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
-            const route = path.routes[ i ];
+            const route = graph.routes[ i ];
 
             if ( route.startPoint.x === position.x && route.startPoint.y === position.y ) {
 
@@ -1839,7 +1838,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        path.routes.splice( routeIndex, 1 );
+        graph.routes.splice( routeIndex, 1 );
 
         //---
 
@@ -1855,17 +1854,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function addCurrentPointToPath( position ) {
+    function addCurrentPointToGraph( position ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         const point = getPointByPosition( position );
 
         if ( point !== null ) {
 
-            path.currentPoint = point;
+            graph.currentPoint = point;
 
         }
 
@@ -1877,27 +1876,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function addSelectedPathSegments( position ) {
+    function addSelectedGraphSegments( position ) {
 
-        selectedPathSegments = [];
+        selectedGraphSegments = [];
 
         //---
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
-        for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-            const pathSegment = path.segments[ i ];
+            const graphSegment = graph.segments[ i ];
 
-            if ( pathSegment.p0.x === position.x && pathSegment.p0.y === position.y ) {
+            if ( graphSegment.p0.x === position.x && graphSegment.p0.y === position.y ) {
 
-                selectedPathSegments.push( pathSegment );
+                selectedGraphSegments.push( graphSegment );
 
-            } else if ( pathSegment.p1.x === position.x && pathSegment.p1.y === position.y ) {
+            } else if ( graphSegment.p1.x === position.x && graphSegment.p1.y === position.y ) {
 
-                selectedPathSegments.push( pathSegment );
+                selectedGraphSegments.push( graphSegment );
 
             }
 
@@ -1905,35 +1904,35 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function removeSelectedPathSegments( position ) {
+    function removeSelectedGraphSegments( position ) {
 
-        selectedPathSegments = [];
+        selectedGraphSegments = [];
 
     }
 
     // function removeDuplicatePointsFromArray() {
 
-    //     const pathIndex = 0;
+    //     const graphIndex = 0;
 
-    //     const path = pathHolder[ pathIndex ];
+    //     const graph = graphHolder[ graphIndex ];
 
-    //     const point = path.currentPoint;
+    //     const point = graph.currentPoint;
 
-    //     const duplicatePoints = path.points.filter( ( p ) => p.x === point.x && p.y === point.y );
+    //     const duplicatePoints = graph.points.filter( ( p ) => p.x === point.x && p.y === point.y );
 
     //     if ( duplicatePoints.length > 1 ) {
 
-    //         path.points.splice( path.points.findIndex( ( p ) => p.x === point.x && p.y === point.y ), 1 );
+    //         graph.points.splice( graph.points.findIndex( ( p ) => p.x === point.x && p.y === point.y ), 1 );
 
     //     }
 
     // }
 
-    // function removeDuplicatePathSegmentsFromArray() {
+    // function removeDuplicateGraphSegmentsFromArray() {
 
-    //     const pathIndex = 0;
+    //     const graphIndex = 0;
 
-    //     const path = pathHolder[ pathIndex ];
+    //     const graph = graphHolder[ graphIndex ];
 
     //     //under construction
 
@@ -1941,15 +1940,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function movePoint( position ) {
 
-        tempPathSegments = [];
+        tempGraphSegments = [];
 
         //---
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
-        const point = path.currentPoint;
+        const point = graph.currentPoint;
 
         if ( point !== null ) {
 
@@ -1959,9 +1958,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
             point.x = position.x;
             point.y = position.y;
 
-            for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
-                const route = path.routes[ i ];
+                const route = graph.routes[ i ];
 
                 if ( route.startPoint.x === pointOldX && route.startPoint.y === pointOldY ) {
 
@@ -1979,41 +1978,41 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            for ( let i = 0, l = selectedPathSegments.length; i < l; i ++ ) {
+            for ( let i = 0, l = selectedGraphSegments.length; i < l; i ++ ) {
 
-                const pathSegment = selectedPathSegments[ i ];
+                const graphSegment = selectedGraphSegments[ i ];
 
                 let diffX = 0;
                 let diffY = 0;
 
-                if ( pathSegment.p0.x === pointOldX && pathSegment.p0.y === pointOldY ) {
+                if ( graphSegment.p0.x === pointOldX && graphSegment.p0.y === pointOldY ) {
 
-                    diffX = point.x - pathSegment.p0.x;
-                    diffY = point.y - pathSegment.p0.y;
+                    diffX = point.x - graphSegment.p0.x;
+                    diffY = point.y - graphSegment.p0.y;
 
-                    pathSegment.p0.x = point.x;
-                    pathSegment.p0.y = point.y;
+                    graphSegment.p0.x = point.x;
+                    graphSegment.p0.y = point.y;
 
-                } else if ( pathSegment.p1.x === pointOldX && pathSegment.p1.y === pointOldY ) {
+                } else if ( graphSegment.p1.x === pointOldX && graphSegment.p1.y === pointOldY ) {
 
-                    diffX = point.x - pathSegment.p1.x;
-                    diffY = point.y - pathSegment.p1.y;
+                    diffX = point.x - graphSegment.p1.x;
+                    diffY = point.y - graphSegment.p1.y;
 
-                    pathSegment.p1.x = point.x;
-                    pathSegment.p1.y = point.y;
+                    graphSegment.p1.x = point.x;
+                    graphSegment.p1.y = point.y;
 
                 }
 
-                pathSegment.length = getPathSegmentLength( pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );// getDistance( pathSegment.p0, pathSegment.p1 );
-                //pathSegment.centerPoint = getPathSegmentCenter( pathSegment );
-                pathSegment.centerPoint = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 0.50 );
+                graphSegment.length = getGraphSegmentLength( graphSegment.p0, graphSegment.p1, graphSegment.controlPoint );// getDistance( graphSegment.p0, graphSegment.p1 );
+                //graphSegment.centerPoint = getGraphSegmentCenter( graphSegment );
+                graphSegment.centerPoint = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 0.50 );
 
-                pathSegment.controlPoint.x += diffX / 2;
-                pathSegment.controlPoint.y += diffY / 2;
+                graphSegment.controlPoint.x += diffX / 2;
+                graphSegment.controlPoint.y += diffY / 2;
 
-                //tempPathSegments.push( { type: 'circfill', position: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
+                //tempGraphSegments.push( { type: 'circfill', position: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
 
-                //getPathSegmentsIntersections( pathSegment, 25 );
+                //getGraphSegmentsIntersections( graphSegment, 25 );
 
             }
 
@@ -2025,7 +2024,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            //tempPathSegments = [];
+            //tempGraphSegments = [];
 
         }
 
@@ -2033,13 +2032,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function togglePointWalkable( position ) {
 
-        tempPathSegments = [];
+        tempGraphSegments = [];
 
         //---
 
-        //const pathIndex = 0;
+        //const graphIndex = 0;
 
-        //const path = pathHolder[ pathIndex ];
+        //const graph = graphHolder[ graphIndex ];
 
         const point = getPointByPosition( position );
 
@@ -2051,75 +2050,75 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function togglePathWalkable( position ) {
+    function toggleGraphWalkable( position ) {
 
-        tempPathSegments = [];
+        tempGraphSegments = [];
 
         //---
 
-        //const pathIndex = 0;
+        //const graphIndex = 0;
 
-        //const path = pathHolder[ pathIndex ];
+        //const graph = graphHolder[ graphIndex ];
 
-        const pathSegment = getPathSegmentByPosition( position );
+        const graphSegment = getGraphSegmentByPosition( position );
 
-        if ( pathSegment !== null ) {
+        if ( graphSegment !== null ) {
 
-            pathSegment.walkable = !pathSegment.walkable;
+            graphSegment.walkable = !graphSegment.walkable;
 
         }
 
     }
 
-    function togglePathDirections( position ) {
+    function toggleGraphDirections( position ) {
 
-        tempPathSegments = [];
+        tempGraphSegments = [];
 
         //---
 
-        //const pathIndex = 0;
+        //const graphIndex = 0;
 
-        //const path = pathHolder[ pathIndex ];
+        //const graph = graphHolder[ graphIndex ];
 
-        const pathSegment = getPathSegmentByPosition( position );
+        const graphSegment = getGraphSegmentByPosition( position );
 
-        if ( pathSegment !== null ) {
+        if ( graphSegment !== null ) {
 
-            let pathDirectionIndex = PATH_DIRECTIONS.findIndex( ( direction ) => direction === pathSegment.direction );
+            let graphDirectionIndex = GRAPH_SEGMENT_DIRECTIONS.findIndex( ( direction ) => direction === graphSegment.direction );
 
-            pathDirectionIndex += 1;
+            graphDirectionIndex += 1;
 
-            if ( pathDirectionIndex > PATH_DIRECTIONS.length - 1 ) {
+            if ( graphDirectionIndex > GRAPH_SEGMENT_DIRECTIONS.length - 1 ) {
 
-                pathDirectionIndex = 0;
+                graphDirectionIndex = 0;
 
             }
 
-            pathSegment.direction = PATH_DIRECTIONS[ pathDirectionIndex ];
+            graphSegment.direction = GRAPH_SEGMENT_DIRECTIONS[ graphDirectionIndex ];
 
         }
 
     }
 
-    function getPathSegmentByPosition( position ) {
+    function getGraphSegmentByPosition( position ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         let distanceTotal = Infinity;
         let indexSave = -1;
 
-        for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-            const pathSegment = path.segments[ i ];
+            const graphSegment = graph.segments[ i ];
 
-            //const distanceToPathSegment = signedDistanceToLine( position, pathSegment.p0.x, pathSegment.p0.y, pathSegment.p1.x, pathSegment.p1.y );
-            const distanceToPathSegment = signedDistanceToQuadraticBezier( position, pathSegment.p0, pathSegment.p1, pathSegment.controlPoint );
+            //const distanceToGraphSegment = signedDistanceToLine( position, graphSegment.p0.x, graphSegment.p0.y, graphSegment.p1.x, graphSegment.p1.y );
+            const distanceToGraphSegment = signedDistanceToQuadraticBezier( position, graphSegment.p0, graphSegment.p1, graphSegment.controlPoint );
 
-            if ( distanceToPathSegment < distanceTotal ) {
+            if ( distanceToGraphSegment < distanceTotal ) {
 
-                distanceTotal = distanceToPathSegment;
+                distanceTotal = distanceToGraphSegment;
 
                 indexSave = i;
 
@@ -2129,7 +2128,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( indexSave > -1 && distanceTotal <= SNAP_TO_DISTANCE ) {
 
-            return path.segments[ indexSave ];
+            return graph.segments[ indexSave ];
 
         }
 
@@ -2145,15 +2144,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
-        for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+        for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
-            const route = path.routes[ i ];
+            const route = graph.routes[ i ];
             const routeColor = PATH_COLORS[ i ];
 
             if ( route.startPoint !== null ) {
@@ -2172,22 +2171,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        path.segments.forEach( ( pathSegment, index ) => {
+        graph.segments.forEach( ( graphSegment, index ) => {
 
-            if ( index < path.segments.length - 1 ) {
+            if ( index < graph.segments.length - 1 ) {
 
-                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toFixed( 0 ).toString() + ', ' + pathSegment.p0.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
-                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toFixed( 0 ).toString() + ', ' + pathSegment.p1.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
+                addDebugElement( graphSegment.p0.x, graphSegment.p0.y, graphSegment.p0.x.toFixed( 0 ).toString() + ', ' + graphSegment.p0.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
+                addDebugElement( graphSegment.p1.x, graphSegment.p1.y, graphSegment.p1.x.toFixed( 0 ).toString() + ', ' + graphSegment.p1.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
 
             } else {
 
-                addDebugElement( pathSegment.p0.x, pathSegment.p0.y, pathSegment.p0.x.toFixed( 0 ).toString() + ', ' + pathSegment.p0.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
-                addDebugElement( pathSegment.p1.x, pathSegment.p1.y, pathSegment.p1.x.toFixed( 0 ).toString() + ', ' + pathSegment.p1.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
+                addDebugElement( graphSegment.p0.x, graphSegment.p0.y, graphSegment.p0.x.toFixed( 0 ).toString() + ', ' + graphSegment.p0.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
+                addDebugElement( graphSegment.p1.x, graphSegment.p1.y, graphSegment.p1.x.toFixed( 0 ).toString() + ', ' + graphSegment.p1.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
 
             }
 
-            addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.id.toString(), 'white', -4, -6, null );
-            addDebugElement( pathSegment.centerPoint.x, pathSegment.centerPoint.y, pathSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
+            addDebugElement( graphSegment.centerPoint.x, graphSegment.centerPoint.y, graphSegment.id.toString(), 'white', -4, -6, null );
+            addDebugElement( graphSegment.centerPoint.x, graphSegment.centerPoint.y, graphSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
 
         } );
 
@@ -2245,7 +2244,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function getPathSegmentLength( p0, p1, controlPoint ) {
+    function getGraphSegmentLength( p0, p1, controlPoint ) {
 
         //return getDistance( p0, p1 );
 
@@ -2261,9 +2260,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		let p = p0;
 		let np = null;
 
-		for ( let i = 1; i < PATH_SEGMENT_CURVE_ACCURACY; i++ ) {
+		for ( let i = 1; i < GRAPH_SEGMENT_CURVE_ACCURACY; i++ ) {
 
-			const t = i / PATH_SEGMENT_CURVE_ACCURACY;
+			const t = i / GRAPH_SEGMENT_CURVE_ACCURACY;
 			const f1 = 2 * t * ( 1 - t );
             const f2 = t * t;
 
@@ -2277,10 +2276,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function getPathSegmentCenter( pathSegment ) {
+    function getGraphSegmentCenter( graphSegment ) {
 
-        const x = ( pathSegment.p0.x + pathSegment.p1.x ) / 2;
-        const y = ( pathSegment.p0.y + pathSegment.p1.y ) / 2;
+        const x = ( graphSegment.p0.x + graphSegment.p1.x ) / 2;
+        const y = ( graphSegment.p0.y + graphSegment.p1.y ) / 2;
 
         return { x: x, y: y };
 
@@ -2322,40 +2321,40 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    // function showPathSegmentIntersectionPointsWithLine( line, precision = 25 ) {
+    // function showGraphSegmentIntersectionPointsWithLine( line, precision = 25 ) {
 
-    //     tempPathSegments = [];
-
-    //     //---
-
-    //     const pathIndex = 0;
-
-    //     const path = pathHolder[ pathIndex ];
+    //     tempGraphSegments = [];
 
     //     //---
 
-    //     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+    //     const graphIndex = 0;
 
-    //         const comparePathSegment = path.segments[ i ];
+    //     const graph = graphHolder[ graphIndex ];
 
-    //         if ( line.id !== comparePathSegment.id ) {
+    //     //---
+
+    //     for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
+
+    //         const compareGraphSegment = graph.segments[ i ];
+
+    //         if ( line.id !== compareGraphSegment.id ) {
 
     //             for ( let iC = 0, iCStep = 1 / precision; iC < 1 + iCStep; iC += iCStep ) {
 
     //                 if ( iC > 0 ) {
 
-    //                     const tempComparePathSegment = {};
+    //                     const tempCompareGraphSegment = {};
 
-    //                     tempComparePathSegment.p0 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC - iCStep );
-    //                     tempComparePathSegment.p1 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC );
+    //                     tempCompareGraphSegment.p0 = interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC - iCStep );
+    //                     tempCompareGraphSegment.p1 = interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC );
 
-    //                     const intersectionPoint = getLinesIntersectionPoint( line.p0.x, line.p0.y, line.p1.x, line.p1.y, tempComparePathSegment.p0.x, tempComparePathSegment.p0.y, tempComparePathSegment.p1.x, tempComparePathSegment.p1.y );
+    //                     const intersectionPoint = getLinesIntersectionPoint( line.p0.x, line.p0.y, line.p1.x, line.p1.y, tempCompareGraphSegment.p0.x, tempCompareGraphSegment.p0.y, tempCompareGraphSegment.p1.x, tempCompareGraphSegment.p1.y );
 
     //                     if ( intersectionPoint !== null ) {
 
     //                         if ( Math.round( intersectionPoint.x ) !== line.p0.x && Math.round( intersectionPoint.y ) !== line.p0.y && Math.round( intersectionPoint.x ) !== line.p1.x && Math.round( intersectionPoint.y ) !== line.p1.y ) {
 
-    //                             tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+    //                             tempGraphSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
 
     //                         }
 
@@ -2371,15 +2370,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     // }
 
-    // function getPathSegmentsIntersections( inputPathSegment, precision = 25 ) {
+    // function getGraphSegmentsIntersections( inputGraphSegment, precision = 25 ) {
 
-    //     //tempPathSegments = [];
+    //     //tempGraphSegments = [];
 
     //     //---
 
-    //     const pathIndex = 0;
+    //     const graphIndex = 0;
 
-    //     const path = pathHolder[ pathIndex ];
+    //     const graph = graphHolder[ graphIndex ];
 
     //     //---
 
@@ -2390,19 +2389,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //         if ( iI > 0 ) {
 
-    //             const tempInputPathSegment = {};
+    //             const tempInputGraphSegment = {};
 
-    //             tempInputPathSegment.id = inputPathSegment.id;
-    //             tempInputPathSegment.p0 = interpolateQuadraticBezier( inputPathSegment.p0, inputPathSegment.controlPoint, inputPathSegment.p1, iI - iIStep );
-    //             tempInputPathSegment.p1 = interpolateQuadraticBezier( inputPathSegment.p0, inputPathSegment.controlPoint, inputPathSegment.p1, iI );
+    //             tempInputGraphSegment.id = inputGraphSegment.id;
+    //             tempInputGraphSegment.p0 = interpolateQuadraticBezier( inputGraphSegment.p0, inputGraphSegment.controlPoint, inputGraphSegment.p1, iI - iIStep );
+    //             tempInputGraphSegment.p1 = interpolateQuadraticBezier( inputGraphSegment.p0, inputGraphSegment.controlPoint, inputGraphSegment.p1, iI );
 
-    //             //tempPathSegments.push( { type: 'line', p0: { x: tempInputPathSegment.p0.x | 0, y: tempInputPathSegment.p0.y | 0 }, p1: { x: tempInputPathSegment.p1.x | 0, y: tempInputPathSegment.p1.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
-    //             //tempPathSegments.push( { type: 'circfill', position: { x: tempInputPathSegment.p0.x | 0, y: tempInputPathSegment.p0.y | 0 }, diameter: 9, color: { r: 255, g: 0, b: 0, a: 255 } } );
+    //             //tempGraphSegments.push( { type: 'line', p0: { x: tempInputGraphSegment.p0.x | 0, y: tempInputGraphSegment.p0.y | 0 }, p1: { x: tempInputGraphSegment.p1.x | 0, y: tempInputGraphSegment.p1.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
+    //             //tempGraphSegments.push( { type: 'circfill', position: { x: tempInputGraphSegment.p0.x | 0, y: tempInputGraphSegment.p0.y | 0 }, diameter: 9, color: { r: 255, g: 0, b: 0, a: 255 } } );
 
-    //             for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+    //             for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-    //                 const comparePathSegment = path.segments[ i ];
-    //                 // const compareIndex = selectedPathSegments.findIndex( ( pathSegment ) => pathSegment.id === comparePathSegment.id );
+    //                 const compareGraphSegment = graph.segments[ i ];
+    //                 // const compareIndex = selectedGraphSegments.findIndex( ( graphSegment ) => graphSegment.id === compareGraphSegment.id );
 
     //                 // if ( compareIndex > -1 ) {
 
@@ -2414,27 +2413,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //                     if ( iC > 0 ) {
 
-    //                         const tempComparePathSegment = {};
+    //                         const tempCompareGraphSegment = {};
 
-    //                         tempComparePathSegment.id = comparePathSegment.id;
-    //                         tempComparePathSegment.p0 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC - iCStep );
-    //                         tempComparePathSegment.p1 = interpolateQuadraticBezier( comparePathSegment.p0, comparePathSegment.controlPoint, comparePathSegment.p1, iC );
+    //                         tempCompareGraphSegment.id = compareGraphSegment.id;
+    //                         tempCompareGraphSegment.p0 = interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC - iCStep );
+    //                         tempCompareGraphSegment.p1 = interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC );
 
-    //                         if ( tempInputPathSegment.id !== tempComparePathSegment.id ) {
+    //                         if ( tempInputGraphSegment.id !== tempCompareGraphSegment.id ) {
 
-    //                             //tempPathSegments.push( { type: 'line', p0: { x: tempComparePathSegment.p0.x | 0, y: tempComparePathSegment.p0.y | 0 }, p1: { x: tempComparePathSegment.p1.x | 0, y: tempComparePathSegment.p1.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
+    //                             //tempGraphSegments.push( { type: 'line', p0: { x: tempCompareGraphSegment.p0.x | 0, y: tempCompareGraphSegment.p0.y | 0 }, p1: { x: tempCompareGraphSegment.p1.x | 0, y: tempCompareGraphSegment.p1.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
 
-    //                             const intersectionPoint = getLinesIntersectionPoint( tempInputPathSegment.p0.x, tempInputPathSegment.p0.y, tempInputPathSegment.p1.x, tempInputPathSegment.p1.y, tempComparePathSegment.p0.x, tempComparePathSegment.p0.y, tempComparePathSegment.p1.x, tempComparePathSegment.p1.y );
+    //                             const intersectionPoint = getLinesIntersectionPoint( tempInputGraphSegment.p0.x, tempInputGraphSegment.p0.y, tempInputGraphSegment.p1.x, tempInputGraphSegment.p1.y, tempCompareGraphSegment.p0.x, tempCompareGraphSegment.p0.y, tempCompareGraphSegment.p1.x, tempCompareGraphSegment.p1.y );
 
     //                             if ( intersectionPoint !== null ) {
 
-    //                                 if ( Math.round( intersectionPoint.x ) !== tempInputPathSegment.p0.x && Math.round( intersectionPoint.y ) !== tempInputPathSegment.p0.y && Math.round( intersectionPoint.x ) !== tempInputPathSegment.p1.x && Math.round( intersectionPoint.y ) !== tempInputPathSegment.p1.y ) {
+    //                                 if ( Math.round( intersectionPoint.x ) !== tempInputGraphSegment.p0.x && Math.round( intersectionPoint.y ) !== tempInputGraphSegment.p0.y && Math.round( intersectionPoint.x ) !== tempInputGraphSegment.p1.x && Math.round( intersectionPoint.y ) !== tempInputGraphSegment.p1.y ) {
 
-    //                                     //console.log( intersectionPoint, tempInputPathSegment.p0, tempInputPathSegment.p1 );
+    //                                     //console.log( intersectionPoint, tempInputGraphSegment.p0, tempInputGraphSegment.p1 );
 
-    //                                     //tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+    //                                     //tempGraphSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
 
-    //                                     intersections.push( { point: intersectionPoint, pathSegment0: inputPathSegment, pathSegment1: comparePathSegment } );
+    //                                     intersections.push( { point: intersectionPoint, graphSegment0: inputGraphSegment, graphSegment1: compareGraphSegment } );
 
     //                                 }
 
@@ -2456,14 +2455,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     // }
 
-    function getTOfQuadraticBezierFromIntersectionPoint( pathSegment, position, precision = 100 ) {
+    function getTOfQuadraticBezierFromIntersectionPoint( graphSegment, position, precision = 100 ) {
 
         let distance = Infinity;
         let t = -1;
 
         for ( let i = 0, l = 1 / precision; i < 1 + l; i += l ) {
 
-            const pOnBezier = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, i );
+            const pOnBezier = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, i );
 
             const d = getDistance( position, pOnBezier );
 
@@ -2480,14 +2479,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function getNearestPointOnPathSegmentByPosition( pathSegment, position, precision = 100 ) {
+    function getNearestPointOnGraphSegmentByPosition( graphSegment, position, precision = 100 ) {
 
         let distance = Infinity;
         let nearestPoint = null;
 
         for ( let i = 0, l = 1 / precision; i < 1 + l; i += l ) {
 
-            const pOnBezier = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, i );
+            const pOnBezier = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, i );
 
             const d = getDistance( position, pOnBezier );
 
@@ -2624,19 +2623,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             addStreetSegment( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.addPathSegment ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.addGraphSegment ) {
 
-            addPathSegment( mouseCursor.position );
+            addGraphSegment( mouseCursor.position );
 
         } else if ( editorMode === EDITOR_MODE_ENUM.addStartPoint ) {
 
-            addStartPointToPath( mouseCursor.position );
+            addStartPointToGraph( mouseCursor.position );
 
         } else if ( editorMode === EDITOR_MODE_ENUM.addEndPoint ) {
 
-            addEndPointToPath( mouseCursor.position );
+            addEndPointToGraph( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.getPathSegment ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.getGraphSegment ) {
 
             //---
 
@@ -2644,22 +2643,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             togglePointWalkable( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.removePathSegment ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.removeGraphSegment ) {
 
-            removePathSegmentByPosition( mouseCursor.position );
+            removeGraphSegmentByPosition( mouseCursor.position );
 
         } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
 
-            addCurrentPointToPath( mouseCursor.position );
-            addSelectedPathSegments( mouseCursor.position );
+            addCurrentPointToGraph( mouseCursor.position );
+            addSelectedGraphSegments( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.togglePathWalkable ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.toggleGraphWalkable ) {
 
-            togglePathWalkable( mouseCursor.position );
+            toggleGraphWalkable( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.togglePathDirections ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.toggleGraphDirections ) {
 
-            togglePathDirections( mouseCursor.position );
+            toggleGraphDirections( mouseCursor.position );
 
         } else if ( editorMode === EDITOR_MODE_ENUM.showRoute ) {
 
@@ -2669,28 +2668,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             removeStartEndPoints( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.bendPathSegment ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.bendGraphSegment ) {
 
-            currentPathSegment = getPathSegmentByPosition( mouseCursor.position );
+            currentGraphSegment = getGraphSegmentByPosition( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.straightenPathSegment ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.straightenGraphSegment ) {
 
-            straightenPathSegmentByPosition( mouseCursor.position );
+            straightenGraphSegmentByPosition( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.splitPathSegment ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.splitGraphSegment ) {
 
-            splitPathSegmentByPosition( mouseCursor.position );
+            splitGraphSegmentByPosition( mouseCursor.position );
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.splitPathSegmentAt ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.splitGraphSegmentAt ) {
 
-            const pathSegment = getPathSegmentByPosition( mousePos );
+            const graphSegment = getGraphSegmentByPosition( mousePos );
 
-            if ( pathSegment !== null ) {
+            if ( graphSegment !== null ) {
 
-                const pointOnPathSegment = getNearestPointOnPathSegmentByPosition( pathSegment, mousePos, 100 );
-                const tOnPathSegment = getTOfQuadraticBezierFromIntersectionPoint( pathSegment, pointOnPathSegment, 100 );
+                const pointOnGraphSegment = getNearestPointOnGraphSegmentByPosition( graphSegment, mousePos, 100 );
+                const tOnGraphSegment = getTOfQuadraticBezierFromIntersectionPoint( graphSegment, pointOnGraphSegment, 100 );
 
-                splitPathSegment( pathSegment, tOnPathSegment );
+                splitGraphSegment( graphSegment, tOnGraphSegment );
 
             }
 
@@ -2704,33 +2703,33 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        if ( editorMode === EDITOR_MODE_ENUM.bendPathSegment ) {
+        if ( editorMode === EDITOR_MODE_ENUM.bendGraphSegment ) {
 
-            currentPathSegment = null;
+            currentGraphSegment = null;
 
-            tempPathSegments = [];
+            tempGraphSegments = [];
 
         } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
 
-            removeSelectedPathSegments();
+            removeSelectedGraphSegments();
             // removeDuplicatePointsFromArray();
-            // removeDuplicatePathSegmentsFromArray();
+            // removeDuplicateGraphSegmentsFromArray();
 
         }
 
         //---
 
-        if ( currentPathSegment === null ) {
+        if ( currentGraphSegment === null ) {
 
-            const pathIndex = 0;
+            const graphIndex = 0;
 
-            const path = pathHolder[ pathIndex ];
+            const graph = graphHolder[ graphIndex ];
 
             //---
 
-            pathfinder.computeRoutes( path, ( routes ) => {
+            pathfinder.computeRoutes( graph, ( routes ) => {
 
-                path.routes = routes;
+                graph.routes = routes;
         
             } );
 
@@ -2748,47 +2747,47 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        if ( editorMode === EDITOR_MODE_ENUM.getPathSegment ||
-             editorMode === EDITOR_MODE_ENUM.removePathSegment ||
-             editorMode === EDITOR_MODE_ENUM.togglePathWalkable ||
-             editorMode === EDITOR_MODE_ENUM.togglePathDirections ||
-             ( editorMode === EDITOR_MODE_ENUM.bendPathSegment && mouseDown === false ) ||
-             editorMode === EDITOR_MODE_ENUM.straightenPathSegment ||
-             editorMode === EDITOR_MODE_ENUM.splitPathSegment ) {
+        if ( editorMode === EDITOR_MODE_ENUM.getGraphSegment ||
+             editorMode === EDITOR_MODE_ENUM.removeGraphSegment ||
+             editorMode === EDITOR_MODE_ENUM.toggleGraphWalkable ||
+             editorMode === EDITOR_MODE_ENUM.toggleGraphDirections ||
+             ( editorMode === EDITOR_MODE_ENUM.bendGraphSegment && mouseDown === false ) ||
+             editorMode === EDITOR_MODE_ENUM.straightenGraphSegment ||
+             editorMode === EDITOR_MODE_ENUM.splitGraphSegment ) {
 
-            tempPathSegments = [];
+            tempGraphSegments = [];
 
             //---
 
-            const pathSegment = getPathSegmentByPosition( mousePos );
+            const graphSegment = getGraphSegmentByPosition( mousePos );
 
-            if ( pathSegment !== null ) {
+            if ( graphSegment !== null ) {
 
-                //tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
-                tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
-                tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 12, color: { r: 255, g: 0, b: 255, a: 255 }  } );
-                tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 12, color: { r: 0, g: 255, b: 255, a: 255 }  } );
+                //tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                tempGraphSegments.push( { type: 'circ', position: { x: graphSegment.p0.x, y: graphSegment.p0.y }, diameter: 12, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                tempGraphSegments.push( { type: 'circ', position: { x: graphSegment.p1.x, y: graphSegment.p1.y }, diameter: 12, color: { r: 0, g: 255, b: 255, a: 255 }  } );
 
             }
 
-        } else if ( editorMode === EDITOR_MODE_ENUM.splitPathSegmentAt ) {
+        } else if ( editorMode === EDITOR_MODE_ENUM.splitGraphSegmentAt ) {
 
-            tempPathSegments = [];
+            tempGraphSegments = [];
 
             //---
 
-            const pathSegment = getPathSegmentByPosition( mousePos );
+            const graphSegment = getGraphSegmentByPosition( mousePos );
 
-            if ( pathSegment !== null ) {
+            if ( graphSegment !== null ) {
 
-                //tempPathSegments.push( { type: 'line', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
-                tempPathSegments.push( { type: 'bezier', p0: { x: pathSegment.p0.x, y: pathSegment.p0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: pathSegment.p1.x, y: pathSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
-                tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p0.x, y: pathSegment.p0.y }, diameter: 12, color: { r: 255, g: 0, b: 255, a: 255 }  } );
-                tempPathSegments.push( { type: 'circ', position: { x: pathSegment.p1.x, y: pathSegment.p1.y }, diameter: 12, color: { r: 0, g: 255, b: 255, a: 255 }  } );
+                //tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y  }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                tempGraphSegments.push( { type: 'circ', position: { x: graphSegment.p0.x, y: graphSegment.p0.y }, diameter: 12, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                tempGraphSegments.push( { type: 'circ', position: { x: graphSegment.p1.x, y: graphSegment.p1.y }, diameter: 12, color: { r: 0, g: 255, b: 255, a: 255 }  } );
 
-                const pointOnPathSegment = getNearestPointOnPathSegmentByPosition( pathSegment, mousePos, 100 );
+                const pointOnGraphSegment = getNearestPointOnGraphSegmentByPosition( graphSegment, mousePos, 100 );
 
-                tempPathSegments.push( { type: 'circfill', position: { x: pointOnPathSegment.x, y: pointOnPathSegment.y }, diameter: 5, color: { r: 255, g: 0, b: 255, a: 255 }  } );
+                tempGraphSegments.push( { type: 'circfill', position: { x: pointOnGraphSegment.x, y: pointOnGraphSegment.y }, diameter: 5, color: { r: 255, g: 0, b: 255, a: 255 }  } );
 
             }
 
@@ -2807,11 +2806,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        if ( editorMode === EDITOR_MODE_ENUM.bendPathSegment ) {
+        if ( editorMode === EDITOR_MODE_ENUM.bendGraphSegment ) {
 
             if ( mouseDown === true ) {
 
-                bendPathSegment( mousePos );
+                bendGraphSegment( mousePos );
 
             }
 
@@ -2819,7 +2818,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( editorMode === EDITOR_MODE_ENUM.addStreetSegment ) {
 
-            tempPathSegments = [];
+            tempGraphSegments = [];
 
             const streetSegment = currentStreetSegment;
 
@@ -2834,7 +2833,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     if ( streetSegment.p0 !== null && streetSegment.p1 === null ) {
 
-                        // const pathDistance = 50;
+                        // const graphDistance = 50;
 
                         // const tempP1 = { x: mousePos.x, y: mousePos.y };
 
@@ -2845,15 +2844,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         // const sinA = Math.sin( angleStart );
                         // const cosA = Math.cos( angleStart );
 
-                        // streetSegment.pTS.x = sinA * pathDistance + streetSegment.p0.x;
-                        // streetSegment.pTS.y = -cosA * pathDistance + streetSegment.p0.y;
-                        // streetSegment.pBS.x = -sinA * pathDistance + streetSegment.p0.x;
-                        // streetSegment.pBS.y = cosA * pathDistance + streetSegment.p0.y;
+                        // streetSegment.pTS.x = sinA * graphDistance + streetSegment.p0.x;
+                        // streetSegment.pTS.y = -cosA * graphDistance + streetSegment.p0.y;
+                        // streetSegment.pBS.x = -sinA * graphDistance + streetSegment.p0.x;
+                        // streetSegment.pBS.y = cosA * graphDistance + streetSegment.p0.y;
 
-                        // streetSegment.pTE.x = sinA * pathDistance + tempP1.x;
-                        // streetSegment.pTE.y = -cosA * pathDistance + tempP1.y;
-                        // streetSegment.pBE.x = -sinA * pathDistance + tempP1.x;
-                        // streetSegment.pBE.y = cosA * pathDistance + tempP1.y;
+                        // streetSegment.pTE.x = sinA * graphDistance + tempP1.x;
+                        // streetSegment.pTE.y = -cosA * graphDistance + tempP1.y;
+                        // streetSegment.pBE.x = -sinA * graphDistance + tempP1.x;
+                        // streetSegment.pBE.y = cosA * graphDistance + tempP1.y;
 
                         // streetSegment.centerPoint.x = ( streetSegment.p0.x + tempP1.x ) / 2;
                         // streetSegment.centerPoint.y = ( streetSegment.p0.y + tempP1.y ) / 2;
@@ -2870,29 +2869,29 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         // streetSegment.pBControl.x = streetSegment.pBCenter.x;
                         // streetSegment.pBControl.y = streetSegment.pBCenter.y;
 
-                        // tempPathSegments.push( { type: 'line', p0: { x: streetSegment.p0.x, y: streetSegment.p0.y }, p1: { x: tempP1.x, y: tempP1.y }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'line', p0: { x: streetSegment.p0.x, y: streetSegment.p0.y }, p1: { x: tempP1.x, y: tempP1.y }, color: { r: 100, g: 100, b: 100, a: 255 } } );
 
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.p0.x, y: streetSegment.p0.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                        // tempPathSegments.push( { type: 'circfill', position: { x: tempP1.x, y: tempP1.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.p0.x, y: streetSegment.p0.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: tempP1.x, y: tempP1.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
 
-                        // tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                        // tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'line', p0: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
 
-                        // tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
-                        // tempPathSegments.push( { type: 'line', p0: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'line', p0: { x: streetSegment.pTS.x | 0, y: streetSegment.pTS.y | 0 }, p1: { x: streetSegment.pTE.x | 0, y: streetSegment.pTE.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'line', p0: { x: streetSegment.pBS.x | 0, y: streetSegment.pBS.y | 0 }, p1: { x: streetSegment.pBE.x | 0, y: streetSegment.pBE.y | 0 }, color: { r: 0, g: 255, b: 0, a: 255 } } );
 
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.centerPoint.x, y: streetSegment.centerPoint.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTCenter.x, y: streetSegment.pTCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBCenter.x, y: streetSegment.pBCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.centerPoint.x, y: streetSegment.centerPoint.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.pTCenter.x, y: streetSegment.pTCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.pBCenter.x, y: streetSegment.pBCenter.y }, diameter: 6, color: { r: 155, g: 155, b: 155, a: 255 } } );
 
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.controlPoint.x, y: streetSegment.controlPoint.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTControl.x, y: streetSegment.pTControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBControl.x, y: streetSegment.pBControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.controlPoint.x, y: streetSegment.controlPoint.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.pTControl.x, y: streetSegment.pTControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.pBControl.x, y: streetSegment.pBControl.y }, diameter: 3, color: { r: 255, g: 255, b: 255, a: 255 } } );
 
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTS.x, y: streetSegment.pTS.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pTE.x, y: streetSegment.pTE.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBS.x, y: streetSegment.pBS.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
-                        // tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.pBE.x, y: streetSegment.pBE.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.pTS.x, y: streetSegment.pTS.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.pTE.x, y: streetSegment.pTE.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.pBS.x, y: streetSegment.pBS.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                        // tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.pBE.x, y: streetSegment.pBE.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
 
                     }
 
@@ -2972,19 +2971,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                         //---
 
-                        tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent.p0.x, y: lineAdjacent.p0.y }, p1: { x: lineAdjacent.p1.x, y: lineAdjacent.p1.y }, color: { r: 55, g: 55, b: 155, a: 255 } } );
-                        tempPathSegments.push( { type: 'line', p0: { x: lineOpposite.p0.x, y: lineOpposite.p0.y }, p1: { x: lineOpposite.p1.x, y: lineOpposite.p1.y }, color: { r: 55, g: 155, b: 55, a: 255 } } );
-                        tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint, diameter: 5, color: { r: 255, g: 55, b: 55, a: 255 } } );
-                        tempPathSegments.push( { type: 'line', p0: { x: lineIntersection.p0.x | 0, y: lineIntersection.p0.y | 0 }, p1: { x: lineIntersection.p1.x | 0, y: lineIntersection.p1.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                        tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
-                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.centerPoint.x, y: streetSegment.centerPoint.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                        tempPathSegments.push( { type: 'line', p0: { x: streetSegment.p0.x, y: streetSegment.p0.y }, p1: { x: tempP1.x, y: tempP1.y }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                        tempPathSegments.push( { type: 'circfill', position: { x: streetSegment.p0.x, y: streetSegment.p0.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                        tempPathSegments.push( { type: 'circfill', position: { x: tempP1.x, y: tempP1.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempGraphSegments.push( { type: 'line', p0: { x: lineAdjacent.p0.x, y: lineAdjacent.p0.y }, p1: { x: lineAdjacent.p1.x, y: lineAdjacent.p1.y }, color: { r: 55, g: 55, b: 155, a: 255 } } );
+                        tempGraphSegments.push( { type: 'line', p0: { x: lineOpposite.p0.x, y: lineOpposite.p0.y }, p1: { x: lineOpposite.p1.x, y: lineOpposite.p1.y }, color: { r: 55, g: 155, b: 55, a: 255 } } );
+                        tempGraphSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint, diameter: 5, color: { r: 255, g: 55, b: 55, a: 255 } } );
+                        tempGraphSegments.push( { type: 'line', p0: { x: lineIntersection.p0.x | 0, y: lineIntersection.p0.y | 0 }, p1: { x: lineIntersection.p1.x | 0, y: lineIntersection.p1.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempGraphSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 0, g: 255, b: 0, a: 255 } } );
+                        tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.centerPoint.x, y: streetSegment.centerPoint.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempGraphSegments.push( { type: 'line', p0: { x: streetSegment.p0.x, y: streetSegment.p0.y }, p1: { x: tempP1.x, y: tempP1.y }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempGraphSegments.push( { type: 'circfill', position: { x: streetSegment.p0.x, y: streetSegment.p0.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempGraphSegments.push( { type: 'circfill', position: { x: tempP1.x, y: tempP1.y }, diameter: 3, color: { r: 100, g: 100, b: 100, a: 255 } } );
 
                         //---
 
-                        tempPathSegments.push( { type: 'bezier', p0: streetSegment.p0, controlPoint: streetSegment.controlPoint, p1: tempP1, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                        tempGraphSegments.push( { type: 'bezier', p0: streetSegment.p0, controlPoint: streetSegment.controlPoint, p1: tempP1, color: { r: 100, g: 100, b: 100, a: 255 } } );
 
                         //---
                         //lanes
@@ -3092,7 +3091,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                     //---
 
-                                    tempPathSegments.push( { type: 'bezier', p0: streetBorder.p0, controlPoint: streetBorder.controlPoint, p1: streetBorder.p1, color: { r: 255, g: 55, b: 255, a: 255 } } );
+                                    tempGraphSegments.push( { type: 'bezier', p0: streetBorder.p0, controlPoint: streetBorder.controlPoint, p1: streetBorder.p1, color: { r: 255, g: 55, b: 255, a: 255 } } );
 
                                     //---
 
@@ -3134,21 +3133,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                 //---
 
-                                tempPathSegments.push( { type: 'line', p0: { x: lane.p0.x, y: lane.p0.y }, p1: { x: lane.p1.x, y: lane.p1.y }, color: { r: 55, g: 55, b: 55, a: 255 } } );
-                                tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent.p0.x, y: lineAdjacent.p0.y }, p1: { x: lineAdjacent.p1.x, y: lineAdjacent.p1.y }, color: { r: 25, g: 25, b: 75, a: 255 } } );
-                                tempPathSegments.push( { type: 'line', p0: { x: lineOpposite.p0.x, y: lineOpposite.p0.y }, p1: { x: lineOpposite.p1.x, y: lineOpposite.p1.y }, color: { r: 25, g: 75, b: 25, a: 255 } } );
-                                tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint, diameter: 3, color: { r: 155, g: 55, b: 55, a: 255 } } );
-                                tempPathSegments.push( { type: 'line', p0: { x: lineIntersection.p0.x | 0, y: lineIntersection.p0.y | 0 }, p1: { x: lineIntersection.p1.x | 0, y: lineIntersection.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
-                                tempPathSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
-                                tempPathSegments.push( { type: 'circfill', position: { x: lane.centerPoint.x, y: lane.centerPoint.y }, diameter: 3, color: { r: 55, g: 55, b: 55, a: 255 } } );
-                                tempPathSegments.push( { type: 'line', p0: { x: lane.p0.x | 0, y: lane.p0.y | 0 }, p1: { x: streetSegment.p0.x | 0, y: streetSegment.p0.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                                tempPathSegments.push( { type: 'line', p0: { x: lane.p1.x | 0, y: lane.p1.y | 0 }, p1: { x: tempP1.x | 0, y: tempP1.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
-                                tempPathSegments.push( { type: 'circfill', position: lane.p0, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
-                                tempPathSegments.push( { type: 'circfill', position: lane.p1, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                                tempGraphSegments.push( { type: 'line', p0: { x: lane.p0.x, y: lane.p0.y }, p1: { x: lane.p1.x, y: lane.p1.y }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+                                tempGraphSegments.push( { type: 'line', p0: { x: lineAdjacent.p0.x, y: lineAdjacent.p0.y }, p1: { x: lineAdjacent.p1.x, y: lineAdjacent.p1.y }, color: { r: 25, g: 25, b: 75, a: 255 } } );
+                                tempGraphSegments.push( { type: 'line', p0: { x: lineOpposite.p0.x, y: lineOpposite.p0.y }, p1: { x: lineOpposite.p1.x, y: lineOpposite.p1.y }, color: { r: 25, g: 75, b: 25, a: 255 } } );
+                                tempGraphSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint, diameter: 3, color: { r: 155, g: 55, b: 55, a: 255 } } );
+                                tempGraphSegments.push( { type: 'line', p0: { x: lineIntersection.p0.x | 0, y: lineIntersection.p0.y | 0 }, p1: { x: lineIntersection.p1.x | 0, y: lineIntersection.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+                                tempGraphSegments.push( { type: 'circfill', position: { x: intersectionPoint.x, y: intersectionPoint.y }, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                                tempGraphSegments.push( { type: 'circfill', position: { x: lane.centerPoint.x, y: lane.centerPoint.y }, diameter: 3, color: { r: 55, g: 55, b: 55, a: 255 } } );
+                                tempGraphSegments.push( { type: 'line', p0: { x: lane.p0.x | 0, y: lane.p0.y | 0 }, p1: { x: streetSegment.p0.x | 0, y: streetSegment.p0.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                                tempGraphSegments.push( { type: 'line', p0: { x: lane.p1.x | 0, y: lane.p1.y | 0 }, p1: { x: tempP1.x | 0, y: tempP1.y | 0 }, color: { r: 100, g: 100, b: 100, a: 255 } } );
+                                tempGraphSegments.push( { type: 'circfill', position: lane.p0, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                                tempGraphSegments.push( { type: 'circfill', position: lane.p1, diameter: 3, color: { r: 155, g: 155, b: 155, a: 255 } } );
 
                                 //---
 
-                                tempPathSegments.push( { type: 'bezier', p0: lane.p0, controlPoint: lane.controlPoint, p1: lane.p1, color: { r: 255, g: 55, b: 55, a: 255 } } );
+                                tempGraphSegments.push( { type: 'bezier', p0: lane.p0, controlPoint: lane.controlPoint, p1: lane.p1, color: { r: 255, g: 55, b: 55, a: 255 } } );
 
                                 //---
                                 //center lanes & cross lanes
@@ -3278,28 +3277,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                         //---
 
-                                        tempPathSegments.push( { type: 'line', p0: { x: l0.p0.x | 0, y: l0.p0.y | 0 }, p1: { x: l0.p1.x | 0, y: l0.p1.y | 0 }, color: { r: 155, g: 155, b: 55, a: 255 } } );
-                                        tempPathSegments.push( { type: 'line', p0: { x: l1.p0.x | 0, y: l1.p0.y | 0 }, p1: { x: l1.p1.x | 0, y: l1.p1.y | 0 }, color: { r: 55, g: 155, b: 155, a: 255 } } );
-                                        tempPathSegments.push( { type: 'circfill', position: centerLane.p0, diameter: 3, color: { r: 55, g: 255, b: 55, a: 255 } } );
-                                        tempPathSegments.push( { type: 'circfill', position: centerLane.p1, diameter: 3, color: { r: 55, g: 255, b: 55, a: 255 } } );
-                                        tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent0.p0.x, y: lineAdjacent0.p0.y }, p1: { x: lineAdjacent0.p1.x, y: lineAdjacent0.p1.y }, color: { r: 25, g: 25, b: 255, a: 255 } } );
-                                        tempPathSegments.push( { type: 'line', p0: { x: lineAdjacent1.p0.x, y: lineAdjacent1.p0.y }, p1: { x: lineAdjacent1.p1.x, y: lineAdjacent1.p1.y }, color: { r: 25, g: 25, b: 255, a: 255 } } );
-                                        tempPathSegments.push( { type: 'line', p0: { x: lineOpposite0.p0.x, y: lineOpposite0.p0.y }, p1: { x: lineOpposite0.p1.x, y: lineOpposite0.p1.y }, color: { r: 25, g: 255, b: 25, a: 255 } } );
-                                        tempPathSegments.push( { type: 'line', p0: { x: lineOpposite1.p0.x, y: lineOpposite1.p0.y }, p1: { x: lineOpposite1.p1.x, y: lineOpposite1.p1.y }, color: { r: 25, g: 255, b: 25, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'line', p0: { x: l0.p0.x | 0, y: l0.p0.y | 0 }, p1: { x: l0.p1.x | 0, y: l0.p1.y | 0 }, color: { r: 155, g: 155, b: 55, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'line', p0: { x: l1.p0.x | 0, y: l1.p0.y | 0 }, p1: { x: l1.p1.x | 0, y: l1.p1.y | 0 }, color: { r: 55, g: 155, b: 155, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'circfill', position: centerLane.p0, diameter: 3, color: { r: 55, g: 255, b: 55, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'circfill', position: centerLane.p1, diameter: 3, color: { r: 55, g: 255, b: 55, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'line', p0: { x: lineAdjacent0.p0.x, y: lineAdjacent0.p0.y }, p1: { x: lineAdjacent0.p1.x, y: lineAdjacent0.p1.y }, color: { r: 25, g: 25, b: 255, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'line', p0: { x: lineAdjacent1.p0.x, y: lineAdjacent1.p0.y }, p1: { x: lineAdjacent1.p1.x, y: lineAdjacent1.p1.y }, color: { r: 25, g: 25, b: 255, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'line', p0: { x: lineOpposite0.p0.x, y: lineOpposite0.p0.y }, p1: { x: lineOpposite0.p1.x, y: lineOpposite0.p1.y }, color: { r: 25, g: 255, b: 25, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'line', p0: { x: lineOpposite1.p0.x, y: lineOpposite1.p0.y }, p1: { x: lineOpposite1.p1.x, y: lineOpposite1.p1.y }, color: { r: 25, g: 255, b: 25, a: 255 } } );
 
-                                        tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint0, diameter: 3, color: { r: 255, g: 55, b: 55, a: 255 } } );
-                                        tempPathSegments.push( { type: 'line', p0: { x: lineIntersection0.p0.x | 0, y: lineIntersection0.p0.y | 0 }, p1: { x: lineIntersection0.p1.x | 0, y: lineIntersection0.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint0, diameter: 3, color: { r: 255, g: 55, b: 55, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'line', p0: { x: lineIntersection0.p0.x | 0, y: lineIntersection0.p0.y | 0 }, p1: { x: lineIntersection0.p1.x | 0, y: lineIntersection0.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
 
-                                        tempPathSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint1, diameter: 3, color: { r: 155, g: 55, b: 55, a: 255 } } );
-                                        tempPathSegments.push( { type: 'line', p0: { x: lineIntersection1.p0.x | 0, y: lineIntersection1.p0.y | 0 }, p1: { x: lineIntersection1.p1.x | 0, y: lineIntersection1.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'circfill', position: lineHypotenuseCenterPoint1, diameter: 3, color: { r: 155, g: 55, b: 55, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'line', p0: { x: lineIntersection1.p0.x | 0, y: lineIntersection1.p0.y | 0 }, p1: { x: lineIntersection1.p1.x | 0, y: lineIntersection1.p1.y | 0 }, color: { r: 55, g: 55, b: 55, a: 255 } } );
 
-                                        tempPathSegments.push( { type: 'circfill', position: intersectionPoint0, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
-                                        tempPathSegments.push( { type: 'circfill', position: intersectionPoint1, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'circfill', position: intersectionPoint0, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'circfill', position: intersectionPoint1, diameter: 3, color: { r: 255, g: 0, b: 0, a: 255 } } );
 
                                         //---
 
-                                        tempPathSegments.push( { type: 'bezier', p0: l0.p0, controlPoint: l0.controlPoint, p1: l0.p1, color: { r: 200, g: 200, b: 200, a: 255 } } );
-                                        tempPathSegments.push( { type: 'bezier', p0: l1.p0, controlPoint: l1.controlPoint, p1: l1.p1, color: { r: 200, g: 200, b: 200, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'bezier', p0: l0.p0, controlPoint: l0.controlPoint, p1: l0.p1, color: { r: 200, g: 200, b: 200, a: 255 } } );
+                                        tempGraphSegments.push( { type: 'bezier', p0: l1.p0, controlPoint: l1.controlPoint, p1: l1.p1, color: { r: 200, g: 200, b: 200, a: 255 } } );
 
                                         //---
 
@@ -3334,7 +3333,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                             lane.centerPoint.x = streetSegment.centerPoint.x;
                             lane.centerPoint.y = streetSegment.centerPoint.y;
 
-                            tempPathSegments.push( { type: 'bezier', p0: lane.p0, controlPoint: lane.controlPoint, p1: lane.p1, color: { r: 200, g: 200, b: 200, a: 255 } } );
+                            tempGraphSegments.push( { type: 'bezier', p0: lane.p0, controlPoint: lane.controlPoint, p1: lane.p1, color: { r: 200, g: 200, b: 200, a: 255 } } );
 
                             //---
                             //streetBorder
@@ -3377,7 +3376,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                             //---
 
-                            tempPathSegments.push( { type: 'bezier', p0: streetBorderTop.p0, controlPoint: streetBorderTop.controlPoint, p1: streetBorderTop.p1, color: { r: 255, g: 55, b: 255, a: 255 } } );
+                            tempGraphSegments.push( { type: 'bezier', p0: streetBorderTop.p0, controlPoint: streetBorderTop.controlPoint, p1: streetBorderTop.p1, color: { r: 255, g: 55, b: 255, a: 255 } } );
 
                             //---
 
@@ -3418,7 +3417,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                             //---
 
-                            tempPathSegments.push( { type: 'bezier', p0: streetBorderBottom.p0, controlPoint: streetBorderBottom.controlPoint, p1: streetBorderBottom.p1, color: { r: 255, g: 55, b: 255, a: 255 } } );
+                            tempGraphSegments.push( { type: 'bezier', p0: streetBorderBottom.p0, controlPoint: streetBorderBottom.controlPoint, p1: streetBorderBottom.p1, color: { r: 255, g: 55, b: 255, a: 255 } } );
 
                             //---
 
@@ -3472,7 +3471,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                 //---
 
-                                tempPathSegments.push( { type: 'bezier', p0: streetBorder.p0, controlPoint: streetBorder.controlPoint, p1: streetBorder.p1, color: { r: 255, g: 55, b: 255, a: 255 } } );
+                                tempGraphSegments.push( { type: 'bezier', p0: streetBorder.p0, controlPoint: streetBorder.controlPoint, p1: streetBorder.p1, color: { r: 255, g: 55, b: 255, a: 255 } } );
 
                                 //---
 
@@ -3737,13 +3736,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function getPointAndAngleOnRouteByT( t, routeIndex ) {
 
-        const pathIndex = 0;
+        const graphIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+        const graph = graphHolder[ graphIndex ];
 
         //---
 
-        const route = path.routes[ routeIndex ];
+        const route = graph.routes[ routeIndex ];
 
         const output = {
 
@@ -3758,18 +3757,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
         let curLength = 0;
         let lastLength = 0;
 
-        for ( let i = 0, l = route.pathSegments.length; i < l; i ++ ) {
+        for ( let i = 0, l = route.graphSegments.length; i < l; i ++ ) {
 
-            const pathSegment = route.pathSegments[ i ];
+            const graphSegment = route.graphSegments[ i ];
 
-            curLength += pathSegment.length;
+            curLength += graphSegment.length;
 
             if ( tLength <= curLength ) {
 
-                const tPathSegment = ( tLength - lastLength ) / pathSegment.length;
+                const tGraphSegment = ( tLength - lastLength ) / graphSegment.length;
 
-                const point0 = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment );
-                const point1 = interpolateQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, tPathSegment + 0.001 );
+                const point0 = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment );
+                const point1 = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment + 0.001 );
 
                 output.point = point0;
                 output.angle = Math.atan2( point0.y - point1.y, point0.x - point1.x );
@@ -3796,20 +3795,20 @@ document.addEventListener( 'DOMContentLoaded', () => {
         mouseCursor.position.y = mousePos.y;
         mouseCursor.color = { r: 255, g: 255, b: 255, a: 255 };
 
-        pathHolder.forEach( ( path, index ) => {
+        graphHolder.forEach( ( graph, index ) => {
 
             // let distanceAtTheMoment = Infinity;
-            // let pathSegmentSelected = null;
+            // let graphSegmentSelected = null;
 
-            // if ( editorMode === EDITOR_MODE_ENUM.addPathSegment ) {
+            // if ( editorMode === EDITOR_MODE_ENUM.addGraphSegment ) {
 
-            //     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+            //     for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-            //         const pathSegment = path.segments[ i ];
+            //         const graphSegment = graph.segments[ i ];
 
-            //         if ( pathSegment.p0 !== null && pathSegment.p1 !== null ) {
+            //         if ( graphSegment.p0 !== null && graphSegment.p1 !== null ) {
 
-            //             const distanceToSegment = signedDistanceToQuadraticBezier( mousePos, pathSegment.p0, pathSegment.p1, pathSegment.controlPoint, 25 );
+            //             const distanceToSegment = signedDistanceToQuadraticBezier( mousePos, graphSegment.p0, graphSegment.p1, graphSegment.controlPoint, 25 );
 
             //             if ( distanceAtTheMoment > distanceToSegment ) {
 
@@ -3817,7 +3816,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //                 if ( distanceAtTheMoment <= SNAP_TO_DISTANCE ) {
 
-            //                     pathSegmentSelected = pathSegment;
+            //                     graphSegmentSelected = graphSegment;
 
             //                 }
 
@@ -3827,7 +3826,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //     }
 
-            //     if ( pathSegmentSelected !== null ) {
+            //     if ( graphSegmentSelected !== null ) {
 
 
 
@@ -3836,15 +3835,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
             // }
 
             // //console.log( 'd: ', d );
-            // //console.log( 'pathSegmentSelected: ', pathSegmentSelected );
+            // //console.log( 'graphSegmentSelected: ', graphSegmentSelected );
 
-            for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-                const pathSegment = path.segments[ i ];
+                const graphSegment = graph.segments[ i ];
 
-                if ( pathSegment.p0 !== null && pathSegment.p1 !== null ) {
+                if ( graphSegment.p0 !== null && graphSegment.p1 !== null ) {
 
-                    //const distanceToSegment = signedDistanceToQuadraticBezier( mousePos, pathSegment.p0, pathSegment.p1, pathSegment.controlPoint, 25 );
+                    //const distanceToSegment = signedDistanceToQuadraticBezier( mousePos, graphSegment.p0, graphSegment.p1, graphSegment.controlPoint, 25 );
 
                     //console.log( distanceToSegment );
 
@@ -3852,24 +3851,24 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     //---
 
-                    const distancep0 = getDistance( mousePos, pathSegment.p0 );
-                    const distancep1 = getDistance( mousePos, pathSegment.p1 );
+                    const distancep0 = getDistance( mousePos, graphSegment.p0 );
+                    const distancep1 = getDistance( mousePos, graphSegment.p1 );
 
                     if ( distancep0 <= SNAP_TO_DISTANCE ) {
 
-                        mouseCursor.position.x = pathSegment.p0.x;
-                        mouseCursor.position.y = pathSegment.p0.y;
+                        mouseCursor.position.x = graphSegment.p0.x;
+                        mouseCursor.position.y = graphSegment.p0.y;
                         mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
 
-                        //console.log( 'p0: ', pathSegment.p0.x, pathSegment.p0.y, mousePos.x, mousePos.y );
+                        //console.log( 'p0: ', graphSegment.p0.x, graphSegment.p0.y, mousePos.x, mousePos.y );
 
                     } else if ( distancep1 <= SNAP_TO_DISTANCE ) {
 
-                        mouseCursor.position.x = pathSegment.p1.x;
-                        mouseCursor.position.y = pathSegment.p1.y;
+                        mouseCursor.position.x = graphSegment.p1.x;
+                        mouseCursor.position.y = graphSegment.p1.y;
                         mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
 
-                        //console.log( 'p1: ', pathSegment.p1.x, pathSegment.p1.y, mousePos.x, mousePos.y );
+                        //console.log( 'p1: ', graphSegment.p1.x, graphSegment.p1.y, mousePos.x, mousePos.y );
 
                     }
 
@@ -3879,9 +3878,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            for ( let i = 0, l = path.streetSegments.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
 
-                const streetSegment = path.streetSegments[ i ];
+                const streetSegment = graph.streetSegments[ i ];
 
                 if ( streetSegment.p0 !== null && streetSegment.p1 !== null ) {
 
@@ -3894,7 +3893,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         mouseCursor.position.y = streetSegment.p0.y;
                         mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
 
-                        //console.log( 'p0: ', pathSegment.p0.x, pathSegment.p0.y, mousePos.x, mousePos.y );
+                        //console.log( 'p0: ', graphSegment.p0.x, graphSegment.p0.y, mousePos.x, mousePos.y );
 
                     } else if ( distancep1 <= SNAP_TO_DISTANCE ) {
 
@@ -3902,7 +3901,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         mouseCursor.position.y = streetSegment.p1.y;
                         mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
 
-                        //console.log( 'p1: ', pathSegment.p1.x, pathSegment.p1.y, mousePos.x, mousePos.y );
+                        //console.log( 'p1: ', graphSegment.p1.x, graphSegment.p1.y, mousePos.x, mousePos.y );
 
                     }
 
@@ -3920,27 +3919,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-                const pathSegment = path.segments[ i ];
+                const graphSegment = graph.segments[ i ];
 
-                if ( pathSegment.p0 !== null ) {
+                if ( graphSegment.p0 !== null ) {
 
-                    if ( pathSegment.p1 === null && i === l - 1 ) {
+                    if ( graphSegment.p1 === null && i === l - 1 ) {
 
-                        drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, mouseCursor.position.x | 0, mouseCursor.position.y | 0, 80, 80, 80, 255 );
+                        drawLine( graphSegment.p0.x | 0, graphSegment.p0.y | 0, mouseCursor.position.x | 0, mouseCursor.position.y | 0, 80, 80, 80, 255 );
 
-                        // if ( allowPathSegmentSplitting === true ) {
+                        // if ( allowGraphSegmentSplitting === true ) {
 
-                        //     const tempPathSegment = {
+                        //     const tempGraphSegment = {
 
-                        //         id: pathSegment.id,
-                        //         p0: pathSegment.p0,
+                        //         id: graphSegment.id,
+                        //         p0: graphSegment.p0,
                         //         p1: { x: mouseCursor.position.x, y: mouseCursor.position.y }
 
                         //     };
 
-                        //     showPathSegmentIntersectionPointsWithLine( tempPathSegment );
+                        //     showGraphSegmentIntersectionPointsWithLine( tempGraphSegment );
 
                         // }
 
@@ -3948,55 +3947,55 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 }
 
-                if ( pathSegment.p1 !== null ) {
+                if ( graphSegment.p1 !== null ) {
 
-                    let pathSegmentLineColor = { r: 0, g: 0, b: 0, a: 0 };
+                    let graphSegmentLineColor = { r: 0, g: 0, b: 0, a: 0 };
 
-                    if ( pathSegment.walkable === true ) {
+                    if ( graphSegment.walkable === true ) {
 
-                        // drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 60, 120, 0, 255 );
+                        // drawLine( graphSegment.p0.x | 0, graphSegment.p0.y | 0, graphSegment.p1.x | 0, graphSegment.p1.y | 0, 60, 120, 0, 255 );
 
-                        pathSegmentLineColor.r = 60;
-                        pathSegmentLineColor.g = 120;
-                        pathSegmentLineColor.b = 0;
-                        pathSegmentLineColor.a = 255;
+                        graphSegmentLineColor.r = 60;
+                        graphSegmentLineColor.g = 120;
+                        graphSegmentLineColor.b = 0;
+                        graphSegmentLineColor.a = 255;
 
-                        drawCircle( pathSegment.centerPoint, 7, 60, 120, 0, 255 );
-                        // drawCircle( pathSegment.controlPoint, 5, 60, 120, 0, 255 );
+                        drawCircle( graphSegment.centerPoint, 7, 60, 120, 0, 255 );
+                        // drawCircle( graphSegment.controlPoint, 5, 60, 120, 0, 255 );
 
                     } else {
 
-                        // drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, 178, 34, 34, 255 );
+                        // drawLine( graphSegment.p0.x | 0, graphSegment.p0.y | 0, graphSegment.p1.x | 0, graphSegment.p1.y | 0, 178, 34, 34, 255 );
 
-                        pathSegmentLineColor.r = 178;
-                        pathSegmentLineColor.g = 34;
-                        pathSegmentLineColor.b = 34;
-                        pathSegmentLineColor.a = 255;
+                        graphSegmentLineColor.r = 178;
+                        graphSegmentLineColor.g = 34;
+                        graphSegmentLineColor.b = 34;
+                        graphSegmentLineColor.a = 255;
 
-                        drawCircle( pathSegment.centerPoint, 7, 178, 34, 34, 255 );
-                        // drawCircle( pathSegment.controlPoint, 5, 178, 34, 34, 255 );
+                        drawCircle( graphSegment.centerPoint, 7, 178, 34, 34, 255 );
+                        // drawCircle( graphSegment.controlPoint, 5, 178, 34, 34, 255 );
 
                     }
 
-                    //drawLine( pathSegment.p0.x | 0, pathSegment.p0.y | 0, pathSegment.p1.x | 0, pathSegment.p1.y | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
+                    //drawLine( graphSegment.p0.x | 0, graphSegment.p0.y | 0, graphSegment.p1.x | 0, graphSegment.p1.y | 0, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
 
-                    drawQuadraticBezier( pathSegment.p0, pathSegment.controlPoint, pathSegment.p1, 25, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
+                    drawQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 25, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
 
                     //---
-                    //draw debug pathSegment direction stuff
+                    //draw debug graphSegment direction stuff
 
-                    //get point on pathSegment depending on percentage value
-                    //const interpolationPoint = interpolate( pathSegment.p0, pathSegment.p1, 0.50 );
+                    //get point on graphSegment depending on percentage value
+                    //const interpolationPoint = interpolate( graphSegment.p0, graphSegment.p1, 0.50 );
 
                     //const cX = interpolationPoint.x;
                     //const cY = interpolationPoint.y;
 
                     //center x & y
-                    const cX = pathSegment.centerPoint.x;// ( ( pathSegment.p0.x + pathSegment.p1.x ) / 2 );
-                    const cY = pathSegment.centerPoint.y;// ( ( pathSegment.p0.y + pathSegment.p1.y ) / 2 );
+                    const cX = graphSegment.centerPoint.x;// ( ( graphSegment.p0.x + graphSegment.p1.x ) / 2 );
+                    const cY = graphSegment.centerPoint.y;// ( ( graphSegment.p0.y + graphSegment.p1.y ) / 2 );
 
-                    //pathSegment angle
-                    const angle = Math.atan2( pathSegment.p1.y - pathSegment.p0.y, pathSegment.p1.x - pathSegment.p0.x );
+                    //graphSegment angle
+                    const angle = Math.atan2( graphSegment.p1.y - graphSegment.p0.y, graphSegment.p1.x - graphSegment.p0.x );
 
                     const length = 10;
 
@@ -4027,23 +4026,23 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     //---
 
-                    if ( pathSegment.direction === '><' ) {
+                    if ( graphSegment.direction === '><' ) {
 
-                        drawLine( ( sinA * length + pSSX ) | 0, ( -cosA * length + pSSY ) | 0, cX | 0, cY | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
-                        drawLine( ( -sinA * length + pSSX ) | 0, ( cosA * length + pSSY ) | 0, cX | 0, cY | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
+                        drawLine( ( sinA * length + pSSX ) | 0, ( -cosA * length + pSSY ) | 0, cX | 0, cY | 0, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
+                        drawLine( ( -sinA * length + pSSX ) | 0, ( cosA * length + pSSY ) | 0, cX | 0, cY | 0, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
 
-                        drawLine( ( sinA * length + pSEX ) | 0, ( -cosA * length + pSEY ) | 0, cX | 0, cY | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
-                        drawLine( ( -sinA * length + pSEX ) | 0, ( cosA * length + pSEY ) | 0, cX | 0, cY | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
+                        drawLine( ( sinA * length + pSEX ) | 0, ( -cosA * length + pSEY ) | 0, cX | 0, cY | 0, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
+                        drawLine( ( -sinA * length + pSEX ) | 0, ( cosA * length + pSEY ) | 0, cX | 0, cY | 0, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
 
-                    } else if ( pathSegment.direction === '>' ) {
+                    } else if ( graphSegment.direction === '>' ) {
 
-                        drawLine( ( sinA * length + pSEX ) | 0, ( -cosA * length + pSEY ) | 0, cX | 0, cY | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
-                        drawLine( ( -sinA * length + pSEX ) | 0, ( cosA * length + pSEY ) | 0, cX | 0, cY | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
+                        drawLine( ( sinA * length + pSEX ) | 0, ( -cosA * length + pSEY ) | 0, cX | 0, cY | 0, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
+                        drawLine( ( -sinA * length + pSEX ) | 0, ( cosA * length + pSEY ) | 0, cX | 0, cY | 0, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
 
-                    } else if ( pathSegment.direction === '<' ) {
+                    } else if ( graphSegment.direction === '<' ) {
 
-                        drawLine( ( sinA * length + pSSX ) | 0, ( -cosA * length + pSSY ) | 0, cX | 0, cY | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
-                        drawLine( ( -sinA * length + pSSX ) | 0, ( cosA * length + pSSY ) | 0, cX | 0, cY | 0, pathSegmentLineColor.r, pathSegmentLineColor.g, pathSegmentLineColor.b, pathSegmentLineColor.a );
+                        drawLine( ( sinA * length + pSSX ) | 0, ( -cosA * length + pSSY ) | 0, cX | 0, cY | 0, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
+                        drawLine( ( -sinA * length + pSSX ) | 0, ( cosA * length + pSSY ) | 0, cX | 0, cY | 0, graphSegmentLineColor.r, graphSegmentLineColor.g, graphSegmentLineColor.b, graphSegmentLineColor.a );
 
                     }
 
@@ -4051,9 +4050,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            for ( let i = 0, l = path.points.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
 
-                const point = path.points[ i ];
+                const point = graph.points[ i ];
 
                 if ( getPointByPosition( point ).walkable === true ) {
 
@@ -4071,9 +4070,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
-                const route = path.routes[ i ];
+                const route = graph.routes[ i ];
                 const routeColor = PATH_COLORS[ i ];
 
                 if ( route.startPoint !== null ) {
@@ -4092,9 +4091,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            for ( let i = 0, l = path.streetSegments.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
 
-                const streetSegment = path.streetSegments[ i ];
+                const streetSegment = graph.streetSegments[ i ];
 
                 if ( streetSegment.p0 !== null && streetSegment.p1 === null ) {
 
@@ -4126,25 +4125,25 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        for ( let i = 0, l = tempPathSegments.length; i < l; i ++ ) {
+        for ( let i = 0, l = tempGraphSegments.length; i < l; i ++ ) {
 
-            const tempPathSegment = tempPathSegments[ i ];
+            const tempGraphSegment = tempGraphSegments[ i ];
 
-            if ( tempPathSegment.type === 'line' ) {
+            if ( tempGraphSegment.type === 'line' ) {
 
-                drawLine( tempPathSegment.p0.x | 0, tempPathSegment.p0.y | 0, tempPathSegment.p1.x | 0, tempPathSegment.p1.y | 0, tempPathSegment.color.r, tempPathSegment.color.g, tempPathSegment.color.b, tempPathSegment.color.a );
+                drawLine( tempGraphSegment.p0.x | 0, tempGraphSegment.p0.y | 0, tempGraphSegment.p1.x | 0, tempGraphSegment.p1.y | 0, tempGraphSegment.color.r, tempGraphSegment.color.g, tempGraphSegment.color.b, tempGraphSegment.color.a );
 
-            } else if ( tempPathSegment.type === 'circ' ) {
+            } else if ( tempGraphSegment.type === 'circ' ) {
 
-                drawCircleOutline( tempPathSegment.position, tempPathSegment.diameter, tempPathSegment.color.r, tempPathSegment.color.g, tempPathSegment.color.b, tempPathSegment.color.a );
+                drawCircleOutline( tempGraphSegment.position, tempGraphSegment.diameter, tempGraphSegment.color.r, tempGraphSegment.color.g, tempGraphSegment.color.b, tempGraphSegment.color.a );
 
-            } else if ( tempPathSegment.type === 'circfill' ) {
+            } else if ( tempGraphSegment.type === 'circfill' ) {
 
-                drawCircle( tempPathSegment.position, tempPathSegment.diameter, tempPathSegment.color.r, tempPathSegment.color.g, tempPathSegment.color.b, tempPathSegment.color.a );
+                drawCircle( tempGraphSegment.position, tempGraphSegment.diameter, tempGraphSegment.color.r, tempGraphSegment.color.g, tempGraphSegment.color.b, tempGraphSegment.color.a );
 
-            } else if ( tempPathSegment.type === 'bezier' ) {
+            } else if ( tempGraphSegment.type === 'bezier' ) {
 
-                drawQuadraticBezier( tempPathSegment.p0, tempPathSegment.controlPoint, tempPathSegment.p1, 25, tempPathSegment.color.r, tempPathSegment.color.g, tempPathSegment.color.b, tempPathSegment.color.a );
+                drawQuadraticBezier( tempGraphSegment.p0, tempGraphSegment.controlPoint, tempGraphSegment.p1, 25, tempGraphSegment.color.r, tempGraphSegment.color.g, tempGraphSegment.color.b, tempGraphSegment.color.a );
 
             }
 
@@ -4176,12 +4175,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             while ( fileIndex.length < 3 ) { fileIndex = '0' + fileIndex; };
 
-            const filePath = './img/car_' + fileIndex + '.png'
+            const fileGraph = './img/car_' + fileIndex + '.png'
 
             const vehicleImage = new Image();
 
             vehicleImage.crossOrigin = 'anonymous';
-            vehicleImage.src = filePath;
+            vehicleImage.src = fileGraph;
 
             vehcileImageHolder.push( vehicleImage );
 
@@ -4217,14 +4216,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( simulationRuns === true ) {
 
-            const pathIndex = 0;
+            const graphIndex = 0;
 
-            const path = pathHolder[ pathIndex ];
+            const graph = graphHolder[ graphIndex ];
 
-            for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+            for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
                 const routeIndex = i;
-                const route = path.routes[ routeIndex ];
+                const route = graph.routes[ routeIndex ];
 
                 if ( route.startPoint === null || route.endPoint === null || route.complete === false ) {
 
@@ -4241,7 +4240,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 }
 
                 const vehicleImage = vehcileImageHolder[ Math.floor( Math.random() * vehcileImageHolder.length ) ];
-                const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, pathIndex, routeIndex, 0.0015, vehicleImage );
+                const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, graphIndex, routeIndex, 0.0015, vehicleImage );
 
                 vehiclesHolder.push( vehicle );
 
@@ -4273,14 +4272,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function getVehicle( position, angle = 0, t = 0, pathIndex = 0, routeIndex = 0, speed = 0.0015, image = null ) {
+    function getVehicle( position, angle = 0, t = 0, graphIndex = 0, routeIndex = 0, speed = 0.0015, image = null ) {
 
         const vehicle = {
 
             position: { x: position.x, y: position.y },
             angle: angle,
             t: t,
-            pathIndex: pathIndex,
+            graphIndex: graphIndex,
             routeIndex: routeIndex,
             speed: speed,
             image: image
@@ -4297,7 +4296,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             const vehicle = vehiclesHolder[ i ];
 
-            const route = pathHolder[ vehicle.pathIndex ].routes[ vehicle.routeIndex ];
+            const route = graphHolder[ vehicle.graphIndex ].routes[ vehicle.routeIndex ];
             const routePositionObject = getPointAndAngleOnRouteByT( vehicle.t, vehicle.routeIndex );
 
             vehicle.position = routePositionObject.point;

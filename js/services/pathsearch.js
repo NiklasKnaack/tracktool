@@ -52,14 +52,14 @@ function init( event ) {
 
 function findPath( route ) {
 
-    tempPathSegments = [];
+    tempGraphSegments = [];
 
     //---
     //get cost value function for MinHeap Sort
 
-    const getCost = ( node ) => {
+    const getCost = ( item ) => {
 
-        return node.cost;
+        return item.cost;
     
     }
 
@@ -113,19 +113,19 @@ function findPath( route ) {
 
         //---
 
-        const neighbourPathsegments = graph.currentPoint.neighbourPathsegments;
+        const neighbourGraphsegments = graph.currentPoint.neighbourGraphsegments;
         const neighbourPoints = graph.currentPoint.neighbourPoints;
 
-        if ( neighbourPathsegments.length > 0 ) {
+        if ( neighbourGraphsegments.length > 0 ) {
 
-            for ( let i = 0, l = neighbourPathsegments.length; i < l; i ++ ) {
+            for ( let i = 0, l = neighbourGraphsegments.length; i < l; i ++ ) {
 
-                const neighbourPathsegment = neighbourPathsegments[ i ];
+                const neighbourGraphsegment = neighbourGraphsegments[ i ];
                 const neighbourPoint = getPointByPosition( neighbourPoints[ i ] );
                 
                 if ( neighbourPoint.visited === false && neighbourPoint.walkable === true ) {
 
-                    const neighbourDistance = graph.currentPoint.cost + neighbourPathsegment.length;
+                    const neighbourDistance = graph.currentPoint.cost + neighbourGraphsegment.length;
 
                     if ( neighbourDistance < neighbourPoint.cost ) {
 
@@ -155,13 +155,13 @@ function findPath( route ) {
 
         // console.log( 'FOUND END' );
 
-        const pathToEnd = [];
+        const routeStartToEnd = [];
 
         let currentPoint = routeEndPoint;
 
         while ( currentPoint !== null ) {
 
-            pathToEnd.unshift( currentPoint );
+            routeStartToEnd.unshift( currentPoint );
 
             currentPoint = currentPoint.parentPoint;
 
@@ -169,62 +169,62 @@ function findPath( route ) {
 
         route.complete = true;
         route.length = 0;
-        route.pathSegments = [];
+        route.graphSegments = [];
 
-        for ( let i = 0, l = pathToEnd.length - 1; i < l; i ++ ) {
+        for ( let i = 0, l = routeStartToEnd.length - 1; i < l; i ++ ) {
 
-            const point0 = pathToEnd[ i ];
-            const point1 = pathToEnd[ i + 1 ];
+            const point0 = routeStartToEnd[ i ];
+            const point1 = routeStartToEnd[ i + 1 ];
 
-            const pathSegment = getPathSegmentByPoints( point0, point1 );
-
-            //---
-
-            route.length += pathSegment.length;
+            const graphSegment = getGraphSegmentByPoints( point0, point1 );
 
             //---
 
-            let newPathSegment = {};
+            route.length += graphSegment.length;
 
-            //newPathSegment.id = pathSegment.id;
-            newPathSegment.controlPoint = pathSegment.controlPoint;
-            newPathSegment.length = pathSegment.length;
-            newPathSegment.p0 = null;
-            newPathSegment.p1 = null;
+            //---
+
+            let newGraphSegment = {};
+
+            //newGraphSegment.id = graphSegment.id;
+            newGraphSegment.controlPoint = graphSegment.controlPoint;
+            newGraphSegment.length = graphSegment.length;
+            newGraphSegment.p0 = null;
+            newGraphSegment.p1 = null;
 
             if ( i === 0 ) {
 
-                if ( pathSegment.p0.x === route.startPoint.x && pathSegment.p0.y === route.startPoint.y ) {
+                if ( graphSegment.p0.x === route.startPoint.x && graphSegment.p0.y === route.startPoint.y ) {
 
-                    newPathSegment.p0 = pathSegment.p0;
-                    newPathSegment.p1 = pathSegment.p1;
+                    newGraphSegment.p0 = graphSegment.p0;
+                    newGraphSegment.p1 = graphSegment.p1;
 
                 } else {
 
-                    newPathSegment.p0 = pathSegment.p1;
-                    newPathSegment.p1 = pathSegment.p0;
+                    newGraphSegment.p0 = graphSegment.p1;
+                    newGraphSegment.p1 = graphSegment.p0;
 
                 }
 
             } else {
 
-                const predecessorNewPathSegment = route.pathSegments[ route.pathSegments.length - 1 ];
+                const predecessorGraphSegment = route.graphSegments[ route.graphSegments.length - 1 ];
 
-                if ( pathSegment.p0.x === predecessorNewPathSegment.p1.x && pathSegment.p0.y === predecessorNewPathSegment.p1.y ) {
+                if ( graphSegment.p0.x === predecessorGraphSegment.p1.x && graphSegment.p0.y === predecessorGraphSegment.p1.y ) {
 
-                    newPathSegment.p0 = pathSegment.p0;
-                    newPathSegment.p1 = pathSegment.p1;
+                    newGraphSegment.p0 = graphSegment.p0;
+                    newGraphSegment.p1 = graphSegment.p1;
 
                 } else {
 
-                    newPathSegment.p0 = pathSegment.p1;
-                    newPathSegment.p1 = pathSegment.p0;
+                    newGraphSegment.p0 = graphSegment.p1;
+                    newGraphSegment.p1 = graphSegment.p0;
 
                 }
 
             }
 
-            route.pathSegments.push( newPathSegment );
+            route.graphSegments.push( newGraphSegment );
 
         }
 
@@ -240,24 +240,24 @@ function findPath( route ) {
 
 //---
 
-function getPathSegmentByPoints( p0, p1 ) {
+function getGraphSegmentByPoints( p0, p1 ) {
 
     let result = null;
 
     for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-        const pathSegment = graph.segments[ i ];
+        const graphSegment = graph.segments[ i ];
 
         let p0Found = false;
         let p1Found = false;
 
-        if ( pathSegment.p0.x === p0.x && pathSegment.p0.y === p0.y || pathSegment.p1.x === p0.x && pathSegment.p1.y === p0.y ) {
+        if ( graphSegment.p0.x === p0.x && graphSegment.p0.y === p0.y || graphSegment.p1.x === p0.x && graphSegment.p1.y === p0.y ) {
 
             p0Found = true;
 
         }
 
-        if ( pathSegment.p0.x === p1.x && pathSegment.p0.y === p1.y || pathSegment.p1.x === p1.x && pathSegment.p1.y === p1.y ) {
+        if ( graphSegment.p0.x === p1.x && graphSegment.p0.y === p1.y || graphSegment.p1.x === p1.x && graphSegment.p1.y === p1.y ) {
 
             p1Found = true;
 
@@ -265,7 +265,7 @@ function getPathSegmentByPoints( p0, p1 ) {
 
         if ( p0Found === true && p1Found === true ) {
 
-            result = pathSegment;
+            result = graphSegment;
 
         }
 
