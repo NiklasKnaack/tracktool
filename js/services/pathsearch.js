@@ -12,8 +12,6 @@ function init( event ) {
 
     graph = event.data;
 
-    console.log( 'worker get: ', graph );
-
     if ( graph.hasOwnProperty( 'routes' ) === false || graph.hasOwnProperty( 'points' ) === false ) {
 
         return;
@@ -41,8 +39,6 @@ function init( event ) {
     }
 
     //---
-
-    console.log( 'graph.routes: ', graph.routes );
 
     postMessage( graph.routes );
 
@@ -99,17 +95,8 @@ function findPath( route ) {
 
     while ( graph.openSet.length > 0 ) {
 
-        //console.log( '______________________________________', graph.openSet.length, graph.openSet.length() );
-
-        // graph.currentPoint = graph.openSet.find( point => point.cost === Math.min( ...graph.openSet.map( nextPoint => nextPoint.cost ) ) );
         graph.currentPoint = graph.openSet.extract();
         graph.currentPoint.visited = true;
-
-        // for ( let i = 0, l = graph.openSet.length; i < l; i ++ ) {
-
-        //     console.log( '--->>> ', graph.openSet[ i ].x, graph.openSet[ i ].y, graph.openSet[ i ].visited, graph.openSet[ i ].cost);
-
-        // }
 
         //---
 
