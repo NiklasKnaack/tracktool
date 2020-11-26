@@ -6,7 +6,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     console.log( 'Track Tool' );
 
     const pathfinder = new Pathfinder();
-    pathfinder.test();
+    //pathfinder.computeRoutes( {} );
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     // let mousePosEnd = { x: 0, y: 0 };
     const mouseCursor = { diameter: 9, color: { r: 255, g: 255, b: 255, a: 255 }, position: { x: 0, y: 0 } };
 
-    let simulationRuns = true;
+    let simulationRuns = false;
 
     let currentPathSegment = null;
     let selectedPathSegments = [];
@@ -116,9 +116,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
         {
             id: 0,
             routes: [
-                { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [], length: 0, complete: true },
-                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0, complete: true },
-                { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0, complete: true },
+                { startPoint: { x: 60, y: 218 }, endPoint: { x: 785, y: 877 }, pathSegments: [], length: 0, complete: false },
+                { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, pathSegments: [], length: 0, complete: false },
+                { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, pathSegments: [], length: 0, complete: false },
             ],
             currentPoint: { x: 0, y: 0 },
             streetPoints: [],
@@ -237,18 +237,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     setAllPathSegmentPointNeighbours();
 
-    for ( let i = 0, l = pathHolder[ 0 ].routes.length; i < l; i ++ ) {
+    pathfinder.computeRoutes( pathHolder[ 0 ], ( routes ) => {
 
-        const route = pathHolder[ 0 ].routes[ i ];
+        pathHolder[ 0 ].routes = routes;
 
-        if ( route.startPoint !== null && route.endPoint !== null ) {
-
-            findPath( route );
-            //findPathAsync( route );
-
-        }
-
-    }
+    } );
 
     if ( debugMode === true ) {
 
@@ -395,7 +388,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const route = path.routes[ i ];
 
-                output += '    { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, pathSegments: [], length: 0, complete: true }';
+                output += '    { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, pathSegments: [], length: 0, complete: false }';
 
                 if ( i < l ) {
 
@@ -640,236 +633,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
         drawStreetSegmentTexture();
         initVehicles();
 
+        simulationRuns = true;
+
     }
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
-
-    // async function findPathAsync( route ) {
-
-    //     // findPath( route );
-
-    //     try {
-    //         // var result = await findPath( route );
-    //         await findPath( route );
-    //         // document.getElementById('output5').innerText = result;
-
-    //     } catch( err ) {
-
-    //         // document.getElementById('output5').innerText = 'Error: ' + err;
-    //         console.log( 'Error: ' + err );
-
-    //     }
-
-    // }
-
-    function findPath( route ) {
-
-        // console.log( '\n\n\n\n\n\n\nfindPath() test1' );
-
-        tempPathSegments = [];
-
-        //---
-
-        const pathIndex = 0;
-
-        const path = pathHolder[ pathIndex ];
-
-        //---
-        //get cost value function for MinHeap Sort
-
-        const getCost = ( node ) => {
-    
-            return node.cost;
-        
-        }
-
-        //---
-        //create new MinHeap
-
-        path.openSet = new MinHeap( getCost );
-
-        //---
-        //reset all points
-
-        for ( let i = 0, l = path.points.length; i < l; i ++ ) {
-
-            const point = path.points[ i ];
-
-            point.cost = Infinity;
-            point.parentPoint = null;
-            point.visited = false;
-
-        }
-
-        //---
-        
-        path.currentPoint = getPointByPosition( route.startPoint );
-
-        if ( path.currentPoint === null ) {
-
-            return;
-
-        }
-
-        path.currentPoint.cost = 0;
-
-        path.openSet.insert( path.currentPoint );
-
-        //---
-
-        while ( path.openSet.length > 0 ) {
-
-            //console.log( '______________________________________', path.openSet.length, path.openSet.length() );
-
-            // path.currentPoint = path.openSet.find( point => point.cost === Math.min( ...path.openSet.map( nextPoint => nextPoint.cost ) ) );
-            path.currentPoint = path.openSet.extract();
-            path.currentPoint.visited = true;
-
-            // for ( let i = 0, l = path.openSet.length; i < l; i ++ ) {
-
-            //     console.log( '--->>> ', path.openSet[ i ].x, path.openSet[ i ].y, path.openSet[ i ].visited, path.openSet[ i ].cost);
-
-            // }
-
-            //---
-
-            const neighbourPathsegments = path.currentPoint.neighbourPathsegments;
-            const neighbourPoints = path.currentPoint.neighbourPoints;
-
-            if ( neighbourPathsegments.length > 0 ) {
-
-                for ( let i = 0, l = neighbourPathsegments.length; i < l; i ++ ) {
-
-                    const neighbourPathsegment = neighbourPathsegments[ i ];
-                    const neighbourPoint = getPointByPosition( neighbourPoints[ i ] );
-                    
-                    if ( neighbourPoint.visited === false && neighbourPoint.walkable === true ) {
-
-                        const neighbourDistance = path.currentPoint.cost + neighbourPathsegment.length;
-
-                        if ( neighbourDistance < neighbourPoint.cost ) {
-
-                            neighbourPoint.parentPoint = path.currentPoint;
-
-                            neighbourPoint.cost = neighbourDistance;
-
-                        }
-
-                        path.openSet.insert( neighbourPoint );
-
-                    }
-
-                }
-
-            }
-
-            //path.openSet.splice( path.openSet.findIndex( ( point ) => point.x === path.currentPoint.x && point.y === path.currentPoint.y ), 1 );
-
-        }
-
-        //---
-
-        const routeEndPoint = getPointByPosition( route.endPoint );
-
-        if ( routeEndPoint.parentPoint !== null ) {
-
-            // console.log( 'FOUND END' );
-
-            const pathToEnd = [];
-
-            let currentPoint = routeEndPoint;
-
-            while ( currentPoint !== null ) {
-
-                pathToEnd.unshift( currentPoint );
-
-                currentPoint = currentPoint.parentPoint;
-
-            }
-
-            route.complete = true;
-            route.length = 0;
-            route.pathSegments = [];
-
-            for ( let i = 0, l = pathToEnd.length - 1; i < l; i ++ ) {
-
-                const point0 = pathToEnd[ i ];
-                const point1 = pathToEnd[ i + 1 ];
-
-                const pathSegment = getPathSegmentByPoints( point0, point1 );
-
-                //---
-
-                route.length += pathSegment.length;
-
-                //---
-
-                let newPathSegment = {};
-
-                //newPathSegment.id = pathSegment.id;
-                newPathSegment.controlPoint = pathSegment.controlPoint;
-                newPathSegment.length = pathSegment.length;
-                newPathSegment.p0 = null;
-                newPathSegment.p1 = null;
-
-                if ( i === 0 ) {
-
-                    if ( pathSegment.p0.x === route.startPoint.x && pathSegment.p0.y === route.startPoint.y ) {
-
-                        newPathSegment.p0 = pathSegment.p0;
-                        newPathSegment.p1 = pathSegment.p1;
-
-                    } else {
-
-                        newPathSegment.p0 = pathSegment.p1;
-                        newPathSegment.p1 = pathSegment.p0;
-
-                    }
-
-                } else {
-
-                    const predecessorNewPathSegment = route.pathSegments[ route.pathSegments.length - 1 ];
-
-                    if ( pathSegment.p0.x === predecessorNewPathSegment.p1.x && pathSegment.p0.y === predecessorNewPathSegment.p1.y ) {
-
-                        newPathSegment.p0 = pathSegment.p0;
-                        newPathSegment.p1 = pathSegment.p1;
-
-                    } else {
-
-                        newPathSegment.p0 = pathSegment.p1;
-                        newPathSegment.p1 = pathSegment.p0;
-
-                    }
-
-                }
-
-                route.pathSegments.push( newPathSegment );
-
-                //---
-
-                // console.log( path.routes[ routeIndex ].pathSegments[ path.routes[ routeIndex ].pathSegments.length - 1 ] );
-
-                // //tempPathSegments.push( { type: 'line', p0: { x: point0.x, y: point0.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                // tempPathSegments.push( { type: 'bezier', p0: { x: point0.x, y: point0.y }, controlPoint: { x: pathSegment.controlPoint.x, y: pathSegment.controlPoint.y }, p1: { x: point1.x, y: point1.y }, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                // tempPathSegments.push( { type: 'circ', position: { x: point0.x, y: point0.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-                // tempPathSegments.push( { type: 'circ', position: { x: point1.x, y: point1.y }, diameter: 15, color: { r: routeColor.r, g: routeColor.g, b: routeColor.b, a: routeColor.a } } );
-
-            }
-
-        } else {
-
-            console.log( "FOUND NO END" );
-
-            //path.routes[ routeIndex ].complete = false;
-
-            route.complete = false;
-
-        }
-
-    }
-
-    //---
 
     function showRoute( position ) {
 
@@ -964,46 +732,46 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function getPathSegmentByPoints( p0, p1 ) {
+    // function getPathSegmentByPoints( p0, p1 ) {
 
-        const pathIndex = 0;
+    //     const pathIndex = 0;
 
-        const path = pathHolder[ pathIndex ];
+    //     const path = pathHolder[ pathIndex ];
 
-        //---
+    //     //---
 
-        let result = null;
+    //     let result = null;
 
-        for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
+    //     for ( let i = 0, l = path.segments.length; i < l; i ++ ) {
 
-            const pathSegment = path.segments[ i ];
+    //         const pathSegment = path.segments[ i ];
 
-            let p0Found = false;
-            let p1Found = false;
+    //         let p0Found = false;
+    //         let p1Found = false;
 
-            if ( pathSegment.p0.x === p0.x && pathSegment.p0.y === p0.y || pathSegment.p1.x === p0.x && pathSegment.p1.y === p0.y ) {
+    //         if ( pathSegment.p0.x === p0.x && pathSegment.p0.y === p0.y || pathSegment.p1.x === p0.x && pathSegment.p1.y === p0.y ) {
 
-                p0Found = true;
+    //             p0Found = true;
 
-            }
+    //         }
 
-            if ( pathSegment.p0.x === p1.x && pathSegment.p0.y === p1.y || pathSegment.p1.x === p1.x && pathSegment.p1.y === p1.y ) {
+    //         if ( pathSegment.p0.x === p1.x && pathSegment.p0.y === p1.y || pathSegment.p1.x === p1.x && pathSegment.p1.y === p1.y ) {
 
-                p1Found = true;
+    //             p1Found = true;
 
-            }
+    //         }
 
-            if ( p0Found === true && p1Found === true ) {
+    //         if ( p0Found === true && p1Found === true ) {
 
-                result = pathSegment;
+    //             result = pathSegment;
 
-            }
+    //         }
 
-        }
+    //     }
 
-        return result;
+    //     return result;
 
-    }
+    // }
 
     function getPathSegmentPoint( position, walkable = true, cost = 0, parentPoint = null, visited = false, neighbourPathsegments = [], neighbourPoints = [] ) {
 
@@ -2958,18 +2726,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             const path = pathHolder[ pathIndex ];
 
-            for ( let i = 0, l = path.routes.length; i < l; i ++ ) {
+            //---
 
-                const route = path.routes[ i ];
+            pathfinder.computeRoutes( path, ( routes ) => {
 
-                if ( route.startPoint !== null && route.endPoint !== null ) {
-
-                    findPath( route );
-                    //findPathAsync( route );
-
-                }
-
-            }
+                path.routes = routes;
+        
+            } );
 
             //---
 
