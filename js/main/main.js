@@ -1378,6 +1378,25 @@ document.addEventListener( 'DOMContentLoaded', () => {
             }
 
             currentGraphSegment.p1 = { x: unifyNumber( graphSegmentPoint.x ), y: unifyNumber( graphSegmentPoint.y ) };
+
+            //GraphSegment points are not allowed to have the same position
+            if ( currentGraphSegment.p0.x === currentGraphSegment.p1.x && currentGraphSegment.p0.y === currentGraphSegment.p1.y ) {
+
+                graph.points.splice( graph.points.findIndex( ( point ) => point.x === currentGraphSegment.p0.x && point.y === currentGraphSegment.p0.y ), 1 );
+                graph.segments.pop();
+
+                currentGraphSegment = null;
+
+                if ( debugMode === true ) {
+
+                    rebuildDebugElements();
+
+                }
+
+                return;
+
+            }
+
             currentGraphSegment.centerPoint = getGraphSegmentCenter( currentGraphSegment );
             currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
             currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
