@@ -160,10 +160,10 @@ function findPath( route ) {
 
         for ( let i = 0, l = routeStartToEnd.length - 1; i < l; i ++ ) {
 
-            const point0 = routeStartToEnd[ i ];
-            const point1 = routeStartToEnd[ i + 1 ];
+            const p0 = routeStartToEnd[ i ];
+            const p1 = routeStartToEnd[ i + 1 ];
 
-            const graphSegment = getGraphSegmentByPoints( point0, point1 );
+            const graphSegment = getGraphSegmentByPoints( p0, p1 );
 
             //---
 
@@ -176,40 +176,8 @@ function findPath( route ) {
             //newGraphSegment.id = graphSegment.id;
             newGraphSegment.controlPoint = graphSegment.controlPoint;
             newGraphSegment.length = graphSegment.length;
-            newGraphSegment.p0 = null;
-            newGraphSegment.p1 = null;
-
-            if ( i === 0 ) {
-
-                if ( graphSegment.p0.x === route.startPoint.x && graphSegment.p0.y === route.startPoint.y ) {
-
-                    newGraphSegment.p0 = graphSegment.p0;
-                    newGraphSegment.p1 = graphSegment.p1;
-
-                } else {
-
-                    newGraphSegment.p0 = graphSegment.p1;
-                    newGraphSegment.p1 = graphSegment.p0;
-
-                }
-
-            } else {
-
-                const predecessorGraphSegment = route.graphSegments[ route.graphSegments.length - 1 ];
-
-                if ( graphSegment.p0.x === predecessorGraphSegment.p1.x && graphSegment.p0.y === predecessorGraphSegment.p1.y ) {
-
-                    newGraphSegment.p0 = graphSegment.p0;
-                    newGraphSegment.p1 = graphSegment.p1;
-
-                } else {
-
-                    newGraphSegment.p0 = graphSegment.p1;
-                    newGraphSegment.p1 = graphSegment.p0;
-
-                }
-
-            }
+            newGraphSegment.p0 = p0;
+            newGraphSegment.p1 = p1;
 
             route.graphSegments.push( newGraphSegment );
 
@@ -253,6 +221,8 @@ function getGraphSegmentByPoints( p0, p1 ) {
         if ( p0Found === true && p1Found === true ) {
 
             result = graphSegment;
+
+            break;
 
         }
 
