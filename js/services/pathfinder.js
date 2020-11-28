@@ -8,7 +8,9 @@
 
 class Pathfinder {
 
-    constructor() {
+    constructor( type = 'Dijkstra' ) {
+
+        this._type = type;
 
         this._callback = null;
         this._worker = null;
@@ -30,7 +32,7 @@ class Pathfinder {
 
         }
 
-        this._worker = new Worker( './js/services/pathsearch.js' );
+        this._worker = new Worker( './js/services/pathsearch' + this._type + '.js' );
         this._worker.addEventListener( 'message', this.resultHandler.bind( this ), false );
         this._worker.addEventListener( 'error', this.errorHandler.bind( this ), false );
 
