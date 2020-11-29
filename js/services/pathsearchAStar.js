@@ -73,6 +73,7 @@ function findPath( route ) {
 
         point.cost = Infinity;
         point.parentPoint = null;
+        point.parentGraphSegment = null;
         point.visited = false;
 
     }
@@ -117,6 +118,7 @@ function findPath( route ) {
                     if ( neighbourDistance < neighbourPoint.cost ) {
 
                         neighbourPoint.parentPoint = graph.currentPoint;
+                        neighbourPoint.parentGraphSegment = neighbourGraphsegment;
 
                         neighbourPoint.cost = neighbourDistance;
 
@@ -142,44 +144,32 @@ function findPath( route ) {
 
         // console.log( 'FOUND END' );
 
-        const routeStartToEnd = [];
+        route.complete = true;
+        route.length = 0;
+        route.graphSegments = [];
 
         let currentPoint = routeEndPoint;
 
         while ( currentPoint !== null ) {
 
-            routeStartToEnd.unshift( currentPoint );
+            if ( currentPoint.parentGraphSegment !== null ) {
+
+                route.length += currentPoint.parentGraphSegment.length;
+
+                //---
+
+                let newGraphSegment = {};
+
+                newGraphSegment.controlPoint = currentPoint.parentGraphSegment.controlPoint;
+                newGraphSegment.length = currentPoint.parentGraphSegment.length;
+                newGraphSegment.p0 = currentPoint.parentPoint;
+                newGraphSegment.p1 = currentPoint;
+
+                route.graphSegments.unshift( newGraphSegment );
+
+            }
 
             currentPoint = currentPoint.parentPoint;
-
-        }
-
-        route.complete = true;
-        route.length = 0;
-        route.graphSegments = [];
-
-        for ( let i = 0, l = routeStartToEnd.length - 1; i < l; i ++ ) {
-
-            const p0 = routeStartToEnd[ i ];
-            const p1 = routeStartToEnd[ i + 1 ];
-
-            const graphSegment = getGraphSegmentByPoints( p0, p1 );
-
-            //---
-
-            route.length += graphSegment.length;
-
-            //---
-
-            let newGraphSegment = {};
-
-            //newGraphSegment.id = graphSegment.id;
-            newGraphSegment.controlPoint = graphSegment.controlPoint;
-            newGraphSegment.length = graphSegment.length;
-            newGraphSegment.p0 = p0;
-            newGraphSegment.p1 = p1;
-
-            route.graphSegments.push( newGraphSegment );
 
         }
 
@@ -194,43 +184,6 @@ function findPath( route ) {
 }
 
 //---
-
-function getGraphSegmentByPoints( p0, p1 ) {
-
-    let result = null;
-
-    for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
-
-        const graphSegment = graph.segments[ i ];
-
-        let p0Found = false;
-        let p1Found = false;
-
-        if ( graphSegment.p0.x === p0.x && graphSegment.p0.y === p0.y || graphSegment.p1.x === p0.x && graphSegment.p1.y === p0.y ) {
-
-            p0Found = true;
-
-        }
-
-        if ( graphSegment.p0.x === p1.x && graphSegment.p0.y === p1.y || graphSegment.p1.x === p1.x && graphSegment.p1.y === p1.y ) {
-
-            p1Found = true;
-
-        }
-
-        if ( p0Found === true && p1Found === true ) {
-
-            result = graphSegment;
-
-            break;
-
-        }
-
-    }
-
-    return result;
-
-}
 
 function getPointByPosition( position ) {
 
