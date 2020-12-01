@@ -166,7 +166,7 @@ function findPath( route ) {
 
                 newGraphSegment.controlPoint = currentPoint.parentGraphSegment.controlPoint;
                 newGraphSegment.length = currentPoint.parentGraphSegment.length;
-                newGraphSegment.p0 = currentPoint.parentPoint;
+                newGraphSegment.p0 = { x: currentPoint.parentPoint.x, y: currentPoint.parentPoint.y };
                 newGraphSegment.p1 = currentPoint;
 
                 route.graphSegments.unshift( newGraphSegment );
