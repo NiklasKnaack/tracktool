@@ -104,6 +104,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let simulationRuns = false;
 
+    let currentNode = null;
     let currentGraphSegment = null;
     let selectedGraphSegments = [];
     // let allowGraphSegmentSplitting = true;
@@ -119,7 +120,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 // { startPoint: { x: 170, y: 835 }, endPoint: { x: 715, y: 51 }, graphSegments: [], length: 0, complete: false },
                 // { startPoint: { x: 906, y: 57 }, endPoint: { x: 868, y: 784 }, graphSegments: [], length: 0, complete: false },
             ],
-            currentPoint: { x: 0, y: 0 },
             streetPoints: [],
             streetSegments: [],
             points: [
@@ -352,7 +352,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
             graphHolder[ graphIndex ] = {
                 id: graphIndex,
                 routes: [],
-                currentPoint: null,
                 points: [],
                 openSet: [],
                 closedSet: [],
@@ -362,6 +361,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             tempGraphSegments = [];
 
+            currentNode = null;
             currentGraphSegment = null;
             currentStreetSegment = null;
             selectedGraphSegments = [];
@@ -405,8 +405,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             output += '],' + '\n';
 
-            //output += 'currentPoint: ' + '{ x: ' + graph.currentPoint.x + ', y: ' + graph.currentPoint.y + ' },' + '\n';
-            output += 'currentPoint: ' + '{ x: 0, y: 0 },' + '\n';
             output += 'streetPoints: ' + '[],' + '\n';
             output += 'streetSegments: ' + '[],' + '\n';
 
@@ -1878,7 +1876,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    function addCurrentPointToGraph( position ) {
+    function setCurrentNode( position ) {
 
         const graphIndex = 0;
 
@@ -1888,7 +1886,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( point !== null ) {
 
-            graph.currentPoint = point;
+            currentNode = point;
 
         }
 
@@ -1940,7 +1938,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //     const graph = graphHolder[ graphIndex ];
 
-    //     const point = graph.currentPoint;
+    //     const point = currentNode;
 
     //     const duplicatePoints = graph.points.filter( ( p ) => p.x === point.x && p.y === point.y );
 
@@ -1972,7 +1970,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graph = graphHolder[ graphIndex ];
 
-        const point = graph.currentPoint;
+        const point = currentNode;
 
         if ( point !== null ) {
 
@@ -2671,7 +2669,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
 
-            addCurrentPointToGraph( mouseCursor.position );
+            setCurrentNode( mouseCursor.position );
             addSelectedGraphSegments( mouseCursor.position );
 
         } else if ( editorMode === EDITOR_MODE_ENUM.toggleGraphWalkable ) {

@@ -48,14 +48,17 @@ function init( event ) {
 
 function findPath( route ) {
 
-    tempGraphSegments = [];
+    const startNode = route.startPoint;
+    const endNode = getPointByPosition( route.endPoint );
+
+    let currentNode = null;
 
     //---
     //get cost value function for MinHeap Sort
 
-    const getCost = ( item ) => {
+    const getCost = ( node ) => {
 
-        return item.cost;
+        return node.cost;
     
     }
 
@@ -81,32 +84,34 @@ function findPath( route ) {
     }
 
     //---
+    //set currentNode
     
-    graph.currentPoint = getPointByPosition( route.startPoint );
+    currentNode = getPointByPosition( startNode );
 
-    if ( graph.currentPoint === null ) {
+    if ( currentNode === null ) {
 
         return;
 
     }
 
-    graph.currentPoint.gCost = 0;
-    graph.currentPoint.hCost = getDistance( graph.currentPoint, route.endPoint );
-    graph.currentPoint.cost = 0;//graph.currentPoint.gCost + graph.currentPoint.hCost;
+    currentNode.gCost = 0;
+    currentNode.hCost = getDistance( currentNode, endNode );
+    currentNode.cost = 0;//currentNode.gCost + currentNode.hCost;
 
-    graph.openSet.insert( graph.currentPoint );
+    graph.openSet.insert( currentNode );
 
     //---
+    //a star algorithm
 
     while ( graph.openSet.length > 0 ) {
 
-        graph.currentPoint = graph.openSet.extract();
-        graph.currentPoint.visited = true;
+        currentNode = graph.openSet.extract();
+        currentNode.visited = true;
 
         //---
 
-        const neighbourGraphsegments = graph.currentPoint.neighbourGraphsegments;
-        const neighbourPoints = graph.currentPoint.neighbourPoints;
+        const neighbourGraphsegments = currentNode.neighbourGraphsegments;
+        const neighbourPoints = currentNode.neighbourPoints;
 
         if ( neighbourGraphsegments.length > 0 ) {
 
@@ -122,15 +127,15 @@ function findPath( route ) {
 
                 const neighbourGraphsegment = neighbourGraphsegments[ i ];
 
-                const gCost = graph.currentPoint.gCost + neighbourGraphsegment.length;
+                const gCost = currentNode.gCost + neighbourGraphsegment.length;
 
                 if ( neighbourPoint.visited === false || gCost < neighbourPoint.gCost ) {
 
                     neighbourPoint.visited = true;
-                    neighbourPoint.parentPoint = graph.currentPoint;
+                    neighbourPoint.parentPoint = currentNode;
                     neighbourPoint.parentGraphSegment = neighbourGraphsegment;
                     neighbourPoint.gCost = gCost;
-                    neighbourPoint.hCost = getDistance( neighbourPoint, route.endPoint );
+                    neighbourPoint.hCost = getDistance( neighbourPoint, endNode );
                     neighbourPoint.cost = neighbourPoint.gCost + neighbourPoint.hCost;
 
                     graph.openSet.insert( neighbourPoint );
@@ -144,10 +149,9 @@ function findPath( route ) {
     }
 
     //---
+    //retrace route
 
-    const routeEndPoint = getPointByPosition( route.endPoint );
-
-    if ( routeEndPoint.parentPoint !== null ) {
+    if ( endNode.parentPoint !== null ) {
 
         // console.log( 'FOUND END' );
 
@@ -155,7 +159,7 @@ function findPath( route ) {
         route.length = 0;
         route.graphSegments = [];
 
-        let currentPoint = routeEndPoint;
+        let currentPoint = endNode;
 
         while ( currentPoint !== null ) {
 
