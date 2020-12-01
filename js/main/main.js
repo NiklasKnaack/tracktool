@@ -1380,13 +1380,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             currentGraphSegment.p1 = { x: unifyNumber( graphSegmentPoint.x ), y: unifyNumber( graphSegmentPoint.y ) };
 
-            //GraphSegment points are not allowed to have the same position. work in progress. check if a point is not used by other GraphSegments!
+            //GraphSegment points are not allowed to have the same position.
             if ( currentGraphSegment.p0.x === currentGraphSegment.p1.x && currentGraphSegment.p0.y === currentGraphSegment.p1.y ) {
 
-                graph.points.splice( graph.points.findIndex( ( point ) => point.x === currentGraphSegment.p0.x && point.y === currentGraphSegment.p0.y ), 1 );
-                graph.segments.pop();
+                const graphSegments = getGraphSegmentsByPosition( currentGraphSegment.p0 );
 
-                currentGraphSegment = null;
+                if ( graphSegments.length === 1 ) {
+
+                    graph.points.splice( graph.points.findIndex( ( point ) => point.x === currentGraphSegment.p0.x && point.y === currentGraphSegment.p0.y ), 1 );
+
+                }
+
+                graph.segments.pop();
 
                 if ( debugMode === true ) {
 
@@ -1394,45 +1399,45 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 }
 
-                return;
+            } else {
 
-            }
+                currentGraphSegment.centerPoint = getGraphSegmentCenter( currentGraphSegment );
+                currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
+                currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
+                currentGraphSegment.walkable = true;
+                currentGraphSegment.direction = '><';
 
-            currentGraphSegment.centerPoint = getGraphSegmentCenter( currentGraphSegment );
-            currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
-            currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
-            currentGraphSegment.walkable = true;
-            currentGraphSegment.direction = '><';
+                setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p0 ) );
+                setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p1 ) );
 
-            setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p0 ) );
-            setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p1 ) );
+                // if ( allowGraphSegmentSplitting === true ) {
 
-            // if ( allowGraphSegmentSplitting === true ) {
+                //     const intersections = getGraphSegmentsIntersections( currentGraphSegment, 100 );
 
-            //     const intersections = getGraphSegmentsIntersections( currentGraphSegment, 100 );
+                //     for ( let i = 0, l = intersections.length; i < l; i ++ ) {
 
-            //     for ( let i = 0, l = intersections.length; i < l; i ++ ) {
+                //         const intersection = intersections[ i ];
 
-            //         const intersection = intersections[ i ];
+                //         console.log( intersection );
 
-            //         console.log( intersection );
+                //         const t0 = getTOfQuadraticBezierFromIntersectionPoint( intersection.graphSegment0, intersection.point );
+                //         const t1 = getTOfQuadraticBezierFromIntersectionPoint( intersection.graphSegment1, intersection.point );
 
-            //         const t0 = getTOfQuadraticBezierFromIntersectionPoint( intersection.graphSegment0, intersection.point );
-            //         const t1 = getTOfQuadraticBezierFromIntersectionPoint( intersection.graphSegment1, intersection.point );
+                //         splitGraphSegment( intersection.graphSegment0, t0 );
+                //         splitGraphSegment( intersection.graphSegment1, t1 );
 
-            //         splitGraphSegment( intersection.graphSegment0, t0 );
-            //         splitGraphSegment( intersection.graphSegment1, t1 );
+                //     }
 
-            //     }
+                // }
 
-            // }
+                if ( debugMode === true ) {
 
-            if ( debugMode === true ) {
+                    addDebugElement( position.x, position.y, position.x.toFixed( 0 ).toString() + ', ' + position.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
+                    addDebugElement( currentGraphSegment.centerPoint.x, currentGraphSegment.centerPoint.y, currentGraphSegment.id.toString(), 'white', -4, -6, null );
 
-                addDebugElement( position.x, position.y, position.x.toFixed( 0 ).toString() + ', ' + position.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
-                addDebugElement( currentGraphSegment.centerPoint.x, currentGraphSegment.centerPoint.y, currentGraphSegment.id.toString(), 'white', -4, -6, null );
+                    addDebugElement( currentGraphSegment.centerPoint.x, currentGraphSegment.centerPoint.y, currentGraphSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
 
-                addDebugElement( currentGraphSegment.centerPoint.x, currentGraphSegment.centerPoint.y, currentGraphSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
+                }
 
             }
 
@@ -2126,6 +2131,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graph = graphHolder[ graphIndex ];
 
+        //---
+
         let distanceTotal = Infinity;
         let indexSave = -1;
 
@@ -2153,6 +2160,32 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
         return null;
+
+    }
+
+    function getGraphSegmentsByPosition( position ) {
+
+        const graphIndex = 0;
+
+        const graph = graphHolder[ graphIndex ];
+
+        //---
+
+        const result = [];
+
+        for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
+
+            const graphSegment = graph.segments[ i ];
+
+            if ( graphSegment.p0.x === position.x && graphSegment.p0.y === position.y || graphSegment.p1.x === position.x && graphSegment.p1.y === position.y ) {
+
+                result.push( graphSegment );
+
+            }
+
+        }
+
+        return result;
 
     }
 
