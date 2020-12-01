@@ -8,9 +8,9 @@
 
 class Pathfinder {
 
-    constructor( type = 'Dijkstra' ) {
+    constructor( type = 'AStar' ) {
 
-        this._type = type;
+        this._type = type;//Dijkstra
 
         this._callback = null;
         this._worker = null;

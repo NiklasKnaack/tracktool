@@ -122,9 +122,9 @@ function findPath( route ) {
 
                         neighbourPoint.cost = neighbourDistance;
 
-                    }
+                        graph.openSet.insert( neighbourPoint );
 
-                    graph.openSet.insert( neighbourPoint );
+                    }
 
                 }
 

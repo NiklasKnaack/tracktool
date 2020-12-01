@@ -71,7 +71,9 @@ function findPath( route ) {
 
         const point = graph.points[ i ];
 
-        point.cost = Infinity;
+        point.gCost = 0;
+        point.hCost = 0;
+        point.cost = 0;
         point.parentPoint = null;
         point.parentGraphSegment = null;
         point.visited = false;
@@ -88,7 +90,9 @@ function findPath( route ) {
 
     }
 
-    graph.currentPoint.cost = 0;
+    graph.currentPoint.gCost = 0;
+    graph.currentPoint.hCost = getDistance( graph.currentPoint, route.endPoint );
+    graph.currentPoint.cost = graph.currentPoint.gCost + graph.currentPoint.hCost;
 
     graph.openSet.insert( graph.currentPoint );
 
@@ -110,19 +114,17 @@ function findPath( route ) {
 
                 const neighbourGraphsegment = neighbourGraphsegments[ i ];
                 const neighbourPoint = getPointByPosition( neighbourPoints[ i ] );
-                
-                if ( neighbourPoint.visited === false && neighbourPoint.walkable === true ) {
 
-                    const neighbourDistance = graph.currentPoint.cost + neighbourGraphsegment.length;
+                const gCost = graph.currentPoint.gCost + neighbourGraphsegment.length;
 
-                    if ( neighbourDistance < neighbourPoint.cost ) {
+                if ( neighbourPoint.visited === false || gCost < neighbourPoint.gCost ) {
 
-                        neighbourPoint.parentPoint = graph.currentPoint;
-                        neighbourPoint.parentGraphSegment = neighbourGraphsegment;
-
-                        neighbourPoint.cost = neighbourDistance;
-
-                    }
+                    neighbourPoint.visited = true;
+                    neighbourPoint.parentPoint = graph.currentPoint;
+                    neighbourPoint.parentGraphSegment = neighbourGraphsegment;
+                    neighbourPoint.gCost = gCost;
+                    neighbourPoint.hCost = getDistance( neighbourPoint, route.endPoint );
+                    neighbourPoint.cost = neighbourPoint.gCost + neighbourPoint.hCost;
 
                     graph.openSet.insert( neighbourPoint );
 
@@ -131,8 +133,6 @@ function findPath( route ) {
             }
 
         }
-
-        //graph.openSet.splice( graph.openSet.findIndex( ( point ) => point.x === graph.currentPoint.x && point.y === graph.currentPoint.y ), 1 );
 
     }
 
@@ -184,6 +184,15 @@ function findPath( route ) {
 }
 
 //---
+
+function getDistance( p0, p1 ) {
+
+    const a = p0.x - p1.x;
+    const b = p0.y - p1.y;
+
+    return Math.sqrt( a * a + b * b );
+
+}
 
 function getPointByPosition( position ) {
 
