@@ -92,7 +92,7 @@ function findPath( route ) {
 
     graph.currentPoint.gCost = 0;
     graph.currentPoint.hCost = getDistance( graph.currentPoint, route.endPoint );
-    graph.currentPoint.cost = graph.currentPoint.gCost + graph.currentPoint.hCost;
+    graph.currentPoint.cost = 0;//graph.currentPoint.gCost + graph.currentPoint.hCost;
 
     graph.openSet.insert( graph.currentPoint );
 
@@ -112,8 +112,15 @@ function findPath( route ) {
 
             for ( let i = 0, l = neighbourGraphsegments.length; i < l; i ++ ) {
 
-                const neighbourGraphsegment = neighbourGraphsegments[ i ];
                 const neighbourPoint = getPointByPosition( neighbourPoints[ i ] );
+
+                if ( neighbourPoint.walkable === false ) {
+
+                    continue;
+
+                }
+
+                const neighbourGraphsegment = neighbourGraphsegments[ i ];
 
                 const gCost = graph.currentPoint.gCost + neighbourGraphsegment.length;
 

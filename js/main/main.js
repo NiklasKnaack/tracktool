@@ -2080,15 +2080,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        //const graphIndex = 0;
-
-        //const graph = graphHolder[ graphIndex ];
-
         const graphSegment = getGraphSegmentByPosition( position );
 
         if ( graphSegment !== null ) {
 
             graphSegment.walkable = !graphSegment.walkable;
+
+            setAllGraphSegmentPointNeighbours();//muss optimiert werden. Es sollte möglich sein nur die betroffenen Punkte upzudaten und nicht alle.
 
         }
 
