@@ -7041,6 +7041,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             movePosition.endPoint.y = mousePos.y;
             movePosition.change = false;
 
+            unifyAllPositions();
+
             if ( debugMode === true ) {
 
                 rebuildDebugElements();
@@ -8076,15 +8078,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function drawQuadraticBezier( sv, cv, ev, segments, r, g, b, a ) {
 
-        for ( let i = 0, l = 1 / segments; i < 1 + l; i += l ) {
+        if ( sv.x > border.left && sv.x < border.right && sv.y > border.top && sv.y < border.bottom || ev.x > border.left && ev.x < border.right && ev.y > border.top && ev.y < border.bottom ) {
 
-            if ( i > 0 ) {
+            for ( let i = 0, l = 1 / segments; i < 1 + l; i += l ) {
 
-                const c1 = interpolateQuadraticBezier( sv, cv, ev, i - l );
-                const c2 = interpolateQuadraticBezier( sv, cv, ev, i );
-
-                drawLine( c1.x | 0, c1.y | 0, c2.x | 0, c2.y | 0, r, g, b, a );
-
+                if ( i > 0 ) {
+    
+                    const c1 = interpolateQuadraticBezier( sv, cv, ev, i - l );
+                    const c2 = interpolateQuadraticBezier( sv, cv, ev, i );
+    
+                    drawLine( c1.x | 0, c1.y | 0, c2.x | 0, c2.y | 0, r, g, b, a );
+    
+                }
+    
             }
 
         }
@@ -8158,10 +8164,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        // console.clear();
-
-        //---
-
         const moveDistanceMax = 500;
         const moveDistance = getDistance( movePosition.startPoint, movePosition.endPoint ) * 50;
         const moveAngle = Math.atan2( movePosition.endPoint.y - movePosition.startPoint.y, movePosition.endPoint.x - movePosition.startPoint.x ) + Math.PI * 0.50;
@@ -8171,8 +8173,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const dx = -sinMove * ( moveDistance / moveDistanceMax );
         const dy = cosMove * ( moveDistance / moveDistanceMax );
-        
-        // console.log( dx, dy, moveDistance, ( moveDistance / moveDistanceMax ) );
 
         //---
         
@@ -8191,14 +8191,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 graphSegment.controlPoint.x += dx;
                 graphSegment.controlPoint.y += dy;
 
-                graphSegment.p0.x = unifyNumber( graphSegment.p0.x );
-                graphSegment.p0.y = unifyNumber( graphSegment.p0.y );
-                graphSegment.p1.x = unifyNumber( graphSegment.p1.x );
-                graphSegment.p1.y = unifyNumber( graphSegment.p1.y );
-                graphSegment.centerPoint.x = unifyNumber( graphSegment.centerPoint.x );
-                graphSegment.centerPoint.y = unifyNumber( graphSegment.centerPoint.y );
-                graphSegment.controlPoint.x = unifyNumber( graphSegment.controlPoint.x );
-                graphSegment.controlPoint.y = unifyNumber( graphSegment.controlPoint.y );
+                // graphSegment.p0.x = unifyNumber( graphSegment.p0.x );
+                // graphSegment.p0.y = unifyNumber( graphSegment.p0.y );
+                // graphSegment.p1.x = unifyNumber( graphSegment.p1.x );
+                // graphSegment.p1.y = unifyNumber( graphSegment.p1.y );
+                // graphSegment.centerPoint.x = unifyNumber( graphSegment.centerPoint.x );
+                // graphSegment.centerPoint.y = unifyNumber( graphSegment.centerPoint.y );
+                // graphSegment.controlPoint.x = unifyNumber( graphSegment.controlPoint.x );
+                // graphSegment.controlPoint.y = unifyNumber( graphSegment.controlPoint.y );
 
             }
 
@@ -8209,8 +8209,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 point.x += dx;
                 point.y += dy;
 
-                point.x = unifyNumber( point.x );
-                point.y = unifyNumber( point.y );
+                // point.x = unifyNumber( point.x );
+                // point.y = unifyNumber( point.y );
 
             }
 
@@ -8222,8 +8222,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     route.startPoint.x += dx;
                     route.startPoint.y += dy;
-                    route.startPoint.x = unifyNumber( route.startPoint.x );
-                    route.startPoint.y = unifyNumber( route.startPoint.y );
+                    // route.startPoint.x = unifyNumber( route.startPoint.x );
+                    // route.startPoint.y = unifyNumber( route.startPoint.y );
 
                 }
 
@@ -8231,8 +8231,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             
                     route.endPoint.x += dx;
                     route.endPoint.y += dy;
-                    route.endPoint.x = unifyNumber( route.endPoint.x );
-                    route.endPoint.y = unifyNumber( route.endPoint.y );
+                    // route.endPoint.x = unifyNumber( route.endPoint.x );
+                    // route.endPoint.y = unifyNumber( route.endPoint.y );
 
                 }
 
@@ -8248,6 +8248,89 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         graphSegment.p1.y += dy;
                         graphSegment.controlPoint.x += dx;
                         graphSegment.controlPoint.y += dy;
+
+                        // graphSegment.p0.x = unifyNumber( graphSegment.p0.x );
+                        // graphSegment.p0.y = unifyNumber( graphSegment.p0.y );
+                        // graphSegment.p1.x = unifyNumber( graphSegment.p1.x );
+                        // graphSegment.p1.y = unifyNumber( graphSegment.p1.y );
+                        // graphSegment.controlPoint.x = unifyNumber( graphSegment.controlPoint.x );
+                        // graphSegment.controlPoint.y = unifyNumber( graphSegment.controlPoint.y );
+
+                    }
+
+                }
+
+            }
+
+            // for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
+
+            //     const streetSegment = graph.streetSegments[ i ];
+
+            //     //---
+
+            // }
+
+        } );
+        
+        //---
+
+        drawLine( movePosition.startPoint.x | 0, movePosition.startPoint.y | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 155, 155, 155, 255 );
+        drawCircle( movePosition.startPoint, 5, 255, 255, 255, 255 );
+        drawCircle( movePosition.endPoint, 5, 255, 255, 255, 255 );
+
+    }
+
+    function unifyAllPositions() {
+
+        graphHolder.forEach( ( graph, index ) => {
+
+            for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
+
+                const graphSegment = graph.segments[ i ];
+
+                graphSegment.p0.x = unifyNumber( graphSegment.p0.x );
+                graphSegment.p0.y = unifyNumber( graphSegment.p0.y );
+                graphSegment.p1.x = unifyNumber( graphSegment.p1.x );
+                graphSegment.p1.y = unifyNumber( graphSegment.p1.y );
+                graphSegment.centerPoint.x = unifyNumber( graphSegment.centerPoint.x );
+                graphSegment.centerPoint.y = unifyNumber( graphSegment.centerPoint.y );
+                graphSegment.controlPoint.x = unifyNumber( graphSegment.controlPoint.x );
+                graphSegment.controlPoint.y = unifyNumber( graphSegment.controlPoint.y );
+
+            }
+
+            for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
+
+                const point = graph.points[ i ];
+
+                point.x = unifyNumber( point.x );
+                point.y = unifyNumber( point.y );
+
+            }
+
+            for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
+
+                const route = graph.routes[ i ];
+
+                if ( route.startPoint !== null ) {
+
+                    route.startPoint.x = unifyNumber( route.startPoint.x );
+                    route.startPoint.y = unifyNumber( route.startPoint.y );
+
+                }
+
+                if ( route.endPoint !== null ) {
+
+                    route.endPoint.x = unifyNumber( route.endPoint.x );
+                    route.endPoint.y = unifyNumber( route.endPoint.y );
+
+                }
+
+                if ( route.graphSegments.length > 0 ) {
+
+                    for ( let j = 0, m = route.graphSegments.length; j < m; j ++ ) {
+
+                        const graphSegment = route.graphSegments[ j ];
 
                         graphSegment.p0.x = unifyNumber( graphSegment.p0.x );
                         graphSegment.p0.y = unifyNumber( graphSegment.p0.y );
@@ -8271,12 +8354,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
             // }
 
         } );
-        
-        //---
-
-        drawLine( movePosition.startPoint.x | 0, movePosition.startPoint.y | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 155, 155, 155, 255 );
-        drawCircle( movePosition.startPoint, 5, 255, 255, 255, 255 );
-        drawCircle( movePosition.endPoint, 5, 255, 255, 255, 255 );
 
     }
 
