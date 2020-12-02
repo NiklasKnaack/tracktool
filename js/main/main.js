@@ -8163,8 +8163,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //---
 
         const moveDistanceMax = 500;
-        const moveDistance = getDistance( movePosition.startPoint, movePosition.endPoint ) * 10;
-        const moveAngle = Math.atan2( movePosition.endPoint.y - movePosition.startPoint.y, movePosition.endPoint.x - movePosition.startPoint.x ) + Math.PI * 0.50;;
+        const moveDistance = getDistance( movePosition.startPoint, movePosition.endPoint ) * 50;
+        const moveAngle = Math.atan2( movePosition.endPoint.y - movePosition.startPoint.y, movePosition.endPoint.x - movePosition.startPoint.x ) + Math.PI * 0.50;
 
         const sinMove = Math.sin( moveAngle );
         const cosMove = Math.cos( moveAngle );
@@ -8256,29 +8256,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         graphSegment.controlPoint.x = unifyNumber( graphSegment.controlPoint.x );
                         graphSegment.controlPoint.y = unifyNumber( graphSegment.controlPoint.y );
 
-                        //---
-
-                        // drawQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 25, 255, 0, 0, 255 );
-
-                        // drawCircle( graphSegment.p0, 5, 155, 0, 0, 255 );
-                        // drawCircle( graphSegment.p1, 5, 155, 0, 0, 255 );
-                        // drawCircle( graphSegment.controlPoint, 7, 255, 0, 0, 255 );
-
-
                     }
 
                 }
 
             }
 
+            // for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
+
+            //     const streetSegment = graph.streetSegments[ i ];
+
+            //     //---
+
+            // }
+
         } );
         
         //---
 
-        //const lineMove = { p0: { x: sinMove * moveDistance + movePosition.startPoint.x, y: -cosMove * moveDistance + movePosition.startPoint.y }, p1: { x: -sinMove * moveDistance + movePosition.startPoint.x, y: cosMove * moveDistance + movePosition.startPoint.y } };
-        //const lineMove = { p0: movePosition.startPoint, p1: moveToPosition };
-
-        //drawLine( lineMove.p0.x | 0, lineMove.p0.y | 0, lineMove.p1.x | 0, lineMove.p1.y | 0, 60, 120, 0, 255 );
+        drawLine( movePosition.startPoint.x | 0, movePosition.startPoint.y | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 155, 155, 155, 255 );
+        drawCircle( movePosition.startPoint, 5, 255, 255, 255, 255 );
+        drawCircle( movePosition.endPoint, 5, 255, 255, 255, 255 );
 
     }
 
@@ -8289,14 +8287,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
         mouseCursor.position.x = mousePos.x;
         mouseCursor.position.y = mousePos.y;
         mouseCursor.color = { r: 255, g: 255, b: 255, a: 255 };
-
-        //---
-
-        if ( editorMode === EDITOR_MODE_ENUM.moveMap ) {
-
-            moveMap();
-
-        }
 
         //---
 
@@ -8600,24 +8590,24 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
+            // for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
 
-                const streetSegment = graph.streetSegments[ i ];
+            //     const streetSegment = graph.streetSegments[ i ];
 
-                if ( streetSegment.p0 !== null && streetSegment.p1 === null ) {
-
-
-
-                }
-
-                if ( streetSegment.p1 !== null ) {
+            //     if ( streetSegment.p0 !== null && streetSegment.p1 === null ) {
 
 
 
-                }
+            //     }
+
+            //     if ( streetSegment.p1 !== null ) {
 
 
-            }
+
+            //     }
+
+
+            // }
 
 
 
@@ -8660,7 +8650,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        // simulateVehicles();
+        if ( editorMode === EDITOR_MODE_ENUM.moveMap ) {
+
+            moveMap();
+
+        }
 
     }
 
