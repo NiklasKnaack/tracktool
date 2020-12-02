@@ -8274,9 +8274,52 @@ document.addEventListener( 'DOMContentLoaded', () => {
         
         //---
 
-        drawLine( movePosition.startPoint.x | 0, movePosition.startPoint.y | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 155, 155, 155, 255 );
-        drawCircle( movePosition.startPoint, 5, 255, 255, 255, 255 );
-        drawCircle( movePosition.endPoint, 5, 255, 255, 255, 255 );
+        // const endPoint = { x: movePosition.endPoint.x ,y: movePosition.endPoint.y };
+
+        // if ( getDistance( movePosition.startPoint, movePosition.endPoint ) < 25 ) {
+
+
+
+        // }
+
+        //---
+
+        drawLine( movePosition.startPoint.x | 0, movePosition.startPoint.y | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
+        //drawCircle( movePosition.startPoint, 5, 255, 255, 255, 255 );
+        //drawCircle( movePosition.endPoint, 5, 255, 255, 255, 255 );
+
+        //---
+
+        const angleEnd = moveAngle + Math.PI * 0.5;
+
+        const sinEnd = Math.sin( angleEnd );
+        const cosEnd = Math.cos( angleEnd );
+
+        const lengthEnd = 10;
+
+        drawLine( ( sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( -cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, ( -sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, 255, 255, 255, 255 );
+
+        //---
+
+        let dist = -25;
+
+        // if ( getDistance( movePosition.startPoint, movePosition.endPoint ) < Math. ) {
+
+            //---
+
+        // }
+
+        const cX = sinMove * dist + movePosition.endPoint.x;
+        const cY = -cosMove * dist + movePosition.endPoint.y;
+
+        const pSSX = sinMove * lengthEnd + cX;
+        const pSSY = -cosMove * lengthEnd + cY;
+
+        const pSEX = -sinMove * lengthEnd + cX;
+        const pSEY = cosMove * lengthEnd + cY;
+
+        drawLine( ( sinEnd * lengthEnd + pSSX ) | 0, ( -cosEnd * lengthEnd + pSSY ) | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
+        drawLine( ( -sinEnd * lengthEnd + pSSX ) | 0, ( cosEnd * lengthEnd + pSSY ) | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
 
     }
 
@@ -8693,7 +8736,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        drawCircleOutline( mouseCursor.position, mouseCursor.diameter, mouseCursor.color.r, mouseCursor.color.g, mouseCursor.color.b, mouseCursor.color.a );
+        if ( editorMode !== EDITOR_MODE_ENUM.moveMap ) {
+
+            drawCircleOutline( mouseCursor.position, mouseCursor.diameter, mouseCursor.color.r, mouseCursor.color.g, mouseCursor.color.b, mouseCursor.color.a );
+
+        }
 
         //---
 
