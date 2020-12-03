@@ -115,7 +115,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let currentStreetSegment = null;
 
-    let graphsHolder = graphsManager.getDefaultGraphs();
+    let graphsHolder = graphsManager.graphs;
 
     setAllGraphSegmentPointNeighbours();
 

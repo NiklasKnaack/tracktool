@@ -4,19 +4,35 @@ class GraphsManager {
 
     constructor() {
 
-        this._graphsHolder = graphsHolderDefault;
+        this._graphsHolder = null;
+
+        this.graphs = graphsHolderDefault;
 
     }
 
-    getDefaultGraphs() {
+    set graphs( graphsHolder ) {
+
+        this._graphsHolder = graphsHolder;
+
+    }
+
+    get graphs() {
 
         return this._graphsHolder;
 
     }
 
-    loadGraphs() {
+    loadGraphs( url, callback ) {
 
-        //---
+        // const head = document.getElementsByTagName( 'head' )[ 0 ];
+
+        // const script = document.createElement( 'script' );
+
+        // script.type = 'text/javascript';
+        // script.src = url;
+        // script.onload = callback;
+
+        // head.appendChild( script );
 
     }
 
