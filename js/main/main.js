@@ -77,9 +77,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     const VEHICLE_INTERVAL = 500;
 
-    const pathfinder = new Pathfinder();
-    const graphsManager = new GraphsManager();
-
     let vehiclesHolder = [];
     let vehicleTimer = null;
     let vehcileImageHolder = [];
@@ -87,13 +84,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let width = 1024;
     let height = 512;
 
-    const canvas = document.createElement( 'canvas' );
-    const context = canvas.getContext( '2d' );
+    const pathfinder = new Pathfinder();
+    const graphsManager = new GraphsManager();
+    const canvasManager = new CanvasManager( width, height );
+
+    const canvasInstructions = [ 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
+
+    let canvasMainObject = null;
+    let canvasMain = null;
+    let contextMain = null;
+    let imageDataMain = null;
+    let dataMain = null;
 
     let animationFrame = null;
-
-    let imageData = null;
-    let data = null;
 
     const border = { left: 1, top: 1, right: width, bottom: height };
     // const center = { x: width / 2, y: height / 2 };
@@ -112,6 +115,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let selectedGraphSegments = [];
     // let allowGraphSegmentSplitting = true;
     let tempGraphSegments = [];
+
+    let streetSegmentTexture = null;
 
     let currentStreetSegment = null;
 
@@ -395,11 +400,20 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function init() {
 
-        canvas.addEventListener( 'mousedown', mouseDownHandler, false );
-        canvas.addEventListener( 'mouseup', mouseUpHandler, false );
-        canvas.addEventListener( 'mousemove', mouseMoveHandler, false );
+        for ( let i = 0, l = canvasInstructions.length; i < l; i++ ) {
 
-        document.body.appendChild( canvas );
+            canvasManager.addCanvas( canvasInstructions[ i ] );
+
+        }
+
+        canvasMainObject = canvasManager.getCanvasObjectByName( 'main' );
+        canvasMain = canvasMainObject.canvas;
+        contextMain = canvasMainObject.context;
+
+        canvasMain.style.pointerEvents = 'auto';
+        canvasMain.addEventListener( 'mousedown', mouseDownHandler, false );
+        canvasMain.addEventListener( 'mouseup', mouseUpHandler, false );
+        canvasMain.addEventListener( 'mousemove', mouseMoveHandler, false );
 
         window.addEventListener( 'resize', onResize, false );
 
@@ -415,14 +429,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function restart() {
 
+        const tt0 = new Background();
+        const tt1 = new Background();
+
         width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
         height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-        canvas.width = width;
-        canvas.height = height;
+        canvasManager.width = width;
+        canvasManager.height = height;
 
-        imageData = context.getImageData( 0, 0, width, height );
-        data = imageData.data;
+        imageDataMain = contextMain.getImageData( 0, 0, width, height );
+        dataMain = imageDataMain.data;
 
         //---
 
@@ -444,7 +461,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        drawStreetSegmentTexture();
+        streetSegmentTexture = ImageFactory.getStreetSegmentTexture();
+
         initVehicles();
 
         simulationRuns = true;
@@ -927,47 +945,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    let canvasStreetTexture = null;
-
-    function drawStreetSegmentTexture() {
-
-        canvasStreetTexture = document.createElement( 'canvas' );
-
-        canvasStreetTexture.width = 256;
-        canvasStreetTexture.height = 256;
-
-        // canvasStreetTexture.style.position = 'absolute';
-        // canvasStreetTexture.style.left = '0px';
-        // canvasStreetTexture.style.top = '0px';
-        // document.body.appendChild( canvasStreetTexture );
-
-        const contextStreetTexture = canvasStreetTexture.getContext( '2d' );
-
-        const imageData = contextStreetTexture.getImageData ( 0, 0, 256, 256 );
-        const data = imageData.data;
-
-        for ( let i = 0, l = data.length; i < l; i += 4 ) {
-
-            const color = Math.floor( Math.random() * 20 ) + 60;
-
-            data[ i ]     = color;
-            data[ i + 1 ] = color;
-            data[ i + 2 ] = color;
-            data[ i + 3 ] = 255;
-
-        }
-
-        contextStreetTexture.putImageData( imageData, 0, 0 );
-
-    }
-
     function drawStreetSegment( streetSegment ) {
 
         if ( streetSegment.p0 !== null && streetSegment.p1 !== null ) {
 
             const precision = 100;
 
-            context.setLineDash( [] );
+            // context.setLineDash( [] );
 
             const streetBorder0 = streetSegment.borders[ 0 ];
             const streetBorder1 = streetSegment.borders[ 1 ];
@@ -992,6 +976,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             _canvas.width = streetSegment.boundingClientRect.width;
             _canvas.height = streetSegment.boundingClientRect.height;
+
+            _context.setLineDash( [] );
 
             //---
 
@@ -1025,7 +1011,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     
                     _context.clip();
                     //_context.drawImage( imageTexture, 0, 0, 256, 256 );
-                    _context.fillStyle = _context.createPattern( canvasStreetTexture, 'repeat' );
+                    _context.fillStyle = _context.createPattern( streetSegmentTexture, 'repeat' );
                     _context.fillRect( 0, 0, streetSegment.boundingClientRect.width, streetSegment.boundingClientRect.height );
 
                     _context.restore();
@@ -1103,9 +1089,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( streetSegment.p0 !== null && streetSegment.p1 !== null ) {
 
-                //context.save();
-                context.drawImage( streetSegment.image, streetSegment.boundingClientRect.x, streetSegment.boundingClientRect.y, streetSegment.boundingClientRect.width, streetSegment.boundingClientRect.height );
-                //context.restore();
+                //contextMain.save();
+                contextMain.drawImage( streetSegment.image, streetSegment.boundingClientRect.x, streetSegment.boundingClientRect.y, streetSegment.boundingClientRect.width, streetSegment.boundingClientRect.height );
+                //contextMain.restore();
 
             }
 
@@ -2643,7 +2629,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function mouseMoveHandler( event ) {
 
-        mousePos = getMousePos( canvas, event );
+        mousePos = getMousePos( canvasMain, event );
 
         //---
 
@@ -3421,12 +3407,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function clearImageData() {
 
-        for ( let i = 0, l = data.length; i < l; i += 4 ) {
+        for ( let i = 0, l = dataMain.length; i < l; i += 4 ) {
 
-            data[ i ] = 0;
-            data[ i + 1 ] = 0;
-            data[ i + 2 ] = 0;
-            data[ i + 3 ] = 0;
+            dataMain[ i ] = 0;
+            dataMain[ i + 1 ] = 0;
+            dataMain[ i + 2 ] = 0;
+            dataMain[ i + 3 ] = 0;
 
         }
 
@@ -3434,12 +3420,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function setPixel( x, y, r, g, b, a ) {
 
-        const i = ( x + y * imageData.width ) * 4;
+        const i = ( x + y * imageDataMain.width ) * 4;
 
-        data[ i ] = r;
-        data[ i + 1 ] = g;
-        data[ i + 2 ] = b;
-        data[ i + 3 ] = a;
+        dataMain[ i ] = r;
+        dataMain[ i + 1 ] = g;
+        dataMain[ i + 2 ] = b;
+        dataMain[ i + 3 ] = a;
 
     }
 
@@ -4485,17 +4471,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 // drawLine( ( sinA0 * length + vehicle.position.x ) | 0, ( -cosA0 * length + vehicle.position.y ) | 0, ( -sinA0 * length + vehicle.position.x ) | 0, ( cosA0 * length + vehicle.position.y ) | 0, 0, 0, 255, 255 );
                 // drawLine( ( sinA1 * length + vehicle.position.x ) | 0, ( -cosA1 * length + vehicle.position.y ) | 0, ( -sinA1 * length + vehicle.position.x ) | 0, ( cosA1 * length + vehicle.position.y ) | 0, 255, 255, 255, 255 );
 
-                // context.drawImage( square[ 'tileObj' + tileType ].image, 0, 0, imgWidth, imgHeight, imgX, imgY, imgWidth, imgHeight );
+                // contextMain.drawImage( square[ 'tileObj' + tileType ].image, 0, 0, imgWidth, imgHeight, imgX, imgY, imgWidth, imgHeight );
 
-                //context.drawImage( vehicleTestImage, vehicle.position.x - 10, vehicle.position.y - 10, 20, 20 );
+                //contextMain.drawImage( vehicleTestImage, vehicle.position.x - 10, vehicle.position.y - 10, 20, 20 );
 
-                context.save();
-                context.translate( vehicle.position.x, vehicle.position.y );
-                context.rotate( angleOnRoute );
-                context.drawImage( vehicle.image, -10, -10, 20, 20 );
-                context.rotate( -angleOnRoute );
-                context.translate( -vehicle.position.x, -vehicle.position.y );
-                context.restore();
+                contextMain.save();
+                contextMain.translate( vehicle.position.x, vehicle.position.y );
+                contextMain.rotate( angleOnRoute );
+                contextMain.drawImage( vehicle.image, -10, -10, 20, 20 );
+                contextMain.rotate( -angleOnRoute );
+                contextMain.translate( -vehicle.position.x, -vehicle.position.y );
+                contextMain.restore();
 
             }
 
@@ -4529,7 +4515,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        context.putImageData( imageData, 0, 0 );
+        contextMain.putImageData( imageDataMain, 0, 0 );
 
         //---
 

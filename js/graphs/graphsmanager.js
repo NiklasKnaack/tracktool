@@ -4,9 +4,19 @@ class GraphsManager {
 
     constructor() {
 
-        this._graphsHolder = null;
+        if ( !Background.instance ) {
 
-        this.graphs = graphsHolderDefault;
+            this._graphsHolder = null;
+
+            this.graphs = graphsHolderDefault;
+
+            Background.instance = this;
+
+        }
+
+        //---
+       
+        return Background.instance;
 
     }
 
