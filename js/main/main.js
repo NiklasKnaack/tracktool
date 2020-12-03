@@ -3901,40 +3901,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
         
         //---
 
-        // const endPoint = { x: movePosition.endPoint.x ,y: movePosition.endPoint.y };
-
-        // if ( getDistance( movePosition.startPoint, movePosition.endPoint ) < 25 ) {
-
-
-
-        // }
-
-        //---
-
-        drawLine( movePosition.startPoint.x | 0, movePosition.startPoint.y | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
-        //drawCircle( movePosition.startPoint, 5, 255, 255, 255, 255 );
-        //drawCircle( movePosition.endPoint, 5, 255, 255, 255, 255 );
-
-        //---
-
         const angleEnd = moveAngle + Math.PI * 0.5;
 
         const sinEnd = Math.sin( angleEnd );
         const cosEnd = Math.cos( angleEnd );
 
         const lengthEnd = 10;
+        
+        if ( getDistance( movePosition.startPoint, movePosition.endPoint ) > 20 ) {
 
-        drawLine( ( sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( -cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, ( -sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, 255, 255, 255, 255 );
+            drawLine( movePosition.startPoint.x | 0, movePosition.startPoint.y | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
+            drawLine( ( sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( -cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, ( -sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, 255, 255, 255, 255 );
+
+        } else {
+
+            drawCircle( movePosition.startPoint, 2, 255, 255, 255, 255 );
+
+        }
 
         //---
 
         let dist = -25;
-
-        // if ( getDistance( movePosition.startPoint, movePosition.endPoint ) < Math. ) {
-
-            //---
-
-        // }
 
         const cX = sinMove * dist + movePosition.endPoint.x;
         const cY = -cosMove * dist + movePosition.endPoint.y;
@@ -3942,8 +3929,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const pSSX = sinMove * lengthEnd + cX;
         const pSSY = -cosMove * lengthEnd + cY;
 
-        const pSEX = -sinMove * lengthEnd + cX;
-        const pSEY = cosMove * lengthEnd + cY;
+        // const pSEX = -sinMove * lengthEnd + cX;
+        // const pSEY = cosMove * lengthEnd + cY;
 
         drawLine( ( sinEnd * lengthEnd + pSSX ) | 0, ( -cosEnd * lengthEnd + pSSY ) | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
         drawLine( ( -sinEnd * lengthEnd + pSSX ) | 0, ( cosEnd * lengthEnd + pSSY ) | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
