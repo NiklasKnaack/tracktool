@@ -4401,8 +4401,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 }
 
+                const vehicleSpeed = ( 1 / route.length ) * 2.5;
                 const vehicleImage = vehcileImageHolder[ Math.floor( Math.random() * vehcileImageHolder.length ) ];
-                const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, graphIndex, routeIndex, 0.0015, vehicleImage );
+                const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, graphIndex, routeIndex, vehicleSpeed, vehicleImage );
 
                 vehiclesHolder.push( vehicle );
 
