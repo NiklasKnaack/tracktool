@@ -4416,12 +4416,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             while ( fileIndex.length < 3 ) { fileIndex = '0' + fileIndex; };
 
-            const fileGraph = './img/car_' + fileIndex + '.png'
+            const vehicleSourcePath = './img/car_' + fileIndex + '.png'
 
             const vehicleImage = new Image();
 
             vehicleImage.crossOrigin = 'anonymous';
-            vehicleImage.src = fileGraph;
+            vehicleImage.src = vehicleSourcePath;
 
             vehcileImageHolder.push( vehicleImage );
 
@@ -4543,32 +4543,39 @@ document.addEventListener( 'DOMContentLoaded', () => {
             vehicle.position = routePositionObject.point;
             vehicle.angle = routePositionObject.angle;
 
-            // const angleOnRoute0 = vehicle.angle;
-            // const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
-            const angleOnRoute3 = vehicle.angle + Math.PI * -0.50;
+            const radius = 20;
 
-            // const length = 15;
+            //only draw vehicles that are visible in the viewport
+            if ( vehicle.position.x - radius > border.left && vehicle.position.x + radius < border.right && vehicle.position.y - radius > border.top && vehicle.position.y + radius < border.bottom ) {
 
-            // const sinA0 = Math.sin( angleOnRoute0 );
-            // const cosA0 = Math.cos( angleOnRoute0 );
-            // const sinA1 = Math.sin( angleOnRoute1 );
-            // const cosA1 = Math.cos( angleOnRoute1 );
+                // const angleOnRoute0 = vehicle.angle;
+                // const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
+                const angleOnRoute = vehicle.angle + Math.PI * -0.50;
 
-            // drawCircle( vehicle.position, 5, 230, 29, 95, 255 );
-            // drawLine( ( sinA0 * length + vehicle.position.x ) | 0, ( -cosA0 * length + vehicle.position.y ) | 0, ( -sinA0 * length + vehicle.position.x ) | 0, ( cosA0 * length + vehicle.position.y ) | 0, 0, 0, 255, 255 );
-            // drawLine( ( sinA1 * length + vehicle.position.x ) | 0, ( -cosA1 * length + vehicle.position.y ) | 0, ( -sinA1 * length + vehicle.position.x ) | 0, ( cosA1 * length + vehicle.position.y ) | 0, 255, 255, 255, 255 );
+                // const length = 15;
 
-            // context.drawImage( square[ 'tileObj' + tileType ].image, 0, 0, imgWidth, imgHeight, imgX, imgY, imgWidth, imgHeight );
+                // const sinA0 = Math.sin( angleOnRoute0 );
+                // const cosA0 = Math.cos( angleOnRoute0 );
+                // const sinA1 = Math.sin( angleOnRoute1 );
+                // const cosA1 = Math.cos( angleOnRoute1 );
 
-            //context.drawImage( vehicleTestImage, vehicle.position.x - 10, vehicle.position.y - 10, 20, 20 );
+                // drawCircle( vehicle.position, 5, 230, 29, 95, 255 );
+                // drawLine( ( sinA0 * length + vehicle.position.x ) | 0, ( -cosA0 * length + vehicle.position.y ) | 0, ( -sinA0 * length + vehicle.position.x ) | 0, ( cosA0 * length + vehicle.position.y ) | 0, 0, 0, 255, 255 );
+                // drawLine( ( sinA1 * length + vehicle.position.x ) | 0, ( -cosA1 * length + vehicle.position.y ) | 0, ( -sinA1 * length + vehicle.position.x ) | 0, ( cosA1 * length + vehicle.position.y ) | 0, 255, 255, 255, 255 );
 
-            context.save();
-            context.translate( vehicle.position.x, vehicle.position.y );
-            context.rotate( angleOnRoute3 );
-            context.drawImage( vehicle.image, -10, -10, 20, 20 );
-            context.rotate( -angleOnRoute3 );
-            context.translate( -vehicle.position.x, -vehicle.position.y );
-            context.restore();
+                // context.drawImage( square[ 'tileObj' + tileType ].image, 0, 0, imgWidth, imgHeight, imgX, imgY, imgWidth, imgHeight );
+
+                //context.drawImage( vehicleTestImage, vehicle.position.x - 10, vehicle.position.y - 10, 20, 20 );
+
+                context.save();
+                context.translate( vehicle.position.x, vehicle.position.y );
+                context.rotate( angleOnRoute );
+                context.drawImage( vehicle.image, -10, -10, 20, 20 );
+                context.rotate( -angleOnRoute );
+                context.translate( -vehicle.position.x, -vehicle.position.y );
+                context.restore();
+
+            }
 
             if ( route.complete === true && simulationRuns === true ) {
 
