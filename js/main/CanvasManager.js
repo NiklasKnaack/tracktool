@@ -1,15 +1,19 @@
 class CanvasManager {
 
     constructor( width = 1024, height = 768 ) {
-        
-        if ( !CanvasManager.instance ) {
 
-            this._width = width;
-            this._height = height;
+        if ( CanvasManager.instance ) {
 
-            CanvasManager.instance = this;
+            return CanvasManager.instance;
 
         }
+
+        CanvasManager.instance = this;
+
+        //---
+        
+        this._width = width;
+        this._height = height;
 
         //---
 
@@ -23,10 +27,6 @@ class CanvasManager {
         };
 
         this._canvasObjectHolder = [];
-
-        //---
-
-        return CanvasManager.instance;
 
     }
 

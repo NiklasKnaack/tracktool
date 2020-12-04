@@ -2,31 +2,27 @@ class Background {
 
     constructor() {
 
-        //if ( !Background.instance ) {
+        if ( Background.instance ) {
 
-            this._backgroundTexture = ImageFactory.getBackgroundGrassTexture();
+            return Background.instance;
 
-            this._canvasManager = new CanvasManager();
-            this._canvasObject = this._canvasManager.getCanvasObjectByName( 'background' );
-            this._canvas = this._canvasObject.canvas;
-            this._context = this._canvasObject.context;
-            // this._imageData = this._context.getImageData( 0, 0, this._canvasManager.width, this._canvasManager.height );
-            // this._data = this._imageData.data;
-            
-            this._x = 0;
-            this._y = 0;
+        }
 
-            //this.createPattern();
-
-            //---
-
-            //Background.instance = this;
-
-        //}
-
+        Background.instance = this;
+        
         //---
-       
-        //return Background.instance;
+
+        this._backgroundTexture = ImageFactory.getBackgroundGrassTexture();
+
+        this._canvasManager = new CanvasManager();
+        this._canvasObject = this._canvasManager.getCanvasObjectByName( 'background' );
+        this._canvas = this._canvasObject.canvas;
+        this._context = this._canvasObject.context;
+        // this._imageData = this._context.getImageData( 0, 0, this._canvasManager.width, this._canvasManager.height );
+        // this._data = this._imageData.data;
+
+        this._x = 0;
+        this._y = 0;
 
     }
 

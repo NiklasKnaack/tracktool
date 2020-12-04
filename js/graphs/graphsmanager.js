@@ -2,21 +2,19 @@ class GraphsManager {
 
     constructor() {
 
-        if ( !Background.instance ) {
+        if ( GraphsManager.instance ) {
 
-            this._graphsHolder = null;
-
-            this.graphs = graphsHolderDefault;
-
-            //---
-
-            Background.instance = this;
+            return GraphsManager.instance;
 
         }
 
+        GraphsManager.instance = this;
+
         //---
-       
-        return Background.instance;
+
+        this._graphsHolder = null;
+
+        this.graphs = graphsHolderDefault;
 
     }
 

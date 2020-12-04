@@ -423,6 +423,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         background = new Background();
 
+        const b = new Background();
+
         //---
 
         window.addEventListener( 'resize', onResize, false );
