@@ -4450,6 +4450,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function simulateVehicles() {
 
+        const vehicleAngle = Math.PI * -0.50;
+
         for ( let i = 0, l = vehiclesHolder.length; i < l; i ++ ) {
 
             const vehicle = vehiclesHolder[ i ];
@@ -4467,7 +4469,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 // const angleOnRoute0 = vehicle.angle;
                 // const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
-                const angleOnRoute = vehicle.angle + Math.PI * -0.50;
+                const angleOnRoute = vehicle.angle + vehicleAngle;
 
                 // const length = 15;
 
