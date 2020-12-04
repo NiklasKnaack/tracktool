@@ -12,9 +12,21 @@ class GraphsManager {
 
         //---
 
-        this._graphsHolder = null;
+        this._graphsHolder = graphsHolderDefault;
 
-        this.graphs = graphsHolderDefault;
+    }
+
+    clear() {
+
+        this._graphsHolder.forEach( ( graph, index ) => {
+
+            graph.routes = [];
+            graph.points = [];
+            graph.segments = [];
+            graph.streetPoints = [];
+            graph.streetSegments = [];
+
+        } );
 
     }
 
@@ -100,8 +112,6 @@ class GraphsManager {
             }
 
             output += '        ],' + '\n';
-            output += '        openSet: [],' + '\n';
-            output += '        closedSet: [],' + '\n';
             output += '        segments: [' + '\n';
 
             for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {

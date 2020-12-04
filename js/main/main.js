@@ -75,19 +75,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let editorMode = EDITOR_MODE_ENUM.addGraphSegment;
 
-    const VEHICLE_INTERVAL = 500;
-
-    let vehiclesHolder = [];
-    let vehicleTimer = null;
-    let vehcileImageHolder = [];
-
     let width = 1024;
     let height = 512;
+
+    const border = { left: 1, top: 1, right: width, bottom: height };
+    // const center = { x: width / 2, y: height / 2 };
 
     const pathfinder = new Pathfinder();
     const graphsManager = new GraphsManager();
     const canvasManager = new CanvasManager( width, height );
-    
+
+    let vehicles = null;
     let background = null;
 
     const canvasInstructions = [ 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
@@ -100,17 +98,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let animationFrame = null;
 
-    const border = { left: 1, top: 1, right: width, bottom: height };
-    // const center = { x: width / 2, y: height / 2 };
-
     let mouseDown = false;
     let mousePos = { x: 0, y: 0 };
     // let mousePosStart = { x: 0, y: 0 };
     // let mousePosEnd = { x: 0, y: 0 };
     const mouseCursor = { diameter: 9, color: { r: 255, g: 255, b: 255, a: 255 }, position: { x: 0, y: 0 } };
     const movePosition = { startPoint: { x: 0, y: 0 }, endPoint: { x: 0, y: 0 }, change: false };
-
-    let simulationRuns = false;
 
     let currentNode = null;
     let currentGraphSegment = null;
@@ -248,9 +241,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 id: graphIndex,
                 routes: [],
                 points: [],
-                openSet: [],
-                closedSet: [],
                 segments: [],
+                streetPoints: [],
                 streetSegments: []
             }
 
@@ -261,9 +253,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             currentStreetSegment = null;
             selectedGraphSegments = [];
 
-            vehiclesHolder = [];
-
-            stopVehicleSimulation();
+            graphsManager.clear();
+            vehicles.clear();
 
             removeDebugElements();
 
@@ -301,7 +292,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const _playPauseSimulation = () => {
 
-            simulationRuns = !simulationRuns;
+            vehicles.vehiclesSimulation = !vehicles.vehiclesSimulation;
+
+            if ( vehicles.vehiclesSimulation === true ) {
+
+                vehicles.startSimulation();
+
+            } else {
+
+                vehicles.stopSimulation();
+
+            }
 
         }
 
@@ -421,9 +422,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         streetSegmentTexture = ImageFactory.getStreetSegmentTexture();
 
+        vehicles = new Vehicles( 0, border );
         background = new Background();
-
-        const b = new Background();
 
         //---
 
@@ -433,7 +433,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        initVehicles();
+        
+
+        //vehicles.startSimulation();
+
+        //initVehicles();
 
     }
 
@@ -474,7 +478,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        simulationRuns = true;
+        vehicles.updateGraph();
+        
+        if ( vehicles.vehiclesSimulation === true ) {
+
+            vehicles.startSimulation();
+
+        }
 
         //---
 
@@ -998,10 +1008,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( iC > 0 ) {
 
-                    const pTL = interpolateQuadraticBezier( streetBorder0.p0, streetBorder0.controlPoint, streetBorder0.p1, iC - iCStep );
-                    const pTR = interpolateQuadraticBezier( streetBorder0.p0, streetBorder0.controlPoint, streetBorder0.p1, iC );
-                    const pBL = interpolateQuadraticBezier( streetBorder1.p0, streetBorder1.controlPoint, streetBorder1.p1, iC - iCStep );
-                    const pBR = interpolateQuadraticBezier( streetBorder1.p0, streetBorder1.controlPoint, streetBorder1.p1, iC );
+                    const pTL = Tools.interpolateQuadraticBezier( streetBorder0.p0, streetBorder0.controlPoint, streetBorder0.p1, iC - iCStep );
+                    const pTR = Tools.interpolateQuadraticBezier( streetBorder0.p0, streetBorder0.controlPoint, streetBorder0.p1, iC );
+                    const pBL = Tools.interpolateQuadraticBezier( streetBorder1.p0, streetBorder1.controlPoint, streetBorder1.p1, iC - iCStep );
+                    const pBR = Tools.interpolateQuadraticBezier( streetBorder1.p0, streetBorder1.controlPoint, streetBorder1.p1, iC );
 
                     //https://stackoverflow.com/questions/9536257/how-to-anti-alias-clip-edges-in-html5-canvas-under-chrome-windows
                     // _context.globalCompositeOperation = 'destination-in';
@@ -1155,12 +1165,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             currentGraphSegment = {};
             currentGraphSegment.id = graph.segments.length;
-            currentGraphSegment.p0 = { x: unifyNumber( graphSegmentPoint.x ), y: unifyNumber( graphSegmentPoint.y ) };
+            currentGraphSegment.p0 = { x: Tools.unifyNumber( graphSegmentPoint.x ), y: Tools.unifyNumber( graphSegmentPoint.y ) };
             currentGraphSegment.p1 = null;
             // currentGraphSegment.p1 = { x: position.x, y: position.y };
             // currentGraphSegment.centerPoint = getGraphSegmentCenter( currentGraphSegment );
             // currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
-            // currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
+            // currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //Tools.getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
             // currentGraphSegment.walkable = true;
             // currentGraphSegment.direction = '><';
 
@@ -1186,7 +1196,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            currentGraphSegment.p1 = { x: unifyNumber( graphSegmentPoint.x ), y: unifyNumber( graphSegmentPoint.y ) };
+            currentGraphSegment.p1 = { x: Tools.unifyNumber( graphSegmentPoint.x ), y: Tools.unifyNumber( graphSegmentPoint.y ) };
 
             //GraphSegment points are not allowed to have the same position.
             if ( currentGraphSegment.p0.x === currentGraphSegment.p1.x && currentGraphSegment.p0.y === currentGraphSegment.p1.y ) {
@@ -1211,7 +1221,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 currentGraphSegment.centerPoint = getGraphSegmentCenter( currentGraphSegment );
                 currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
-                currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
+                currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //Tools.getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
                 currentGraphSegment.walkable = true;
                 currentGraphSegment.direction = '><';
 
@@ -1349,7 +1359,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             graphSegment.controlPoint.x = position.x;
             graphSegment.controlPoint.y = position.y;
 
-            graphSegment.centerPoint = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 0.50 );
+            graphSegment.centerPoint = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 0.50 );
 
             graphSegment.length = getGraphSegmentLength( graphSegment.p0, graphSegment.p1, graphSegment.controlPoint );
 
@@ -1466,8 +1476,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            newGraphSegment.centerPoint = interpolateQuadraticBezier( newGraphSegment.p0, newGraphSegment.controlPoint, newGraphSegment.p1, 0.50 );
-            newGraphSegment.length = getGraphSegmentLength( newGraphSegment.p0, newGraphSegment.p1, newGraphSegment.controlPoint ); //getDistance( newGraphSegment0.p0, newGraphSegment0.p1 );
+            newGraphSegment.centerPoint = Tools.interpolateQuadraticBezier( newGraphSegment.p0, newGraphSegment.controlPoint, newGraphSegment.p1, 0.50 );
+            newGraphSegment.length = getGraphSegmentLength( newGraphSegment.p0, newGraphSegment.p1, newGraphSegment.controlPoint ); //Tools.getDistance( newGraphSegment0.p0, newGraphSegment0.p1 );
             newGraphSegment.walkable = true;
             newGraphSegment.direction = '><';
 
@@ -1528,8 +1538,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             newGraphSegment.p0 = {
 
-                x: unifyNumber( newGraphSegment.controlPoint.x + dx * t ),
-                y: unifyNumber( newGraphSegment.controlPoint.y + dy * t )
+                x: Tools.unifyNumber( newGraphSegment.controlPoint.x + dx * t ),
+                y: Tools.unifyNumber( newGraphSegment.controlPoint.y + dy * t )
 
             };
 
@@ -1537,8 +1547,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             newGraphSegment.p1 = {
 
-                x: unifyNumber( newGraphSegment.controlPoint.x + dx * t ),
-                y: unifyNumber( newGraphSegment.controlPoint.y + dy * t )
+                x: Tools.unifyNumber( newGraphSegment.controlPoint.x + dx * t ),
+                y: Tools.unifyNumber( newGraphSegment.controlPoint.y + dy * t )
 
             };
 
@@ -1838,9 +1848,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 }
 
-                graphSegment.length = getGraphSegmentLength( graphSegment.p0, graphSegment.p1, graphSegment.controlPoint );// getDistance( graphSegment.p0, graphSegment.p1 );
+                graphSegment.length = getGraphSegmentLength( graphSegment.p0, graphSegment.p1, graphSegment.controlPoint );// Tools.getDistance( graphSegment.p0, graphSegment.p1 );
                 //graphSegment.centerPoint = getGraphSegmentCenter( graphSegment );
-                graphSegment.centerPoint = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 0.50 );
+                graphSegment.centerPoint = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 0.50 );
 
                 graphSegment.controlPoint.x += diffX / 2;
                 graphSegment.controlPoint.y += diffY / 2;
@@ -2096,18 +2106,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
-    function getDistance( p0, p1 ) {
-
-        const a = p0.x - p1.x;
-        const b = p0.y - p1.y;
-
-        return Math.sqrt( a * a + b * b );
-
-    }
-
     function getGraphSegmentLength( p0, p1, controlPoint ) {
 
-        //return getDistance( p0, p1 );
+        //return Tools.getDistance( p0, p1 );
 
         //---
 
@@ -2128,12 +2129,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
             const f2 = t * t;
 
 			np = { x: p0.x + dx * ( f1 * cx + f2 ), y: p0.y + dy * ( f1 * cy + f2 ) };
-			d += getDistance( p, np );
+			d += Tools.getDistance( p, np );
             p = np;
 
         }
 
-		return d + getDistance( p, p1 );
+		return d + Tools.getDistance( p, p1 );
 
     }
 
@@ -2206,8 +2207,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //                     const tempCompareGraphSegment = {};
 
-    //                     tempCompareGraphSegment.p0 = interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC - iCStep );
-    //                     tempCompareGraphSegment.p1 = interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC );
+    //                     tempCompareGraphSegment.p0 = Tools.interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC - iCStep );
+    //                     tempCompareGraphSegment.p1 = Tools.interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC );
 
     //                     const intersectionPoint = getLinesIntersectionPoint( line.p0.x, line.p0.y, line.p1.x, line.p1.y, tempCompareGraphSegment.p0.x, tempCompareGraphSegment.p0.y, tempCompareGraphSegment.p1.x, tempCompareGraphSegment.p1.y );
 
@@ -2253,8 +2254,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
     //             const tempInputGraphSegment = {};
 
     //             tempInputGraphSegment.id = inputGraphSegment.id;
-    //             tempInputGraphSegment.p0 = interpolateQuadraticBezier( inputGraphSegment.p0, inputGraphSegment.controlPoint, inputGraphSegment.p1, iI - iIStep );
-    //             tempInputGraphSegment.p1 = interpolateQuadraticBezier( inputGraphSegment.p0, inputGraphSegment.controlPoint, inputGraphSegment.p1, iI );
+    //             tempInputGraphSegment.p0 = Tools.interpolateQuadraticBezier( inputGraphSegment.p0, inputGraphSegment.controlPoint, inputGraphSegment.p1, iI - iIStep );
+    //             tempInputGraphSegment.p1 = Tools.interpolateQuadraticBezier( inputGraphSegment.p0, inputGraphSegment.controlPoint, inputGraphSegment.p1, iI );
 
     //             //tempGraphSegments.push( { type: 'line', p0: { x: tempInputGraphSegment.p0.x | 0, y: tempInputGraphSegment.p0.y | 0 }, p1: { x: tempInputGraphSegment.p1.x | 0, y: tempInputGraphSegment.p1.y | 0 }, color: { r: 255, g: 0, b: 0, a: 255 } } );
     //             //tempGraphSegments.push( { type: 'circfill', position: { x: tempInputGraphSegment.p0.x | 0, y: tempInputGraphSegment.p0.y | 0 }, diameter: 9, color: { r: 255, g: 0, b: 0, a: 255 } } );
@@ -2277,8 +2278,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
     //                         const tempCompareGraphSegment = {};
 
     //                         tempCompareGraphSegment.id = compareGraphSegment.id;
-    //                         tempCompareGraphSegment.p0 = interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC - iCStep );
-    //                         tempCompareGraphSegment.p1 = interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC );
+    //                         tempCompareGraphSegment.p0 = Tools.interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC - iCStep );
+    //                         tempCompareGraphSegment.p1 = Tools.interpolateQuadraticBezier( compareGraphSegment.p0, compareGraphSegment.controlPoint, compareGraphSegment.p1, iC );
 
     //                         if ( tempInputGraphSegment.id !== tempCompareGraphSegment.id ) {
 
@@ -2323,9 +2324,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         for ( let i = 0, l = 1 / precision; i < 1 + l; i += l ) {
 
-            const pOnBezier = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, i );
+            const pOnBezier = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, i );
 
-            const d = getDistance( position, pOnBezier );
+            const d = Tools.getDistance( position, pOnBezier );
 
             if ( distance > d ) {
 
@@ -2347,9 +2348,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         for ( let i = 0, l = 1 / precision; i < 1 + l; i += l ) {
 
-            const pOnBezier = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, i );
+            const pOnBezier = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, i );
 
-            const d = getDistance( position, pOnBezier );
+            const d = Tools.getDistance( position, pOnBezier );
 
             if ( distance > d ) {
 
@@ -2383,7 +2384,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const p1p0X = p1X - p0X;
         const p1p0Y = p1Y - p0Y;
 
-        const t = clamp( ( pp0X * p1p0X + pp0Y * p1p0Y ) / l2, 0, 1 );
+        const t = Tools.clamp( ( pp0X * p1p0X + pp0Y * p1p0Y ) / l2, 0, 1 );
 
         const ptX = p0X + t * p1p0X;
         const ptY = p0Y + t * p1p0Y;
@@ -2401,9 +2402,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         for ( let i = 0, l = 1 / precision; i < 1 + l; i += l ) {
 
-            const pOnBezier = interpolateQuadraticBezier( p0, pControl, p1, i );
+            const pOnBezier = Tools.interpolateQuadraticBezier( p0, pControl, p1, i );
 
-            const d = getDistance( p, pOnBezier );
+            const d = Tools.getDistance( p, pOnBezier );
 
             if ( distance > d ) {
 
@@ -2415,61 +2416,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         return distance;
 
-    }
-
-    //---
-
-    function clamp( val, min, max ) {
-
-        return Math.min( Math.max( min, val ), max );
-
-    }
-
-    // function interpolateLine( a, b, frac ) {
-
-    //     return {
-
-    //         x: a.x + ( b.x - a.x ) * frac,
-    //         y: a.y + ( b.y - a.y ) * frac
-
-    //     };
-
-    // }
-
-    function interpolateQuadraticBezier( sv, cv, ev, t ) {
-
-        const t1 = 1 - t;
-        const t1pow = t1 * t1;
-        const tpow = t * t;
-        const t2 = 2 * t1 * t;
-
-        return {
-
-            x: t1pow * sv.x + t2 * cv.x + tpow * ev.x,
-            y: t1pow * sv.y + t2 * cv.y + tpow * ev.y
-
-        };
-
-    }
-
-    function unifyNumber( numb, digits = 5 ) {
-
-        return parseFloat( numb.toFixed( digits ) );
-
-    }
-
-    function getUID() {
-
-        //https://stackoverflow.com/questions/8012002/create-a-unique-number-with-javascript-time
-        //https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
-        return window.crypto.getRandomValues( new Uint8Array( 10 ) ).join( '' );
-      
-    }
-
-    function getUNumber() {
-
-        return parseFloat( window.crypto.getRandomValues( new Uint8Array( 10 ) ).join( '' ) );
-    
     }
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
@@ -2632,7 +2578,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 //---
 
-                startVehicleSimulation();
+                vehicles.updateGraph();
+
+                if ( vehicles.vehiclesSimulation === true ) {
+
+                    vehicles.startSimulation();
+
+                }
 
             }
 
@@ -2858,8 +2810,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                             let intersectionPoint0 = getLinesIntersectionPoint( lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
                             let intersectionPoint1 = getLinesIntersectionPoint( lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
 
-                            const distintersectionPoint00 = getDistance( intersectionPoint0, lineHypotenuseCenterPoint );
-                            const distintersectionPoint01 = getDistance( intersectionPoint1, lineHypotenuseCenterPoint );
+                            const distintersectionPoint00 = Tools.getDistance( intersectionPoint0, lineHypotenuseCenterPoint );
+                            const distintersectionPoint01 = Tools.getDistance( intersectionPoint1, lineHypotenuseCenterPoint );
 
                             if ( distintersectionPoint00 <= distintersectionPoint01 ) {
 
@@ -2873,7 +2825,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                             streetSegment.controlPoint.x = intersectionPoint.x;
                             streetSegment.controlPoint.y = intersectionPoint.y;
-                            streetSegment.centerPoint = interpolateQuadraticBezier( streetSegment.p0, intersectionPoint, tempP1, 0.50 );
+                            streetSegment.centerPoint = Tools.interpolateQuadraticBezier( streetSegment.p0, intersectionPoint, tempP1, 0.50 );
 
                             //---
 
@@ -2978,8 +2930,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                         let intersectionPoint0 = getLinesIntersectionPoint( lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
                                         let intersectionPoint1 = getLinesIntersectionPoint( lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
 
-                                        const distintersectionPoint00 = getDistance( intersectionPoint0, lineHypotenuseCenterPoint );
-                                        const distintersectionPoint01 = getDistance( intersectionPoint1, lineHypotenuseCenterPoint );
+                                        const distintersectionPoint00 = Tools.getDistance( intersectionPoint0, lineHypotenuseCenterPoint );
+                                        const distintersectionPoint01 = Tools.getDistance( intersectionPoint1, lineHypotenuseCenterPoint );
 
                                         if ( distintersectionPoint00 <= distintersectionPoint01 ) {
 
@@ -2993,7 +2945,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                         streetBorder.controlPoint.x = intersectionPoint.x;
                                         streetBorder.controlPoint.y = intersectionPoint.y;
-                                        streetBorder.centerPoint = interpolateQuadraticBezier( streetBorder.p0, streetBorder.controlPoint, streetBorder.p1, 0.50 );
+                                        streetBorder.centerPoint = Tools.interpolateQuadraticBezier( streetBorder.p0, streetBorder.controlPoint, streetBorder.p1, 0.50 );
 
                                         //---
 
@@ -3020,8 +2972,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                     let intersectionPoint0 = getLinesIntersectionPoint( lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
                                     let intersectionPoint1 = getLinesIntersectionPoint( lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
 
-                                    const distintersectionPoint00 = getDistance( intersectionPoint0, lineHypotenuseCenterPoint );
-                                    const distintersectionPoint01 = getDistance( intersectionPoint1, lineHypotenuseCenterPoint );
+                                    const distintersectionPoint00 = Tools.getDistance( intersectionPoint0, lineHypotenuseCenterPoint );
+                                    const distintersectionPoint01 = Tools.getDistance( intersectionPoint1, lineHypotenuseCenterPoint );
 
                                     if ( distintersectionPoint00 <= distintersectionPoint01 ) {
 
@@ -3035,7 +2987,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                     lane.controlPoint.x = intersectionPoint.x;
                                     lane.controlPoint.y = intersectionPoint.y;
-                                    lane.centerPoint = interpolateQuadraticBezier( lane.p0, intersectionPoint, lane.p1, 0.50 );
+                                    lane.centerPoint = Tools.interpolateQuadraticBezier( lane.p0, intersectionPoint, lane.p1, 0.50 );
 
                                     //---
 
@@ -3084,8 +3036,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                             let centerLane0IntersectiobPoint0 = getLinesIntersectionPoint( centerLane0Adjacent.p0.x, centerLane0Adjacent.p0.y, centerLane0Adjacent.p1.x, centerLane0Adjacent.p1.y, centerLane0Intersection.p0.x, centerLane0Intersection.p0.y, centerLane0Intersection.p1.x, centerLane0Intersection.p1.y );
                                             let centerLane0IntersectiobPoint1 = getLinesIntersectionPoint( centerLane0Opposite.p0.x, centerLane0Opposite.p0.y, centerLane0Opposite.p1.x, centerLane0Opposite.p1.y, centerLane0Intersection.p0.x, centerLane0Intersection.p0.y, centerLane0Intersection.p1.x, centerLane0Intersection.p1.y );
 
-                                            const distcenterLane0IntersectiobPoint00 = getDistance( centerLane0IntersectiobPoint0, centerLane0HypotenuseCenterPoint );
-                                            const distcenterLane0IntersectiobPoint01 = getDistance( centerLane0IntersectiobPoint1, centerLane0HypotenuseCenterPoint );
+                                            const distcenterLane0IntersectiobPoint00 = Tools.getDistance( centerLane0IntersectiobPoint0, centerLane0HypotenuseCenterPoint );
+                                            const distcenterLane0IntersectiobPoint01 = Tools.getDistance( centerLane0IntersectiobPoint1, centerLane0HypotenuseCenterPoint );
 
                                             if ( distcenterLane0IntersectiobPoint00 <= distcenterLane0IntersectiobPoint01 ) {
 
@@ -3099,7 +3051,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                             centerLane.controlPoint.x = centerLane0IntersectiobPoint.x;
                                             centerLane.controlPoint.y = centerLane0IntersectiobPoint.y;
-                                            centerLane.centerPoint = interpolateQuadraticBezier( centerLane.p0, centerLane.controlPoint, centerLane.p1, 0.50 );
+                                            centerLane.centerPoint = Tools.interpolateQuadraticBezier( centerLane.p0, centerLane.controlPoint, centerLane.p1, 0.50 );
 
                                             streetSegment.centerLanes.push( centerLane );
 
@@ -3132,8 +3084,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                             let intersectionPoint00 = getLinesIntersectionPoint( lineAdjacent0.p0.x, lineAdjacent0.p0.y, lineAdjacent0.p1.x, lineAdjacent0.p1.y, lineIntersection0.p0.x, lineIntersection0.p0.y, lineIntersection0.p1.x, lineIntersection0.p1.y );
                                             let intersectionPoint01 = getLinesIntersectionPoint( lineOpposite0.p0.x, lineOpposite0.p0.y, lineOpposite0.p1.x, lineOpposite0.p1.y, lineIntersection0.p0.x, lineIntersection0.p0.y, lineIntersection0.p1.x, lineIntersection0.p1.y );
 
-                                            const distintersectionPoint00 = getDistance( intersectionPoint00, lineHypotenuseCenterPoint0 );
-                                            const distintersectionPoint01 = getDistance( intersectionPoint01, lineHypotenuseCenterPoint0 );
+                                            const distintersectionPoint00 = Tools.getDistance( intersectionPoint00, lineHypotenuseCenterPoint0 );
+                                            const distintersectionPoint01 = Tools.getDistance( intersectionPoint01, lineHypotenuseCenterPoint0 );
 
                                             if ( distintersectionPoint00 <= distintersectionPoint01 ) {
 
@@ -3148,7 +3100,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                             
                                             l0.controlPoint.x = intersectionPoint0.x;
                                             l0.controlPoint.y = intersectionPoint0.y;
-                                            l0.centerPoint = interpolateQuadraticBezier( l0.p0, intersectionPoint0, l0.p1, 0.50 );
+                                            l0.centerPoint = Tools.interpolateQuadraticBezier( l0.p0, intersectionPoint0, l0.p1, 0.50 );
 
                                             //---
 
@@ -3163,8 +3115,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                             let intersectionPoint10 = getLinesIntersectionPoint( lineAdjacent1.p0.x, lineAdjacent1.p0.y, lineAdjacent1.p1.x, lineAdjacent1.p1.y, lineIntersection1.p0.x, lineIntersection1.p0.y, lineIntersection1.p1.x, lineIntersection1.p1.y );
                                             let intersectionPoint11 = getLinesIntersectionPoint( lineOpposite1.p0.x, lineOpposite1.p0.y, lineOpposite1.p1.x, lineOpposite1.p1.y, lineIntersection1.p0.x, lineIntersection1.p0.y, lineIntersection1.p1.x, lineIntersection1.p1.y );
 
-                                            const distIntersectionPoint10 = getDistance( intersectionPoint10, lineHypotenuseCenterPoint1 );
-                                            const distIntersectionPoint11 = getDistance( intersectionPoint11, lineHypotenuseCenterPoint1 );
+                                            const distIntersectionPoint10 = Tools.getDistance( intersectionPoint10, lineHypotenuseCenterPoint1 );
+                                            const distIntersectionPoint11 = Tools.getDistance( intersectionPoint11, lineHypotenuseCenterPoint1 );
 
                                             if ( distIntersectionPoint10 <= distIntersectionPoint11 ) {
 
@@ -3179,7 +3131,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                             
                                             l1.controlPoint.x = intersectionPoint1.x;
                                             l1.controlPoint.y = intersectionPoint1.y;
-                                            l1.centerPoint = interpolateQuadraticBezier( l1.p0, intersectionPoint1, l1.p1, 0.50 );
+                                            l1.centerPoint = Tools.interpolateQuadraticBezier( l1.p0, intersectionPoint1, l1.p1, 0.50 );
 
                                             //---
 
@@ -3263,8 +3215,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                 let intersectionPointTop0 = getLinesIntersectionPoint( lineAdjacentTop.p0.x, lineAdjacentTop.p0.y, lineAdjacentTop.p1.x, lineAdjacentTop.p1.y, lineIntersectionTop.p0.x, lineIntersectionTop.p0.y, lineIntersectionTop.p1.x, lineIntersectionTop.p1.y );
                                 let intersectionPointTop1 = getLinesIntersectionPoint( lineOppositeTop.p0.x, lineOppositeTop.p0.y, lineOppositeTop.p1.x, lineOppositeTop.p1.y, lineIntersectionTop.p0.x, lineIntersectionTop.p0.y, lineIntersectionTop.p1.x, lineIntersectionTop.p1.y );
 
-                                const distintersectionPointTop00 = getDistance( intersectionPointTop0, lineHypotenuseCenterPointTop );
-                                const distintersectionPointTop01 = getDistance( intersectionPointTop1, lineHypotenuseCenterPointTop );
+                                const distintersectionPointTop00 = Tools.getDistance( intersectionPointTop0, lineHypotenuseCenterPointTop );
+                                const distintersectionPointTop01 = Tools.getDistance( intersectionPointTop1, lineHypotenuseCenterPointTop );
 
                                 if ( distintersectionPointTop00 <= distintersectionPointTop01 ) {
 
@@ -3278,7 +3230,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                 streetBorderTop.controlPoint.x = intersectionPointTop.x;
                                 streetBorderTop.controlPoint.y = intersectionPointTop.y;
-                                streetBorderTop.centerPoint = interpolateQuadraticBezier( streetBorderTop.p0, streetBorderTop.controlPoint, streetBorderTop.p1, 0.50 );
+                                streetBorderTop.centerPoint = Tools.interpolateQuadraticBezier( streetBorderTop.p0, streetBorderTop.controlPoint, streetBorderTop.p1, 0.50 );
 
                                 //---
 
@@ -3304,8 +3256,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                 let intersectionPointBottom0 = getLinesIntersectionPoint( lineAdjacentBottom.p0.x, lineAdjacentBottom.p0.y, lineAdjacentBottom.p1.x, lineAdjacentBottom.p1.y, lineIntersectionBottom.p0.x, lineIntersectionBottom.p0.y, lineIntersectionBottom.p1.x, lineIntersectionBottom.p1.y );
                                 let intersectionPointBottom1 = getLinesIntersectionPoint( lineOppositeBottom.p0.x, lineOppositeBottom.p0.y, lineOppositeBottom.p1.x, lineOppositeBottom.p1.y, lineIntersectionBottom.p0.x, lineIntersectionBottom.p0.y, lineIntersectionBottom.p1.x, lineIntersectionBottom.p1.y );
 
-                                const distintersectionPointBottom00 = getDistance( intersectionPointBottom0, lineHypotenuseCenterPointBottom );
-                                const distintersectionPointBottom01 = getDistance( intersectionPointBottom1, lineHypotenuseCenterPointBottom );
+                                const distintersectionPointBottom00 = Tools.getDistance( intersectionPointBottom0, lineHypotenuseCenterPointBottom );
+                                const distintersectionPointBottom01 = Tools.getDistance( intersectionPointBottom1, lineHypotenuseCenterPointBottom );
 
                                 if ( distintersectionPointBottom00 <= distintersectionPointBottom01 ) {
 
@@ -3319,7 +3271,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                 streetBorderBottom.controlPoint.x = intersectionPointBottom.x;
                                 streetBorderBottom.controlPoint.y = intersectionPointBottom.y;
-                                streetBorderBottom.centerPoint = interpolateQuadraticBezier( streetBorderBottom.p0, streetBorderBottom.controlPoint, streetBorderBottom.p1, 0.50 );
+                                streetBorderBottom.centerPoint = Tools.interpolateQuadraticBezier( streetBorderBottom.p0, streetBorderBottom.controlPoint, streetBorderBottom.p1, 0.50 );
 
                                 //---
 
@@ -3358,8 +3310,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                                     let intersectionPoint0 = getLinesIntersectionPoint( lineAdjacent.p0.x, lineAdjacent.p0.y, lineAdjacent.p1.x, lineAdjacent.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
                                     let intersectionPoint1 = getLinesIntersectionPoint( lineOpposite.p0.x, lineOpposite.p0.y, lineOpposite.p1.x, lineOpposite.p1.y, lineIntersection.p0.x, lineIntersection.p0.y, lineIntersection.p1.x, lineIntersection.p1.y );
 
-                                    const distintersectionPoint00 = getDistance( intersectionPoint0, lineHypotenuseCenterPoint );
-                                    const distintersectionPoint01 = getDistance( intersectionPoint1, lineHypotenuseCenterPoint );
+                                    const distintersectionPoint00 = Tools.getDistance( intersectionPoint0, lineHypotenuseCenterPoint );
+                                    const distintersectionPoint01 = Tools.getDistance( intersectionPoint1, lineHypotenuseCenterPoint );
 
                                     if ( distintersectionPoint00 <= distintersectionPoint01 ) {
 
@@ -3373,7 +3325,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                                     streetBorder.controlPoint.x = intersectionPoint.x;
                                     streetBorder.controlPoint.y = intersectionPoint.y;
-                                    streetBorder.centerPoint = interpolateQuadraticBezier( streetBorder.p0, streetBorder.controlPoint, streetBorder.p1, 0.50 );
+                                    streetBorder.centerPoint = Tools.interpolateQuadraticBezier( streetBorder.p0, streetBorder.controlPoint, streetBorder.p1, 0.50 );
 
                                     //---
 
@@ -3631,8 +3583,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( i > 0 ) {
     
-                    const c1 = interpolateQuadraticBezier( sv, cv, ev, i - l );
-                    const c2 = interpolateQuadraticBezier( sv, cv, ev, i );
+                    const c1 = Tools.interpolateQuadraticBezier( sv, cv, ev, i - l );
+                    const c2 = Tools.interpolateQuadraticBezier( sv, cv, ev, i );
     
                     drawLine( c1.x | 0, c1.y | 0, c2.x | 0, c2.y | 0, r, g, b, a );
     
@@ -3646,58 +3598,58 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
-    function getPointAndAngleOnRouteByT( t, routeIndex ) {
+    // function getPointAndAngleOnRouteByT( t, routeIndex ) {
 
-        const graphIndex = 0;
+    //     const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+    //     const graph = graphsHolder[ graphIndex ];
 
-        //---
+    //     //---
 
-        const route = graph.routes[ routeIndex ];
+    //     const route = graph.routes[ routeIndex ];
 
-        const output = {
+    //     const output = {
 
-            point: null,
-            angle: 0
+    //         point: null,
+    //         angle: 0
 
-        };
+    //     };
 
-        const routeLength = route.length;
-        const tLength = t * routeLength;
+    //     const routeLength = route.length;
+    //     const tLength = t * routeLength;
 
-        let curLength = 0;
-        let lastLength = 0;
+    //     let curLength = 0;
+    //     let lastLength = 0;
 
-        for ( let i = 0, l = route.graphSegments.length; i < l; i ++ ) {
+    //     for ( let i = 0, l = route.graphSegments.length; i < l; i ++ ) {
 
-            const graphSegment = route.graphSegments[ i ];
+    //         const graphSegment = route.graphSegments[ i ];
 
-            curLength += graphSegment.length;
+    //         curLength += graphSegment.length;
 
-            if ( tLength <= curLength ) {
+    //         if ( tLength <= curLength ) {
 
-                const tGraphSegment = ( tLength - lastLength ) / graphSegment.length;
+    //             const tGraphSegment = ( tLength - lastLength ) / graphSegment.length;
 
-                const point0 = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment );
-                const point1 = interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment + 0.001 );
+    //             const point0 = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment );
+    //             const point1 = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment + 0.001 );
 
-                output.point = point0;
-                output.angle = Math.atan2( point0.y - point1.y, point0.x - point1.x );
+    //             output.point = point0;
+    //             output.angle = Math.atan2( point0.y - point1.y, point0.x - point1.x );
 
-                break;
+    //             break;
 
-            }
+    //         }
 
-            lastLength = curLength;
+    //         lastLength = curLength;
 
-        }
+    //     }
 
-        //---
+    //     //---
 
-        return output;
+    //     return output;
 
-    }
+    // }
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
@@ -3712,7 +3664,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //---
 
         const moveDistanceMax = 500;
-        const moveDistance = getDistance( movePosition.startPoint, movePosition.endPoint ) * 50;
+        const moveDistance = Tools.getDistance( movePosition.startPoint, movePosition.endPoint ) * 50;
         const moveAngle = Math.atan2( movePosition.endPoint.y - movePosition.startPoint.y, movePosition.endPoint.x - movePosition.startPoint.x ) + Math.PI * 0.50;
 
         const sinMove = Math.sin( moveAngle );
@@ -3738,14 +3690,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 graphSegment.controlPoint.x += dx;
                 graphSegment.controlPoint.y += dy;
 
-                // graphSegment.p0.x = unifyNumber( graphSegment.p0.x );
-                // graphSegment.p0.y = unifyNumber( graphSegment.p0.y );
-                // graphSegment.p1.x = unifyNumber( graphSegment.p1.x );
-                // graphSegment.p1.y = unifyNumber( graphSegment.p1.y );
-                // graphSegment.centerPoint.x = unifyNumber( graphSegment.centerPoint.x );
-                // graphSegment.centerPoint.y = unifyNumber( graphSegment.centerPoint.y );
-                // graphSegment.controlPoint.x = unifyNumber( graphSegment.controlPoint.x );
-                // graphSegment.controlPoint.y = unifyNumber( graphSegment.controlPoint.y );
+                // graphSegment.p0.x = Tools.unifyNumber( graphSegment.p0.x );
+                // graphSegment.p0.y = Tools.unifyNumber( graphSegment.p0.y );
+                // graphSegment.p1.x = Tools.unifyNumber( graphSegment.p1.x );
+                // graphSegment.p1.y = Tools.unifyNumber( graphSegment.p1.y );
+                // graphSegment.centerPoint.x = Tools.unifyNumber( graphSegment.centerPoint.x );
+                // graphSegment.centerPoint.y = Tools.unifyNumber( graphSegment.centerPoint.y );
+                // graphSegment.controlPoint.x = Tools.unifyNumber( graphSegment.controlPoint.x );
+                // graphSegment.controlPoint.y = Tools.unifyNumber( graphSegment.controlPoint.y );
 
             }
 
@@ -3756,8 +3708,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 point.x += dx;
                 point.y += dy;
 
-                // point.x = unifyNumber( point.x );
-                // point.y = unifyNumber( point.y );
+                // point.x = Tools.unifyNumber( point.x );
+                // point.y = Tools.unifyNumber( point.y );
 
             }
 
@@ -3769,8 +3721,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     route.startPoint.x += dx;
                     route.startPoint.y += dy;
-                    // route.startPoint.x = unifyNumber( route.startPoint.x );
-                    // route.startPoint.y = unifyNumber( route.startPoint.y );
+                    // route.startPoint.x = Tools.unifyNumber( route.startPoint.x );
+                    // route.startPoint.y = Tools.unifyNumber( route.startPoint.y );
 
                 }
 
@@ -3778,8 +3730,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             
                     route.endPoint.x += dx;
                     route.endPoint.y += dy;
-                    // route.endPoint.x = unifyNumber( route.endPoint.x );
-                    // route.endPoint.y = unifyNumber( route.endPoint.y );
+                    // route.endPoint.x = Tools.unifyNumber( route.endPoint.x );
+                    // route.endPoint.y = Tools.unifyNumber( route.endPoint.y );
 
                 }
 
@@ -3796,12 +3748,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
                         graphSegment.controlPoint.x += dx;
                         graphSegment.controlPoint.y += dy;
 
-                        // graphSegment.p0.x = unifyNumber( graphSegment.p0.x );
-                        // graphSegment.p0.y = unifyNumber( graphSegment.p0.y );
-                        // graphSegment.p1.x = unifyNumber( graphSegment.p1.x );
-                        // graphSegment.p1.y = unifyNumber( graphSegment.p1.y );
-                        // graphSegment.controlPoint.x = unifyNumber( graphSegment.controlPoint.x );
-                        // graphSegment.controlPoint.y = unifyNumber( graphSegment.controlPoint.y );
+                        // graphSegment.p0.x = Tools.unifyNumber( graphSegment.p0.x );
+                        // graphSegment.p0.y = Tools.unifyNumber( graphSegment.p0.y );
+                        // graphSegment.p1.x = Tools.unifyNumber( graphSegment.p1.x );
+                        // graphSegment.p1.y = Tools.unifyNumber( graphSegment.p1.y );
+                        // graphSegment.controlPoint.x = Tools.unifyNumber( graphSegment.controlPoint.x );
+                        // graphSegment.controlPoint.y = Tools.unifyNumber( graphSegment.controlPoint.y );
 
                     }
 
@@ -3821,6 +3773,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
+        // vehicles.update( dx, dy );
+
         background.move( dx, dy ); 
         
         //---
@@ -3832,7 +3786,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const lengthEnd = 10;
         
-        if ( getDistance( movePosition.startPoint, movePosition.endPoint ) > 20 ) {
+        if ( Tools.getDistance( movePosition.startPoint, movePosition.endPoint ) > 20 ) {
 
             drawLine( movePosition.startPoint.x | 0, movePosition.startPoint.y | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
             drawLine( ( sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( -cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, ( -sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, 255, 255, 255, 255 );
@@ -3869,14 +3823,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const graphSegment = graph.segments[ i ];
 
-                graphSegment.p0.x = unifyNumber( graphSegment.p0.x );
-                graphSegment.p0.y = unifyNumber( graphSegment.p0.y );
-                graphSegment.p1.x = unifyNumber( graphSegment.p1.x );
-                graphSegment.p1.y = unifyNumber( graphSegment.p1.y );
-                graphSegment.centerPoint.x = unifyNumber( graphSegment.centerPoint.x );
-                graphSegment.centerPoint.y = unifyNumber( graphSegment.centerPoint.y );
-                graphSegment.controlPoint.x = unifyNumber( graphSegment.controlPoint.x );
-                graphSegment.controlPoint.y = unifyNumber( graphSegment.controlPoint.y );
+                graphSegment.p0.x = Tools.unifyNumber( graphSegment.p0.x );
+                graphSegment.p0.y = Tools.unifyNumber( graphSegment.p0.y );
+                graphSegment.p1.x = Tools.unifyNumber( graphSegment.p1.x );
+                graphSegment.p1.y = Tools.unifyNumber( graphSegment.p1.y );
+                graphSegment.centerPoint.x = Tools.unifyNumber( graphSegment.centerPoint.x );
+                graphSegment.centerPoint.y = Tools.unifyNumber( graphSegment.centerPoint.y );
+                graphSegment.controlPoint.x = Tools.unifyNumber( graphSegment.controlPoint.x );
+                graphSegment.controlPoint.y = Tools.unifyNumber( graphSegment.controlPoint.y );
 
             }
 
@@ -3884,8 +3838,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const point = graph.points[ i ];
 
-                point.x = unifyNumber( point.x );
-                point.y = unifyNumber( point.y );
+                point.x = Tools.unifyNumber( point.x );
+                point.y = Tools.unifyNumber( point.y );
 
             }
 
@@ -3895,15 +3849,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( route.startPoint !== null ) {
 
-                    route.startPoint.x = unifyNumber( route.startPoint.x );
-                    route.startPoint.y = unifyNumber( route.startPoint.y );
+                    route.startPoint.x = Tools.unifyNumber( route.startPoint.x );
+                    route.startPoint.y = Tools.unifyNumber( route.startPoint.y );
 
                 }
 
                 if ( route.endPoint !== null ) {
 
-                    route.endPoint.x = unifyNumber( route.endPoint.x );
-                    route.endPoint.y = unifyNumber( route.endPoint.y );
+                    route.endPoint.x = Tools.unifyNumber( route.endPoint.x );
+                    route.endPoint.y = Tools.unifyNumber( route.endPoint.y );
 
                 }
 
@@ -3913,12 +3867,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                         const graphSegment = route.graphSegments[ j ];
 
-                        graphSegment.p0.x = unifyNumber( graphSegment.p0.x );
-                        graphSegment.p0.y = unifyNumber( graphSegment.p0.y );
-                        graphSegment.p1.x = unifyNumber( graphSegment.p1.x );
-                        graphSegment.p1.y = unifyNumber( graphSegment.p1.y );
-                        graphSegment.controlPoint.x = unifyNumber( graphSegment.controlPoint.x );
-                        graphSegment.controlPoint.y = unifyNumber( graphSegment.controlPoint.y );
+                        graphSegment.p0.x = Tools.unifyNumber( graphSegment.p0.x );
+                        graphSegment.p0.y = Tools.unifyNumber( graphSegment.p0.y );
+                        graphSegment.p1.x = Tools.unifyNumber( graphSegment.p1.x );
+                        graphSegment.p1.y = Tools.unifyNumber( graphSegment.p1.y );
+                        graphSegment.controlPoint.x = Tools.unifyNumber( graphSegment.controlPoint.x );
+                        graphSegment.controlPoint.y = Tools.unifyNumber( graphSegment.controlPoint.y );
 
                     }
 
@@ -4004,8 +3958,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     //---
 
-                    const distancep0 = getDistance( mousePos, graphSegment.p0 );
-                    const distancep1 = getDistance( mousePos, graphSegment.p1 );
+                    const distancep0 = Tools.getDistance( mousePos, graphSegment.p0 );
+                    const distancep1 = Tools.getDistance( mousePos, graphSegment.p1 );
 
                     if ( distancep0 <= SNAP_TO_DISTANCE ) {
 
@@ -4037,8 +3991,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( streetSegment.p0 !== null && streetSegment.p1 !== null ) {
 
-                    const distancep0 = getDistance( mousePos, streetSegment.p0 );
-                    const distancep1 = getDistance( mousePos, streetSegment.p1 );
+                    const distancep0 = Tools.getDistance( mousePos, streetSegment.p0 );
+                    const distancep1 = Tools.getDistance( mousePos, streetSegment.p1 );
 
                     if ( distancep0 <= SNAP_TO_DISTANCE ) {
 
@@ -4310,215 +4264,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        //---
-
-        if ( editorMode === EDITOR_MODE_ENUM.moveMap ) {
-
-            moveMap();
-
-        }
-
     }
 
     function drawContext() {
 
         drawStreetSegments();
-        simulateVehicles();
 
-    }
-
-    //--- ------------------------------------------------------------------------------------------------------------------------------
-
-    function initVehicles() {
-
-        vehiclesHolder = [];
-        vehcileImageHolder = [];
-
-        for ( let i = 0, l = 40; i < l; i ++ ) {
-
-            let fileIndex = ( i + 1 ).toString();
-
-            while ( fileIndex.length < 3 ) { fileIndex = '0' + fileIndex; };
-
-            const vehicleSourcePath = './img/car_' + fileIndex + '.png'
-
-            const vehicleImage = new Image();
-
-            vehicleImage.crossOrigin = 'anonymous';
-            vehicleImage.src = vehicleSourcePath;
-
-            vehcileImageHolder.push( vehicleImage );
-
-        }
-
-        startVehicleSimulation();
-
-    }
-
-    function startVehicleSimulation() {
-
-        stopVehicleSimulation();
-
-        vehicleTimer = setInterval( addVehicle, VEHICLE_INTERVAL );
-
-        addVehicle();
-
-    }
-
-    function stopVehicleSimulation() {
-
-        if ( vehicleTimer !== null ) {
-
-            clearInterval( vehicleTimer );
-
-            vehicleTimer = null;
-
-        }
-
-    }
-
-    function addVehicle() {
-
-        if ( simulationRuns === true ) {
-
-            const graphIndex = 0;
-
-            const graph = graphsHolder[ graphIndex ];
-
-            for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
-
-                const routeIndex = i;
-                const route = graph.routes[ routeIndex ];
-
-                if ( route.startPoint === null || route.endPoint === null || route.complete === false || route.graphSegments.length === 0 ) {
-
-                    continue;
-
-                }
-
-                const routePositionObject = getPointAndAngleOnRouteByT( 0, routeIndex );
-
-                if ( routePositionObject === null ) {
-
-                    continue;
-
-                }
-
-                const vehicleSpeed = ( 1 / route.length ) * 2.5;
-                const vehicleImage = vehcileImageHolder[ Math.floor( Math.random() * vehcileImageHolder.length ) ];
-                const vehicle = getVehicle( routePositionObject.point, routePositionObject.angle, 0, graphIndex, routeIndex, vehicleSpeed, vehicleImage );
-
-                vehiclesHolder.push( vehicle );
-
-            }
-
-        }
-
-    }
-
-    function removeVehiclesByRouteIndex( routeIndex ) {
-
-        for ( let i = 0, l = vehiclesHolder.length; i < l; i ++ ) {
-
-            const vehicle = vehiclesHolder[ i ];
-
-            if ( vehicle.routeIndex === routeIndex ) {
-
-                vehicle.t = 1;
-
-            } else if ( vehicle.routeIndex > routeIndex ) {
-
-                vehicle.routeIndex--;
-
-            }
-
-        }
-
-        vehiclesHolder = vehiclesHolder.filter( ( v ) => v.t !== 1 );
-
-    }
-
-    function getVehicle( position, angle = 0, t = 0, graphIndex = 0, routeIndex = 0, speed = 0.0015, image = null ) {
-
-        const vehicle = {
-
-            position: { x: position.x, y: position.y },
-            angle: angle,
-            t: t,
-            graphIndex: graphIndex,
-            routeIndex: routeIndex,
-            speed: speed,
-            image: image
-
-        }
-
-        return vehicle;
-
-    }
-
-    function simulateVehicles() {
-
-        const vehicleAngle = Math.PI * -0.50;
-
-        for ( let i = 0, l = vehiclesHolder.length; i < l; i ++ ) {
-
-            const vehicle = vehiclesHolder[ i ];
-
-            const route = graphsHolder[ vehicle.graphIndex ].routes[ vehicle.routeIndex ];
-            const routePositionObject = getPointAndAngleOnRouteByT( vehicle.t, vehicle.routeIndex );
-
-            vehicle.position = routePositionObject.point;
-            vehicle.angle = routePositionObject.angle;
-
-            const radius = 20;
-
-            //only draw vehicles that are visible in the viewport
-            if ( vehicle.position.x + radius > border.left && vehicle.position.x - radius < border.right && vehicle.position.y + radius > border.top && vehicle.position.y - radius < border.bottom ) {
-
-                // const angleOnRoute0 = vehicle.angle;
-                // const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
-                const angleOnRoute = vehicle.angle + vehicleAngle;
-
-                // const length = 15;
-
-                // const sinA0 = Math.sin( angleOnRoute0 );
-                // const cosA0 = Math.cos( angleOnRoute0 );
-                // const sinA1 = Math.sin( angleOnRoute1 );
-                // const cosA1 = Math.cos( angleOnRoute1 );
-
-                // drawCircle( vehicle.position, 5, 230, 29, 95, 255 );
-                // drawLine( ( sinA0 * length + vehicle.position.x ) | 0, ( -cosA0 * length + vehicle.position.y ) | 0, ( -sinA0 * length + vehicle.position.x ) | 0, ( cosA0 * length + vehicle.position.y ) | 0, 0, 0, 255, 255 );
-                // drawLine( ( sinA1 * length + vehicle.position.x ) | 0, ( -cosA1 * length + vehicle.position.y ) | 0, ( -sinA1 * length + vehicle.position.x ) | 0, ( cosA1 * length + vehicle.position.y ) | 0, 255, 255, 255, 255 );
-
-                // contextMain.drawImage( square[ 'tileObj' + tileType ].image, 0, 0, imgWidth, imgHeight, imgX, imgY, imgWidth, imgHeight );
-
-                //contextMain.drawImage( vehicleTestImage, vehicle.position.x - 10, vehicle.position.y - 10, 20, 20 );
-
-                contextMain.save();
-                contextMain.translate( vehicle.position.x, vehicle.position.y );
-                contextMain.rotate( angleOnRoute );
-                contextMain.drawImage( vehicle.image, -10, -10, 20, 20 );
-                contextMain.rotate( -angleOnRoute );
-                contextMain.translate( -vehicle.position.x, -vehicle.position.y );
-                contextMain.restore();
-
-            }
-
-            if ( route.complete === true && simulationRuns === true ) {
-
-                vehicle.t += vehicle.speed;
-
-                if ( vehicle.t > 1 ) {
-
-                    vehicle.t = 1;
-
-                }
-
-            }
-
-        }
-
-        vehiclesHolder = vehiclesHolder.filter( ( v ) => v.t !== 1 );
+        vehicles.simulate();
 
     }
 
@@ -4531,6 +4283,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //---
 
         drawImageData();
+
+        //---
+
+        if ( editorMode === EDITOR_MODE_ENUM.moveMap ) {
+
+            moveMap();
+
+        }
 
         //---
 
