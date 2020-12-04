@@ -1962,8 +1962,6 @@ let graphsHolderDefault = [
             { x: 5078.47, y: -739.99, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
             { x: 5084.06, y: -1083.8, walkable: true, cost: 0, parentPoint: null, visited: false, neighbourGraphsegments: [], neighbourPoints: [] },
         ],
-        openSet: [],
-        closedSet: [],
         segments: [
             { id: 0, p0: { x: 304.48, y: 705.9 }, p1: { x: 314.48, y: 586.9 }, walkable: true, direction: '><', centerPoint: { x: 334.98, y: 635.65 }, controlPoint: { x: 360.48, y: 624.9 }, length: 132.12833065410595 },
             { id: 1, p0: { x: 314.48, y: 586.9 }, p1: { x: 287.48, y: 454.9 }, walkable: true, direction: '><', centerPoint: { x: 250.73, y: 504.9 }, controlPoint: { x: 200.48, y: 488.9 }, length: 172.63169979347268 },
