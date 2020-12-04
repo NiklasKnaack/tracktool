@@ -70,4 +70,33 @@ class Tools {
     
     }
 
+    //---
+
+    static getFieldLimitationRect( width, height ) {
+
+        console.log( 'getFieldLimitationRect: ', width, height );
+
+        return { 
+            
+            x: -Settings.FIELD_SIZE.width / 2, 
+            y: -Settings.FIELD_SIZE.height / 2, 
+            width: width + Settings.FIELD_SIZE.width, 
+            height: height + Settings.FIELD_SIZE.height 
+        
+        };
+
+    }
+
+    static getFieldLimitationBorders() {
+
+        return {
+
+            left: Settings.FIELD_SIZE.width / 2, 
+            top: Settings.FIELD_SIZE.height / 2, 
+            right: -Settings.FIELD_SIZE.width / 2, 
+            bottom: -Settings.FIELD_SIZE.height / 2 
+        }
+
+    }
+
 }

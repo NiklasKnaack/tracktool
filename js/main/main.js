@@ -87,6 +87,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let vehicles = null;
     let background = null;
+    let navigator = null;
 
     const canvasInstructions = [ 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
 
@@ -103,7 +104,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
     // let mousePosStart = { x: 0, y: 0 };
     // let mousePosEnd = { x: 0, y: 0 };
     const mouseCursor = { diameter: 9, color: { r: 255, g: 255, b: 255, a: 255 }, position: { x: 0, y: 0 } };
-    const movePosition = { startPoint: { x: 0, y: 0 }, endPoint: { x: 0, y: 0 }, change: false };
 
     let currentNode = null;
     let currentGraphSegment = null;
@@ -424,20 +424,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         vehicles = new Vehicles( 0, border );
         background = new Background();
+        navigator = new Navigator();
 
         //---
 
         window.addEventListener( 'resize', onResize, false );
 
         restart();
-
-        //---
-
-        
-
-        //vehicles.startSimulation();
-
-        //initVehicles();
 
     }
 
@@ -454,6 +447,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         canvasManager.width = width;
         canvasManager.height = height;
+
+        //background.resize();
 
         imageDataMain = contextMain.getImageData( 0, 0, width, height );
         dataMain = imageDataMain.data;
@@ -488,6 +483,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
+        background.update();
         background.add();
 
     }
@@ -2430,9 +2426,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            movePosition.startPoint.x = width / 2;
-            movePosition.startPoint.y = height/ 2;
-            movePosition.change = true;
+            navigator.setPositionInit( width / 2, height/ 2 );
+            navigator.active = true;
 
             if ( debugMode === true ) {
 
@@ -2530,11 +2525,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( editorMode === EDITOR_MODE_ENUM.moveMap ) {
 
-            movePosition.endPoint.x = mousePos.x;
-            movePosition.endPoint.y = mousePos.y;
-            movePosition.change = false;
-
-            unifyAllPositions();
+            navigator.setPositionTarget( mousePos.x, mousePos.y );
+            navigator.active = false;
+            navigator.stop();
 
             if ( debugMode === true ) {
 
@@ -2600,8 +2593,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( editorMode === EDITOR_MODE_ENUM.moveMap ) {
 
-            movePosition.endPoint.x = mousePos.x;
-            movePosition.endPoint.y = mousePos.y;
+            navigator.setPositionTarget( mousePos.x, mousePos.y );
 
         } else {
 
@@ -3655,7 +3647,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function moveMap() {
 
-        if ( movePosition.change === false ) {
+        if ( navigator.active === false ) {
 
             return;
 
@@ -3663,137 +3655,26 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const moveDistanceMax = 500;
-        const moveDistance = Tools.getDistance( movePosition.startPoint, movePosition.endPoint ) * 50;
-        const moveAngle = Math.atan2( movePosition.endPoint.y - movePosition.startPoint.y, movePosition.endPoint.x - movePosition.startPoint.x ) + Math.PI * 0.50;
-
-        const sinMove = Math.sin( moveAngle );
-        const cosMove = Math.cos( moveAngle );
-
-        const dx = -sinMove * ( moveDistance / moveDistanceMax );
-        const dy = cosMove * ( moveDistance / moveDistanceMax );
+        navigator.navigate();
 
         //---
-        
-        graphsHolder.forEach( ( graph, index ) => {
+        //draw navigation direction arrow
 
-            for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
-
-                const graphSegment = graph.segments[ i ];
-
-                graphSegment.p0.x += dx;
-                graphSegment.p0.y += dy;
-                graphSegment.p1.x += dx;
-                graphSegment.p1.y += dy;
-                graphSegment.centerPoint.x += dx;
-                graphSegment.centerPoint.y += dy;
-                graphSegment.controlPoint.x += dx;
-                graphSegment.controlPoint.y += dy;
-
-                // graphSegment.p0.x = Tools.unifyNumber( graphSegment.p0.x );
-                // graphSegment.p0.y = Tools.unifyNumber( graphSegment.p0.y );
-                // graphSegment.p1.x = Tools.unifyNumber( graphSegment.p1.x );
-                // graphSegment.p1.y = Tools.unifyNumber( graphSegment.p1.y );
-                // graphSegment.centerPoint.x = Tools.unifyNumber( graphSegment.centerPoint.x );
-                // graphSegment.centerPoint.y = Tools.unifyNumber( graphSegment.centerPoint.y );
-                // graphSegment.controlPoint.x = Tools.unifyNumber( graphSegment.controlPoint.x );
-                // graphSegment.controlPoint.y = Tools.unifyNumber( graphSegment.controlPoint.y );
-
-            }
-
-            for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
-
-                const point = graph.points[ i ];
-
-                point.x += dx;
-                point.y += dy;
-
-                // point.x = Tools.unifyNumber( point.x );
-                // point.y = Tools.unifyNumber( point.y );
-
-            }
-
-            for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
-
-                const route = graph.routes[ i ];
-
-                if ( route.startPoint !== null ) {
-
-                    route.startPoint.x += dx;
-                    route.startPoint.y += dy;
-                    // route.startPoint.x = Tools.unifyNumber( route.startPoint.x );
-                    // route.startPoint.y = Tools.unifyNumber( route.startPoint.y );
-
-                }
-
-                if ( route.endPoint !== null ) {
-            
-                    route.endPoint.x += dx;
-                    route.endPoint.y += dy;
-                    // route.endPoint.x = Tools.unifyNumber( route.endPoint.x );
-                    // route.endPoint.y = Tools.unifyNumber( route.endPoint.y );
-
-                }
-
-                if ( route.graphSegments.length > 0 ) {
-
-                    for ( let j = 0, m = route.graphSegments.length; j < m; j ++ ) {
-
-                        const graphSegment = route.graphSegments[ j ];
-
-                        graphSegment.p0.x += dx;
-                        graphSegment.p0.y += dy;
-                        graphSegment.p1.x += dx;
-                        graphSegment.p1.y += dy;
-                        graphSegment.controlPoint.x += dx;
-                        graphSegment.controlPoint.y += dy;
-
-                        // graphSegment.p0.x = Tools.unifyNumber( graphSegment.p0.x );
-                        // graphSegment.p0.y = Tools.unifyNumber( graphSegment.p0.y );
-                        // graphSegment.p1.x = Tools.unifyNumber( graphSegment.p1.x );
-                        // graphSegment.p1.y = Tools.unifyNumber( graphSegment.p1.y );
-                        // graphSegment.controlPoint.x = Tools.unifyNumber( graphSegment.controlPoint.x );
-                        // graphSegment.controlPoint.y = Tools.unifyNumber( graphSegment.controlPoint.y );
-
-                    }
-
-                }
-
-            }
-
-            // for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
-
-            //     const streetSegment = graph.streetSegments[ i ];
-
-            //     //---
-
-            // }
-
-        } );
-
-        //---
-
-        // vehicles.update( dx, dy );
-
-        background.move( dx, dy ); 
-        
-        //---
-
-        const angleEnd = moveAngle + Math.PI * 0.5;
+        const angleEnd = navigator.angle + Math.PI * 0.5;
 
         const sinEnd = Math.sin( angleEnd );
         const cosEnd = Math.cos( angleEnd );
 
         const lengthEnd = 10;
         
-        if ( Tools.getDistance( movePosition.startPoint, movePosition.endPoint ) > 20 ) {
+        if ( Tools.getDistance( navigator.positionInit, navigator.positionTarget ) > 20 ) {
 
-            drawLine( movePosition.startPoint.x | 0, movePosition.startPoint.y | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
-            drawLine( ( sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( -cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, ( -sinEnd * lengthEnd +  movePosition.startPoint.x ) | 0, ( cosEnd * lengthEnd +  movePosition.startPoint.y ) | 0, 255, 255, 255, 255 );
+            drawLine( navigator.positionInit.x | 0, navigator.positionInit.y | 0, navigator.positionTarget.x | 0, navigator.positionTarget.y | 0, 255, 255, 255, 255 );
+            drawLine( ( sinEnd * lengthEnd +  navigator.positionInit.x ) | 0, ( -cosEnd * lengthEnd +  navigator.positionInit.y ) | 0, ( -sinEnd * lengthEnd +  navigator.positionInit.x ) | 0, ( cosEnd * lengthEnd +  navigator.positionInit.y ) | 0, 255, 255, 255, 255 );
 
         } else {
 
-            drawCircle( movePosition.startPoint, 2, 255, 255, 255, 255 );
+            drawCircle( navigator.positionInit, 2, 255, 255, 255, 255 );
 
         }
 
@@ -3801,95 +3682,18 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         let dist = -25;
 
-        const cX = sinMove * dist + movePosition.endPoint.x;
-        const cY = -cosMove * dist + movePosition.endPoint.y;
+        const cX = navigator.sin * dist + navigator.positionTarget.x;
+        const cY = -navigator.cos * dist + navigator.positionTarget.y;
 
-        const pSSX = sinMove * lengthEnd + cX;
-        const pSSY = -cosMove * lengthEnd + cY;
+        const pSSX = navigator.sin * lengthEnd + cX;
+        const pSSY = -navigator.cos * lengthEnd + cY;
 
-        // const pSEX = -sinMove * lengthEnd + cX;
-        // const pSEY = cosMove * lengthEnd + cY;
+        // const pSEX = -navigator.sin * lengthEnd + cX;
+        // const pSEY = navigator.cos * lengthEnd + cY;
 
-        drawLine( ( sinEnd * lengthEnd + pSSX ) | 0, ( -cosEnd * lengthEnd + pSSY ) | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
-        drawLine( ( -sinEnd * lengthEnd + pSSX ) | 0, ( cosEnd * lengthEnd + pSSY ) | 0, movePosition.endPoint.x | 0, movePosition.endPoint.y | 0, 255, 255, 255, 255 );
-
-    }
-
-    function unifyAllPositions() {
-
-        graphsHolder.forEach( ( graph, index ) => {
-
-            for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
-
-                const graphSegment = graph.segments[ i ];
-
-                graphSegment.p0.x = Tools.unifyNumber( graphSegment.p0.x );
-                graphSegment.p0.y = Tools.unifyNumber( graphSegment.p0.y );
-                graphSegment.p1.x = Tools.unifyNumber( graphSegment.p1.x );
-                graphSegment.p1.y = Tools.unifyNumber( graphSegment.p1.y );
-                graphSegment.centerPoint.x = Tools.unifyNumber( graphSegment.centerPoint.x );
-                graphSegment.centerPoint.y = Tools.unifyNumber( graphSegment.centerPoint.y );
-                graphSegment.controlPoint.x = Tools.unifyNumber( graphSegment.controlPoint.x );
-                graphSegment.controlPoint.y = Tools.unifyNumber( graphSegment.controlPoint.y );
-
-            }
-
-            for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
-
-                const point = graph.points[ i ];
-
-                point.x = Tools.unifyNumber( point.x );
-                point.y = Tools.unifyNumber( point.y );
-
-            }
-
-            for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
-
-                const route = graph.routes[ i ];
-
-                if ( route.startPoint !== null ) {
-
-                    route.startPoint.x = Tools.unifyNumber( route.startPoint.x );
-                    route.startPoint.y = Tools.unifyNumber( route.startPoint.y );
-
-                }
-
-                if ( route.endPoint !== null ) {
-
-                    route.endPoint.x = Tools.unifyNumber( route.endPoint.x );
-                    route.endPoint.y = Tools.unifyNumber( route.endPoint.y );
-
-                }
-
-                if ( route.graphSegments.length > 0 ) {
-
-                    for ( let j = 0, m = route.graphSegments.length; j < m; j ++ ) {
-
-                        const graphSegment = route.graphSegments[ j ];
-
-                        graphSegment.p0.x = Tools.unifyNumber( graphSegment.p0.x );
-                        graphSegment.p0.y = Tools.unifyNumber( graphSegment.p0.y );
-                        graphSegment.p1.x = Tools.unifyNumber( graphSegment.p1.x );
-                        graphSegment.p1.y = Tools.unifyNumber( graphSegment.p1.y );
-                        graphSegment.controlPoint.x = Tools.unifyNumber( graphSegment.controlPoint.x );
-                        graphSegment.controlPoint.y = Tools.unifyNumber( graphSegment.controlPoint.y );
-
-                    }
-
-                }
-
-            }
-
-            // for ( let i = 0, l = graph.streetSegments.length; i < l; i ++ ) {
-
-            //     const streetSegment = graph.streetSegments[ i ];
-
-            //     //---
-
-            // }
-
-        } );
-
+        drawLine( ( sinEnd * lengthEnd + pSSX ) | 0, ( -cosEnd * lengthEnd + pSSY ) | 0, navigator.positionTarget.x | 0, navigator.positionTarget.y | 0, 255, 255, 255, 255 );
+        drawLine( ( -sinEnd * lengthEnd + pSSX ) | 0, ( cosEnd * lengthEnd + pSSY ) | 0, navigator.positionTarget.x | 0, navigator.positionTarget.y | 0, 255, 255, 255, 255 );
+        
     }
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
