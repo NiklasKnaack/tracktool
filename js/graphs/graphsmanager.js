@@ -1,5 +1,3 @@
-//---
-
 class GraphsManager {
 
     constructor() {
@@ -9,6 +7,8 @@ class GraphsManager {
             this._graphsHolder = null;
 
             this.graphs = graphsHolderDefault;
+
+            //---
 
             Background.instance = this;
 
@@ -137,5 +137,3 @@ class GraphsManager {
     }
 
 }
-
-//---

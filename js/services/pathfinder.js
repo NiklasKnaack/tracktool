@@ -1,5 +1,3 @@
-//---
-
 //https://www.sitepoint.com/javascript-web-workers/
 //https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 //https://www.html5rocks.com/de/tutorials/workers/basics/
@@ -72,5 +70,3 @@ class Pathfinder {
     }
 
 }
-
-//---

@@ -1,5 +1,3 @@
-//---
-
 this.addEventListener( 'message', init, false );
 
 //---

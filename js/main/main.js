@@ -87,6 +87,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
     const pathfinder = new Pathfinder();
     const graphsManager = new GraphsManager();
     const canvasManager = new CanvasManager( width, height );
+    
+    let background = null;
 
     const canvasInstructions = [ 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
 
@@ -415,6 +417,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         canvasMain.addEventListener( 'mouseup', mouseUpHandler, false );
         canvasMain.addEventListener( 'mousemove', mouseMoveHandler, false );
 
+        background = new Background();
+
         window.addEventListener( 'resize', onResize, false );
 
         restart();
@@ -428,9 +432,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
     }
 
     function restart() {
-
-        const tt0 = new Background();
-        const tt1 = new Background();
 
         width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
         height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
@@ -466,6 +467,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
         initVehicles();
 
         simulationRuns = true;
+
+        //---
+
+        background.add();
 
     }
 
@@ -3612,7 +3617,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function drawQuadraticBezier( sv, cv, ev, segments, r, g, b, a ) {
 
-        if ( sv.x > border.left && sv.x < border.right && sv.y > border.top && sv.y < border.bottom || ev.x > border.left && ev.x < border.right && ev.y > border.top && ev.y < border.bottom ) {
+        if ( sv.x > border.left && sv.x < border.right && sv.y > border.top && sv.y < border.bottom || cv.x > border.left && cv.x < border.right && cv.y > border.top && cv.y < border.bottom || ev.x > border.left && ev.x < border.right && ev.y > border.top && ev.y < border.bottom ) {
 
             for ( let i = 0, l = 1 / segments; i < 1 + l; i += l ) {
 
@@ -3805,6 +3810,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
             // }
 
         } );
+
+        //---
+
+        background.move( dx, dy ); 
         
         //---
 

@@ -4,14 +4,14 @@ class CanvasManager {
         
         if ( !CanvasManager.instance ) {
 
+            this._width = width;
+            this._height = height;
+
             CanvasManager.instance = this;
 
         }
 
         //---
-
-        this._width = width;
-        this._height = height;
 
         this._style = {
 

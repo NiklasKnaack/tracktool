@@ -13,15 +13,23 @@ class ImageFactory {
         const data = imageData.data;
 
         for ( let i = 0, l = data.length; i < l; i += 4 ) {
+            
+            // const r = Math.floor( Math.random() * 5 ) + 109;
+            // const g = Math.floor( Math.random() * 15 ) + 110;
+            // const b = Math.floor( Math.random() * 5 ) + 69;
+            // const a = 255;
 
-            const r = Math.floor( Math.random() * 5 ) + 138;
-            const g = Math.floor( Math.random() * 20 ) + 155;
-            const b = Math.floor( Math.random() * 5 ) + 104;
+            // data[ i ]     = r;
+            // data[ i + 1 ] = g;
+            // data[ i + 2 ] = b;
+            // data[ i + 3 ] = a;
+
+            const rgb = Math.floor( Math.random() * 20 ) + 60;
             const a = 255;
 
-            data[ i ]     = r;
-            data[ i + 1 ] = g;
-            data[ i + 2 ] = b;
+            data[ i ]     = rgb;
+            data[ i + 1 ] = rgb;
+            data[ i + 2 ] = rgb;
             data[ i + 3 ] = a;
 
         }
