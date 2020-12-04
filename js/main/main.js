@@ -417,11 +417,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
         canvasMain.addEventListener( 'mouseup', mouseUpHandler, false );
         canvasMain.addEventListener( 'mousemove', mouseMoveHandler, false );
 
+        //---
+
+        streetSegmentTexture = ImageFactory.getStreetSegmentTexture();
+
         background = new Background();
+
+        //---
 
         window.addEventListener( 'resize', onResize, false );
 
         restart();
+
+        //---
+
+        initVehicles();
 
     }
 
@@ -461,10 +471,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
         animationFrame = requestAnimFrame( render );
 
         //---
-
-        streetSegmentTexture = ImageFactory.getStreetSegmentTexture();
-
-        initVehicles();
 
         simulationRuns = true;
 

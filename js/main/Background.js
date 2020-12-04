@@ -4,17 +4,19 @@ class Background {
 
         //if ( !Background.instance ) {
 
+            this._backgroundTexture = ImageFactory.getBackgroundGrassTexture();
+
             this._canvasManager = new CanvasManager();
             this._canvasObject = this._canvasManager.getCanvasObjectByName( 'background' );
             this._canvas = this._canvasObject.canvas;
             this._context = this._canvasObject.context;
             // this._imageData = this._context.getImageData( 0, 0, this._canvasManager.width, this._canvasManager.height );
             // this._data = this._imageData.data;
-
-            this._backgroundGrassTexture = ImageFactory.getBackgroundGrassTexture();
-
+            
             this._x = 0;
             this._y = 0;
+
+            //this.createPattern();
 
             //---
 
@@ -28,9 +30,15 @@ class Background {
 
     }
 
+    createPattern( image, repetition = 'repeat' ) {
+
+        return this._context.createPattern( image, repetition );
+
+    }
+
     add() {
 
-        this._context.fillStyle = this._context.createPattern( this._backgroundGrassTexture, 'repeat' );
+        this._context.fillStyle = this.createPattern( this._backgroundTexture );
         this._context.fillRect( 0, 0, this._canvasManager.width, this._canvasManager.height );
 
     }
