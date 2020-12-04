@@ -74,8 +74,6 @@ class Tools {
 
     static getFieldLimitationRect( width, height ) {
 
-        console.log( 'getFieldLimitationRect: ', width, height );
-
         return { 
             
             x: -Settings.FIELD_SIZE.width / 2, 
