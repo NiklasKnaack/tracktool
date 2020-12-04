@@ -92,8 +92,9 @@ class Tools {
             left: Settings.FIELD_SIZE.width / 2, 
             top: Settings.FIELD_SIZE.height / 2, 
             right: -Settings.FIELD_SIZE.width / 2, 
-            bottom: -Settings.FIELD_SIZE.height / 2 
-        }
+            bottom: -Settings.FIELD_SIZE.height / 2
+
+        };
 
     }
 

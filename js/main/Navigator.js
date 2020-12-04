@@ -2,13 +2,13 @@ class Navigator {
 
     constructor() {
 
-        if ( Navigator.instance ) {
+        if ( Navigator._instance ) {
 
-            return Navigator.instance;
+            return Navigator._instance;
 
         }
 
-        Navigator.instance = this;
+        Navigator._instance = this;
         
         //---
 

@@ -2,13 +2,13 @@ class Background {
 
     constructor() {
 
-        if ( Background.instance ) {
+        if ( Background._instance ) {
 
-            return Background.instance;
+            return Background._instance;
 
         }
 
-        Background.instance = this;
+        Background._instance = this;
         
         //---
 

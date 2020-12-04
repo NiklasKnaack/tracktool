@@ -2,13 +2,13 @@ class GraphsManager {
 
     constructor() {
 
-        if ( GraphsManager.instance ) {
+        if ( GraphsManager._instance ) {
 
-            return GraphsManager.instance;
+            return GraphsManager._instance;
 
         }
 
-        GraphsManager.instance = this;
+        GraphsManager._instance = this;
 
         //---
 

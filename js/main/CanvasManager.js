@@ -2,13 +2,13 @@ class CanvasManager {
 
     constructor( width = 1024, height = 768 ) {
 
-        if ( CanvasManager.instance ) {
+        if ( CanvasManager._instance ) {
 
-            return CanvasManager.instance;
+            return CanvasManager._instance;
 
         }
 
-        CanvasManager.instance = this;
+        CanvasManager._instance = this;
 
         //---
         
