@@ -4072,7 +4072,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     if ( graphSegment.p1 === null && i === l - 1 ) {
 
-                        drawLine( graphSegment.p0.x | 0, graphSegment.p0.y | 0, mouseCursor.position.x | 0, mouseCursor.position.y | 0, 80, 80, 80, 255 );
+                        drawLine( graphSegment.p0.x | 0, graphSegment.p0.y | 0, mouseCursor.position.x | 0, mouseCursor.position.y | 0, 0, 191, 255, 255 );
 
                         // if ( allowGraphSegmentSplitting === true ) {
 
