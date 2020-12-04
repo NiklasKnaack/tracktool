@@ -4463,7 +4463,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             const radius = 20;
 
             //only draw vehicles that are visible in the viewport
-            if ( vehicle.position.x - radius > border.left && vehicle.position.x + radius < border.right && vehicle.position.y - radius > border.top && vehicle.position.y + radius < border.bottom ) {
+            if ( vehicle.position.x + radius > border.left && vehicle.position.x - radius < border.right && vehicle.position.y + radius > border.top && vehicle.position.y - radius < border.bottom ) {
 
                 // const angleOnRoute0 = vehicle.angle;
                 // const angleOnRoute1 = angleOnRoute0 + Math.PI * 0.50;
