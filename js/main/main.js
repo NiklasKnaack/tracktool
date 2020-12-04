@@ -483,7 +483,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        background.update();
+        background.resize();
         background.add();
 
     }

@@ -24,7 +24,7 @@ class Background {
 
     }
 
-    update() {
+    resize() {
 
         this._rect = Tools.getFieldLimitationRect( this._canvasManager.width, this._canvasManager.height );
         
@@ -52,12 +52,6 @@ class Background {
         this._context.translate( this._x, this._y );
         this._context.fillRect( this._rect.x, this._rect.y, this._rect.width, this._rect.height );
         this._context.restore();
-
-    }
-
-    resize() {
-
-        //---
 
     }
 
