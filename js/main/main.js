@@ -84,6 +84,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     const pathfinder = new Pathfinder();
     const graphsManager = new GraphsManager();
     const canvasManager = new CanvasManager( width, height );
+    const fileManager = new FileManager();
 
     let vehicles = null;
     let background = null;
@@ -306,6 +307,39 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        const _saveJSON = () => {
+
+            fileManager.saveJSON();
+
+        }
+
+        const _loadJSON = () => {
+
+            fileManager.loadJSON( ( graphs ) => {
+
+                console.log( 'WORK IN PROGRESS' );
+
+                // _clearAll();
+                // restart();
+
+                //---
+
+                // let graphsHolder = graphs;
+
+                // setAllGraphSegmentPointNeighbours();
+
+                // pathfinder.computeRoutes( graphsHolder[ 0 ], ( routes, time ) => {
+
+                //     graphsHolder[ 0 ].routes = routes;
+
+                //     console.log( 'Der Aufruf von computeRoutes dauerte ' + time + ' Millisekunden.' );
+
+                // } );
+
+            } );
+
+        }
+
         const _linkTo = () => {
 
             window.open( 'https://twitter.com/niklaswebdev', '_blank' );
@@ -338,6 +372,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Show Route': _showRoute,
             'Toggle Debug Mode': _toggleDebugMode,
             'Play/Pause Simulation': _playPauseSimulation,
+            'Save Map': _saveJSON,
+            'Load Map': _loadJSON,
             '@niklaswebdev': _linkTo
 
         }
@@ -381,6 +417,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         folderSimulation.open();
         folderSimulation.add( guiSetting, 'Play/Pause Simulation' );
+
+        const folderFile = gui.addFolder( 'File' );
+
+        folderFile.open();
+        folderFile.add( guiSetting, 'Save Map' );
+        folderFile.add( guiSetting, 'Load Map' );
 
         const folderContact = gui.addFolder( 'Contact' );
 
