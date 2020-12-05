@@ -1,7 +1,5 @@
 class FileManager {
 
-    static FILE_NAME = 'data.json';
-
     constructor() {
 
         if ( FileManager._instance ) {
@@ -15,6 +13,14 @@ class FileManager {
         //---
 
         this._graphsManager = new GraphsManager();
+
+    }
+
+    //---
+
+    _getFileName() {
+
+        return `data_${ Tools.getTimeStamp() }.json`;
 
     }
 
@@ -56,8 +62,6 @@ class FileManager {
 
     _loadJSONCompleteHandler( result, callback = null ) {
 
-        console.log( result );
-
         this._graphsManager.graphs = result;
 
         if ( callback !== null ) {
@@ -72,15 +76,15 @@ class FileManager {
 
     _encode( s ) {
 
-        var out = [];
+        const result = [];
 
-        for ( var i = 0, l = s.length; i < l; i ++ ) {
+        for ( let i = 0, l = s.length; i < l; i ++ ) {
 
-            out[ i ] = s.charCodeAt( i );
+            result[ i ] = s.charCodeAt( i );
 
         }
 
-        return new Uint8Array( out );
+        return new Uint8Array( result );
 
     }
 
@@ -100,13 +104,15 @@ class FileManager {
         // const event = document.createEvent( 'MouseEvents' );
 
         link.setAttribute( 'href', url );
-        link.setAttribute( 'download', FileManager.FILE_NAME );
+        link.setAttribute( 'download', this._getFileName() );
 
         // event.initMouseEvent( 'click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null );
         
         // link.dispatchEvent( event );
 
         link.click();
+
+        ;
 
     }
 

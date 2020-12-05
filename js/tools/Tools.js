@@ -70,6 +70,12 @@ class Tools {
     
     }
 
+    static getTimeStamp() {
+
+        return Date.now();
+
+    }
+
     //---
 
     static getFieldLimitationRect( width, height ) {
@@ -115,8 +121,6 @@ class Tools {
 
     }
 
-    //---
-
     static getRouteColorRGBA( index ) {
 
         if ( index < Settings.ROUTE_COLORS.length ) {
@@ -130,5 +134,7 @@ class Tools {
         }
 
     }
+
+    //---
 
 }
