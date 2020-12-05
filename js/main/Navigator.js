@@ -87,6 +87,12 @@ class Navigator {
 
     }
 
+    updateGraph() {
+
+        this._graphs = this._graphsManager.graphs;
+
+    }
+
     navigate() {
 
         if ( this._active === false ) {

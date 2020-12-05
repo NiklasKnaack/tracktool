@@ -317,24 +317,42 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             fileManager.loadJSON( ( graphs ) => {
 
-                console.log( 'WORK IN PROGRESS' );
+                //---
 
-                // _clearAll();
-                // restart();
+                tempGraphSegments = [];
+
+                currentNode = null;
+                currentGraphSegment = null;
+                currentStreetSegment = null;
+                selectedGraphSegments = [];
+
+                navigator.updateGraph();
+
+                vehicles.clear();
+                vehicles.updateGraph();
+                vehicles.startSimulation();
+
+                removeDebugElements();
 
                 //---
 
-                // let graphsHolder = graphs;
+                graphsHolder = graphs;// graphsManager.graphs;
 
-                // setAllGraphSegmentPointNeighbours();
+                setAllGraphSegmentPointNeighbours();
 
-                // pathfinder.computeRoutes( graphsHolder[ 0 ], ( routes, time ) => {
+                pathfinder.computeRoutes( graphsHolder[ 0 ], ( routes, time ) => {
 
-                //     graphsHolder[ 0 ].routes = routes;
+                    graphsHolder[ 0 ].routes = routes;
 
-                //     console.log( 'Der Aufruf von computeRoutes dauerte ' + time + ' Millisekunden.' );
+                    console.log( 'Der Aufruf von computeRoutes dauerte ' + time + ' Millisekunden.' );
 
-                // } );
+                } );
+
+                if ( debugMode === true ) {
+
+                    rebuildDebugElements();
+
+                }
 
             } );
 
@@ -3749,6 +3767,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //---
 
         graphsHolder.forEach( ( graph, index ) => {
+
+            console.log( 'graph.points.length: ', graph.points.length );
 
             // let distanceAtTheMoment = Infinity;
             // let graphSegmentSelected = null;
