@@ -42,7 +42,7 @@ class GraphsManager {
 
     }
 
-    loadGraphs( url, callback ) {
+    // loadGraphs( url, callback ) {
 
         // const head = document.getElementsByTagName( 'head' )[ 0 ];
 
@@ -54,7 +54,7 @@ class GraphsManager {
 
         // head.appendChild( script );
 
-    }
+    // }
 
     logGraphs() {
 

@@ -98,4 +98,37 @@ class Tools {
 
     }
 
+    //---
+
+    static getRandomColorRGBA() {
+
+        const rgb = Math.round( Math.random() * 0xffffff );
+
+        return {
+
+            r: rgb >> 16,
+            g: rgb >> 8 & 255,
+            b: rgb & 255,
+            a: 255
+
+        }
+
+    }
+
+    //---
+
+    static getRouteColorRGBA( index ) {
+
+        if ( index < Settings.ROUTE_COLORS.length ) {
+
+            return Settings.ROUTE_COLORS[ index ];
+
+        } else {
+
+            return Tools.getRandomColorRGBA();
+
+        }
+
+    }
+
 }

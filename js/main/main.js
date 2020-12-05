@@ -41,38 +41,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
     const GRAPH_SEGMENT_DIRECTIONS = [ '><', '>', '<' ];
     const GRAPH_SEGMENT_CURVE_ACCURACY = 5;
 
-    const PATH_COLORS = [
-        { r: 255, g: 213, b:   0, a: 255 },
-        { r: 255, g:  85, b:   0, a: 255 },
-        { r:   0, g: 170, b: 255, a: 255 },
-        { r:   0, g: 255, b: 213, a: 255 },
-        { r:   0, g: 255, b:  86, a: 255 },
-        { r: 255, g:   0, b: 169, a: 255 },
-        { r: 214, g:   0, b: 255, a: 255 },
-        { r: 169, g: 255, b:   0, a: 255 },
-        { r:   0, g:  41, b: 255, a: 255 },
-        { r: 255, g:   0, b:  41, a: 255 },
-        { r: 254, g:  74, b:  73, a: 255 },
-        { r:  42, g: 183, b: 202, a: 255 },
-        { r: 254, g: 215, b: 102, a: 255 },
-        { r: 244, g: 244, b: 248, a: 255 },
-        { r: 246, g: 171, b: 182, a: 255 },
-        { r: 238, g: 201, b: 210, a: 255 },
-        { r: 179, g: 205, b: 224, a: 255 },
-        { r: 100, g: 151, b: 177, a: 255 },
-        { r: 222, g: 195, b: 195, a: 255 },
-        { r:  14, g: 154, b: 167, a: 255 },
-        { r:  61, g: 164, b: 171, a: 255 },
-        { r: 246, g: 205, b:  97, a: 255 },
-        { r: 254, g: 138, b: 113, a: 255 },
-        { r: 131, g: 208, b: 201, a: 255 },
-        { r: 253, g: 244, b: 152, a: 255 },
-        { r: 123, g: 192, b:  67, a: 255 },
-        { r: 255, g:   0, b:   0, a: 255 },
-        { r:   0, g: 255, b:   0, a: 255 },
-        { r:   0, g:   0, b: 255, a: 255 },
-    ];
-
     let editorMode = EDITOR_MODE_ENUM.addGraphSegment;
 
     let width = 1024;
@@ -576,7 +544,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 if ( point.x === route.startPoint.x && point.y === route.startPoint.y || point.x === route.endPoint.x && point.y === route.endPoint.y ) {
 
                     routeFound = route;
-                    routeColor = PATH_COLORS[ i ];
+                    routeColor = Settings.ROUTE_COLORS[ i ];
+                    // routeColor = Tools.getRouteColorRGBA( i );
 
                     break;
 
@@ -2080,7 +2049,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
             const route = graph.routes[ i ];
-            const routeColor = PATH_COLORS[ i ];
+            // const routeColor = Settings.ROUTE_COLORS[ i ];
 
             if ( route.startPoint !== null ) {
 
@@ -3768,8 +3737,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         graphsHolder.forEach( ( graph, index ) => {
 
-            console.log( 'graph.points.length: ', graph.points.length );
-
             // let distanceAtTheMoment = Infinity;
             // let graphSegmentSelected = null;
 
@@ -4050,7 +4017,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
                 const route = graph.routes[ i ];
-                const routeColor = PATH_COLORS[ i ];
+                const routeColor = Settings.ROUTE_COLORS[ i ];
+                // const routeColor = Tools.getRouteColorRGBA( i );
 
                 if ( route.startPoint !== null ) {
 
