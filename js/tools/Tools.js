@@ -70,6 +70,14 @@ class Tools {
     
     }
 
+    //---
+
+    static getTimes() {
+
+        return new Date().getTime();
+
+    }
+
     static getTimeStamp() {
 
         return Date.now();

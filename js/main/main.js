@@ -10,7 +10,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let stats = null;
 
     let debugMode = false;
-    let debugElements = [];
 
     const MATHPI2 = Math.PI * 2;
 
@@ -49,6 +48,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     const border = { left: 1, top: 1, right: width, bottom: height };
     // const center = { x: width / 2, y: height / 2 };
 
+    const debugElements = new DebugElements( document.body );
     const pathfinder = new Pathfinder();
     const graphsManager = new GraphsManager();
     const canvasManager = new CanvasManager( width, height );
@@ -98,7 +98,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     if ( debugMode === true ) {
 
-        rebuildDebugElements();
+        debugElements.addElementsByGraph( graphsHolder[ 0 ] );
 
     }
 
@@ -222,10 +222,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
             currentStreetSegment = null;
             selectedGraphSegments = [];
 
+            debugElements.clear();
             graphsManager.clear();
             vehicles.clear();
-
-            removeDebugElements();
 
         }
 
@@ -249,11 +248,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( debugMode === true ) {
 
-                rebuildDebugElements();
+                debugElements.addElementsByGraph( graphsHolder[ 0 ] );
 
             } else {
 
-                removeDebugElements();
+                debugElements.clear();
 
             }
 
@@ -300,7 +299,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 vehicles.updateGraph();
                 vehicles.startSimulation();
 
-                removeDebugElements();
+                debugElements.clear();
 
                 //---
 
@@ -318,7 +317,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( debugMode === true ) {
 
-                    rebuildDebugElements();
+                    debugElements.addElementsByGraph( graphsHolder[ 0 ] );
 
                 }
 
@@ -1238,7 +1237,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( debugMode === true ) {
 
-                    rebuildDebugElements();
+                    debugElements.addElementsByGraph( graph );
 
                 }
 
@@ -1367,7 +1366,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            rebuildDebugElements();
+            debugElements.addElementsByGraph( graph );
 
         }
 
@@ -1394,7 +1393,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            rebuildDebugElements();
+            debugElements.addElementsByGraph( graphsHolder[ 0 ] );
 
         }
 
@@ -1432,7 +1431,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            rebuildDebugElements();
+            debugElements.addElementsByGraph( graphsHolder[ 0 ] );
 
         }
 
@@ -1517,7 +1516,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            rebuildDebugElements();
+            debugElements.addElementsByGraph( graph );
 
         }
 
@@ -1618,7 +1617,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            rebuildDebugElements();
+            debugElements.addElementsByGraph( graph );
 
         }
 
@@ -1666,7 +1665,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            rebuildDebugElements();
+            debugElements.addElementsByGraph( graph );
 
         }
 
@@ -1718,7 +1717,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            rebuildDebugElements();
+            debugElements.addElementsByGraph( graph );
 
         }
 
@@ -1740,7 +1739,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            rebuildDebugElements();
+            debugElements.addElementsByGraph( graph );
 
         }
 
@@ -1890,7 +1889,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( debugMode === true ) {
 
-                rebuildDebugElements();
+                debugElements.addElementsByGraph( graph );
 
             }
 
@@ -2029,103 +2028,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
         return result;
-
-    }
-
-    //--- ------------------------------------------------------------------------------------------------------------------------------
-
-    function rebuildDebugElements() {
-
-        removeDebugElements();
-
-        //---
-
-        const graphIndex = 0;
-
-        const graph = graphsHolder[ graphIndex ];
-
-        //---
-
-        for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
-
-            const route = graph.routes[ i ];
-            // const routeColor = Settings.ROUTE_COLORS[ i ];
-
-            if ( route.startPoint !== null ) {
-
-                addDebugElement( route.startPoint.x, route.startPoint.y, 'START ' + ( i + 1 ).toString(), 'white', -15, -25, null );
-
-            }
-
-            if ( route.endPoint !== null ) {
-
-                addDebugElement( route.endPoint.x, route.endPoint.y, 'END ' + ( i + 1 ).toString(), 'white', -15, -25, null );
-
-            }
-
-        }
-
-        //---
-
-        graph.segments.forEach( ( graphSegment, index ) => {
-
-            if ( index < graph.segments.length - 1 ) {
-
-                addDebugElement( graphSegment.p0.x, graphSegment.p0.y, graphSegment.p0.x.toFixed( 0 ).toString() + ', ' + graphSegment.p0.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
-                addDebugElement( graphSegment.p1.x, graphSegment.p1.y, graphSegment.p1.x.toFixed( 0 ).toString() + ', ' + graphSegment.p1.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
-
-            } else {
-
-                addDebugElement( graphSegment.p0.x, graphSegment.p0.y, graphSegment.p0.x.toFixed( 0 ).toString() + ', ' + graphSegment.p0.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
-                addDebugElement( graphSegment.p1.x, graphSegment.p1.y, graphSegment.p1.x.toFixed( 0 ).toString() + ', ' + graphSegment.p1.y.toFixed( 0 ).toString(), '#cdcbc8', 0, 9, null );
-
-            }
-
-            addDebugElement( graphSegment.centerPoint.x, graphSegment.centerPoint.y, graphSegment.id.toString(), 'white', -4, -6, null );
-            addDebugElement( graphSegment.centerPoint.x, graphSegment.centerPoint.y, graphSegment.length.toFixed( 2 ).toString(), 'grey', 10, -5, null );
-
-        } );
-
-    }
-
-    function removeDebugElements() {
-
-        debugElements.forEach( ( debugElement, index ) => {
-
-            document.body.removeChild( debugElement );
-
-        } );
-
-        debugElements = [];
-
-    }
-
-    function addDebugElement( x, y, message, color = 'white', offsetX = 0, offsetY = 0, className = null ) {
-
-        const debugElement = document.createElement( 'div' );
-
-        debugElement.style.position = 'absolute';
-        debugElement.style.left = ( x + offsetX ).toString() + 'px';
-        debugElement.style.top = ( y + offsetY ).toString() + 'px';
-        debugElement.style.color = color;
-        debugElement.style.fontSize = '8pt';
-        debugElement.style.pointerEvents = 'none';
-
-        if ( className === null ) {
-
-            debugElement.className = 'debug-' + ( new Date().getTime() + debugElements.length ).toString();
-
-        } else {
-
-            debugElement.className = 'debug-' + className.toString();
-
-        }
-
-        debugElement.innerHTML = message;
-
-        document.body.appendChild( debugElement );
-
-        debugElements.push( debugElement );
 
     }
 
@@ -2460,7 +2362,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( debugMode === true ) {
 
-                removeDebugElements();
+                debugElements.clear();
         
             }
 
@@ -2560,7 +2462,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( debugMode === true ) {
 
-                rebuildDebugElements();
+                debugElements.addElementsByGraph( graphsHolder[ 0 ] );
         
             }
 
@@ -3616,61 +3518,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
     }
-
-    //--- ------------------------------------------------------------------------------------------------------------------------------
-
-    // function getPointAndAngleOnRouteByT( t, routeIndex ) {
-
-    //     const graphIndex = 0;
-
-    //     const graph = graphsHolder[ graphIndex ];
-
-    //     //---
-
-    //     const route = graph.routes[ routeIndex ];
-
-    //     const output = {
-
-    //         point: null,
-    //         angle: 0
-
-    //     };
-
-    //     const routeLength = route.length;
-    //     const tLength = t * routeLength;
-
-    //     let curLength = 0;
-    //     let lastLength = 0;
-
-    //     for ( let i = 0, l = route.graphSegments.length; i < l; i ++ ) {
-
-    //         const graphSegment = route.graphSegments[ i ];
-
-    //         curLength += graphSegment.length;
-
-    //         if ( tLength <= curLength ) {
-
-    //             const tGraphSegment = ( tLength - lastLength ) / graphSegment.length;
-
-    //             const point0 = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment );
-    //             const point1 = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment + 0.001 );
-
-    //             output.point = point0;
-    //             output.angle = Math.atan2( point0.y - point1.y, point0.x - point1.x );
-
-    //             break;
-
-    //         }
-
-    //         lastLength = curLength;
-
-    //     }
-
-    //     //---
-
-    //     return output;
-
-    // }
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
