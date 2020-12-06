@@ -70,14 +70,6 @@ class Tools {
     
     }
 
-    //---
-
-    static getTimes() {
-
-        return new Date().getTime();
-
-    }
-
     static getTimeStamp() {
 
         return Date.now();
@@ -144,5 +136,11 @@ class Tools {
     }
 
     //---
+
+    static positionInCircle( x, y, cx, cy, radius ) {
+
+        return ( x - cx ) * ( x - cx ) + ( y - cy ) * ( y - cy ) <= radius * radius;
+
+    }
 
 }

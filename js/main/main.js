@@ -30,10 +30,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
         addEndPoint: 'addEndPoint',
         removeStartEndPoints: 'removeStartEndPoints',
         getGraphSegment: 'getGraphSegment',
+        getVehicle: 'getVehicle',
         togglePointWalkable: 'togglePointWalkable',
         movePoint: 'movePoint',
         showRoute: 'showRoute',
-        addStreetSegment: 'addStreetSegment'
+        addStreetSegment: 'addStreetSegment',
 
     } );
 
@@ -202,6 +203,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        const _getVehicle = () => {
+
+            editorMode = EDITOR_MODE_ENUM.getVehicle;
+
+        }
+
         const _clearAll = () => {
 
             const graphIndex = 0;
@@ -353,6 +360,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Toggle Walkable Point': _setToggleWalkable,
             'Clear All': _clearAll,
             'Get GraphSegment': _getGraphSegment,
+            'Get Vehicle': _getVehicle,
             'Log Graph': _logGraph,
             'Show Route': _showRoute,
             'Toggle Debug Mode': _toggleDebugMode,
@@ -394,6 +402,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         folderAnalyze.open();
         folderAnalyze.add( guiSetting, 'Get GraphSegment' );
+        folderAnalyze.add( guiSetting, 'Get Vehicle' );
         folderAnalyze.add( guiSetting, 'Log Graph' );
         folderAnalyze.add( guiSetting, 'Show Route' );
         folderAnalyze.add( guiSetting, 'Toggle Debug Mode' );
@@ -2388,6 +2397,20 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 //---
 
+            } else if ( editorMode === EDITOR_MODE_ENUM.getVehicle ) {
+
+                const vehicle = vehicles.getVehicleByPosition( mousePos );
+
+                if ( vehicle !== null ) {
+
+                    console.log( 'Found vehicle: ', vehicle );
+
+                } else {
+
+                    console.log( 'Could not find vehicle on position: ', mousePos );
+
+                }
+            
             } else if ( editorMode === EDITOR_MODE_ENUM.togglePointWalkable ) {
 
                 togglePointWalkable( mouseCursor.position );

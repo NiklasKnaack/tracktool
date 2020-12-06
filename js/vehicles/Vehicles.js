@@ -1,6 +1,7 @@
 class Vehicles {
 
     static INTERVAL = 500;
+    static VEHICLE_RADIUS = 20;
 
     //---
 
@@ -204,17 +205,18 @@ class Vehicles {
             vehicle.position = routePositionObject.point;
             vehicle.angle = routePositionObject.angle;
 
-            const radius = 20;
+            const radius = Vehicles.VEHICLE_RADIUS;
 
             //only draw vehicles that are visible in the viewport
             if ( vehicle.position.x + radius > this._border.left && vehicle.position.x - radius < this._border.right && vehicle.position.y + radius > this._border.top && vehicle.position.y - radius < this._border.bottom ) {
 
                 const angleOnRoute = vehicle.angle + this._vehiclesAngle;
+                const imagePosition = -radius / 2;
 
                 vehicle.context.save();
                 vehicle.context.translate( vehicle.position.x, vehicle.position.y );
                 vehicle.context.rotate( angleOnRoute );
-                vehicle.context.drawImage( vehicle.image, -10, -10, 20, 20 );
+                vehicle.context.drawImage( vehicle.image, imagePosition, imagePosition, radius, radius );
                 vehicle.context.rotate( -angleOnRoute );
                 vehicle.context.translate( -vehicle.position.x, -vehicle.position.y );
                 vehicle.context.restore();
@@ -300,6 +302,30 @@ class Vehicles {
     set vehiclesSimulation( value ) {
 
         this._vehiclesSimulation = value;
+
+    }
+
+    //---
+
+    getVehicleByPosition( position ) {
+
+        let result = null;
+
+        for ( let i = 0, l = this._vehiclesHolder.length; i < l; i ++ ) {
+
+            const vehicle = this._vehiclesHolder[ i ];
+
+            if ( Tools.positionInCircle( position.x, position.y, vehicle.position.x, vehicle.position.y, Vehicles.VEHICLE_RADIUS ) === true ) {
+
+                result = vehicle;
+
+                break;
+
+            }
+
+        }
+
+        return result;
 
     }
 
