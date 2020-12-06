@@ -116,6 +116,12 @@ class Navigator {
 
         //---
 
+        this.move( dx, dy );
+
+    }
+
+    move( dx, dy ) {
+
         this._x += dx;
         this._y += dy;
 
@@ -230,7 +236,7 @@ class Navigator {
 
         // vehicles.update( dx, dy );
 
-        this._background.move( dx, dy ); 
+        this._background.move( dx, dy );
 
     }
 

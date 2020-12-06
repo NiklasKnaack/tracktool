@@ -31,6 +31,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         removeStartEndPoints: 'removeStartEndPoints',
         getGraphSegment: 'getGraphSegment',
         getVehicle: 'getVehicle',
+        followVehicle: 'followVehicle',
         togglePointWalkable: 'togglePointWalkable',
         movePoint: 'movePoint',
         showRoute: 'showRoute',
@@ -209,6 +210,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        const _followVehicle = () => {
+
+            editorMode = EDITOR_MODE_ENUM.followVehicle;
+
+        }
+
         const _clearAll = () => {
 
             const graphIndex = 0;
@@ -361,6 +368,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Clear All': _clearAll,
             'Get GraphSegment': _getGraphSegment,
             'Get Vehicle': _getVehicle,
+            'Follow Vehicle': _followVehicle,
             'Log Graph': _logGraph,
             'Show Route': _showRoute,
             'Toggle Debug Mode': _toggleDebugMode,
@@ -403,6 +411,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderAnalyze.open();
         folderAnalyze.add( guiSetting, 'Get GraphSegment' );
         folderAnalyze.add( guiSetting, 'Get Vehicle' );
+        folderAnalyze.add( guiSetting, 'Follow Vehicle' );
         folderAnalyze.add( guiSetting, 'Log Graph' );
         folderAnalyze.add( guiSetting, 'Show Route' );
         folderAnalyze.add( guiSetting, 'Toggle Debug Mode' );
@@ -2410,7 +2419,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     console.log( 'Could not find vehicle on position: ', mousePos );
 
                 }
-            
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.followVehicle ) {
+
+                vehicles.vehicleSelected = vehicles.getVehicleByPosition( mousePos );
+
             } else if ( editorMode === EDITOR_MODE_ENUM.togglePointWalkable ) {
 
                 togglePointWalkable( mouseCursor.position );
@@ -2496,6 +2509,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 currentGraphSegment = null;
 
                 tempGraphSegments = [];
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.followVehicle ) {
+
+                vehicles.vehicleSelected = null;
 
             } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
 
@@ -3975,6 +3992,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
         drawStreetSegments();
 
         vehicles.simulate();
+
+        //---
+
+        if ( editorMode === EDITOR_MODE_ENUM.followVehicle ) {
+
+            vehicles.followVehicle( vehicles.vehicleSelected )
+
+        }
 
     }
 

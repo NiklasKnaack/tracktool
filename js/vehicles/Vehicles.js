@@ -9,11 +9,13 @@ class Vehicles {
 
         this._canvasManager = new CanvasManager();
         this._graphsManager = new GraphsManager();
+        this._navigator = new Navigator();
 
         this._graphIndex = graphIndex;
         this._graph = null;
         this._border = border;
 
+        this._vehicleSelected = null;
         this._vehiclesSimulation = true;
         this._vehiclesTimer = null;
         this._vehiclesHolder = [];
@@ -173,7 +175,7 @@ class Vehicles {
         const vehicle = {
 
             position: { x: position.x, y: position.y },
-            // lastPosition: { x: position.x, y: position.y },
+            lastPosition: { x: position.x, y: position.y },
             angle: angle,
             t: t,
             routeIndex: routeIndex,
@@ -196,6 +198,7 @@ class Vehicles {
             const vehicle = this._vehiclesHolder[ i ];
 
             // vehicle.lastPosition = { x: 0, y: 0 };//vehicle.position;
+            vehicle.lastPosition = vehicle.position;
 
             const route = this._graph.routes[ vehicle.routeIndex ];
             // const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.routeIndex, vehicle.lastPosition );
@@ -293,20 +296,6 @@ class Vehicles {
 
     //---
 
-    get vehiclesSimulation() {
-
-        return this._vehiclesSimulation;
-
-    }
-
-    set vehiclesSimulation( value ) {
-
-        this._vehiclesSimulation = value;
-
-    }
-
-    //---
-
     getVehicleByPosition( position ) {
 
         let result = null;
@@ -326,6 +315,51 @@ class Vehicles {
         }
 
         return result;
+
+    }
+
+    //---
+
+    followVehicle( vehicle ) {
+
+        if ( vehicle !== null ) {
+
+            if ( vehicle.t < 1 ) {
+
+                const dx = vehicle.lastPosition.x - vehicle.position.x;
+                const dy = vehicle.lastPosition.y - vehicle.position.y;
+
+                this._navigator.move( dx, dy );
+
+            }
+
+        }
+
+    }
+
+    //---
+
+    get vehiclesSimulation() {
+
+        return this._vehiclesSimulation;
+
+    }
+
+    set vehiclesSimulation( value ) {
+
+        this._vehiclesSimulation = value;
+
+    }
+
+    get vehicleSelected() {
+
+        return this._vehicleSelected;
+
+    }
+
+    set vehicleSelected( value ) {
+
+        this._vehicleSelected = value;
 
     }
 
