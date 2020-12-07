@@ -48,7 +48,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let height = 512;
 
     const border = { left: 1, top: 1, right: width, bottom: height };
-    // const center = { x: width / 2, y: height / 2 };
+    const center = { x: width / 2, y: height / 2 };
 
     const debugElements = new DebugElements( document.body );
     const pathfinder = new Pathfinder();
@@ -503,8 +503,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         border.right = width;
         border.bottom = height;
 
-        // center.x = width / 2;
-        // center.y = height / 2;
+        center.x = width / 2;
+        center.y = height / 2;
 
         //---
 
@@ -2375,7 +2375,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            navigator.setPositionInit( width / 2, height/ 2 );
+            navigator.setPositionInit( center.x, center.y );
             navigator.active = true;
 
             if ( debugMode === true ) {
@@ -2514,6 +2514,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 vehicles.vehicleSelected = null;
 
+                // vehicles.stopFollowVehicle();
+                navigator.stop();
+
             } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
 
                 removeSelectedGraphSegments();
@@ -2541,6 +2544,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 } );
 
                 //---
+                //dieser part hier muss erneut überprüft werden. 
 
                 vehicles.updateGraph();
 
@@ -3980,6 +3984,38 @@ document.addEventListener( 'DOMContentLoaded', () => {
             } else if ( tempGraphSegment.type === 'bezier' ) {
 
                 drawQuadraticBezier( tempGraphSegment.p0, tempGraphSegment.controlPoint, tempGraphSegment.p1, 25, tempGraphSegment.color.r, tempGraphSegment.color.g, tempGraphSegment.color.b, tempGraphSegment.color.a );
+
+            }
+
+        }
+
+        //---
+
+        if ( vehicles.vehicleSelected !== null ) {
+
+            if ( vehicles.vehicleSelected.t < 1 ) {
+
+                drawCircleOutline( vehicles.vehicleSelected.position, Vehicles.VEHICLE_RADIUS, 0, 255, 0, 255 );
+
+                //---
+
+                const graphIndex = 0;
+
+                const graph = graphsHolder[ graphIndex ];
+
+                for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
+
+                    const route = graph.routes[ i ];
+
+                    for ( let j = 0, m = route.graphSegments.length; j < m; j ++ ) {
+
+                        const graphSegment = route.graphSegments[ j ];
+
+                        drawQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 25, 255, 0, 0, 255 );
+
+                    }
+
+                }
 
             }
 
