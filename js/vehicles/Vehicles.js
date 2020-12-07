@@ -71,18 +71,21 @@ class Vehicles {
 
     }
 
-    // update( x, y ) {
+    updateVehiclesPositions( x, y ) {
 
-    //     for ( let i = 0, l = this._vehiclesHolder.length; i < l; i ++ ) {
+        for ( let i = 0, l = this._vehiclesHolder.length; i < l; i ++ ) {
 
-    //         const vehicle = this._vehiclesHolder[ i ];
+            const vehicle = this._vehiclesHolder[ i ];
 
-    //         vehicle.lastPosition.x += x;
-    //         vehicle.lastPosition.y += y;
+            vehicle.position.x += x;
+            vehicle.position.y += y;
 
-    //     }
+            vehicle.lastPosition.x += x;
+            vehicle.lastPosition.y += y;
 
-    // }
+        }
+
+    }
 
     //---
 
@@ -331,18 +334,6 @@ class Vehicles {
                 vehicle.position.x += dx;
                 vehicle.position.y += dy;
 
-                // vehicle.position.x = Tools.unifyNumber( vehicle.position.x );
-                // vehicle.position.y = Tools.unifyNumber( vehicle.position.y );
-
-                // for ( let i = 0, l = this._vehiclesHolder.length; i < l; i ++ ) {
-
-                //     const v = this._vehiclesHolder[ i ];
-        
-                //     vehicle.lastPosition.x += dx;
-                //     vehicle.lastPosition.y += dy;
-
-                // }
-
                 this._navigator.move( dx, dy );
 
             }
@@ -352,23 +343,6 @@ class Vehicles {
     }
 
     stopFollowVehicle() {
-
-        // for ( let i = 0, l = this._vehiclesHolder.length; i < l; i ++ ) {
-
-        //     const vehicle = this._vehiclesHolder[ i ];
-
-        //     // const dx = vehicle.lastPosition.x - vehicle.position.x;
-        //     // const dy = vehicle.lastPosition.y - vehicle.position.y;
-
-        //     // vehicle.position.x += dx;
-        //     // vehicle.position.y += dy;
-
-        //     vehicle.position.x = 0;
-        //     vehicle.position.y = 0;
-        //     vehicle.lastPosition.x = vehicle.position.x;
-        //     vehicle.lastPosition.y = vehicle.position.y;
-
-        // }
 
         this._navigator.stop();
 

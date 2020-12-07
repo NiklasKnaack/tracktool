@@ -72,7 +72,7 @@ class GraphsManager {
 
                 const route = graph.routes[ i ];
 
-                output += '            { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, graphSegments: [], length: 0, complete: false }';
+                output += '            { startPoint: { x: ' + route.startPoint.x + ', y: ' + route.startPoint.y + ' }, endPoint: { x: ' + route.endPoint.x + ', y: ' + route.endPoint.y + ' }, graphSegments: [], length: 0, complete: false, color: { r: ' + route.color.r + ', g: ' + route.color.g + ', b: ' + route.color.b + ', a: ' + route.color.a + ' } }';
 
                 if ( i < l ) {
 

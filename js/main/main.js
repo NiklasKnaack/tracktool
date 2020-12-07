@@ -561,7 +561,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 if ( point.x === route.startPoint.x && point.y === route.startPoint.y || point.x === route.endPoint.x && point.y === route.endPoint.y ) {
 
                     routeFound = route;
-                    routeColor = Settings.ROUTE_COLORS[ i ];
+                    routeColor = route.color;
+                    // routeColor = Settings.ROUTE_COLORS[ i ];
                     // routeColor = Tools.getRouteColorRGBA( i );
 
                     break;
@@ -1614,7 +1615,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const route = { startPoint: null, endPoint: null, graphSegments: [] };
+        const route = { startPoint: null, endPoint: null, graphSegments: [], color: Tools.getRouteColorRGBA( graph.routes.length ) };
 
         const startPoint = getPointByPosition( position );
 
@@ -1675,6 +1676,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 x: endPoint.x,
                 y: endPoint.y
+
             };
 
         }
@@ -2424,6 +2426,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 vehicles.vehicleSelected = vehicles.getVehicleByPosition( mousePos );
 
+                //centers the selected vehicle in the middle of the screen
+                if ( vehicles.vehicleSelected !== null ) {
+
+                    const dx = center.x - vehicles.vehicleSelected.position.x;
+                    const dy = center.y - vehicles.vehicleSelected.position.y;
+
+                    vehicles.updateVehiclesPositions( dx, dy );
+
+                }
+
             } else if ( editorMode === EDITOR_MODE_ENUM.togglePointWalkable ) {
 
                 togglePointWalkable( mouseCursor.position );
@@ -2513,9 +2525,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             } else if ( editorMode === EDITOR_MODE_ENUM.followVehicle ) {
 
                 vehicles.vehicleSelected = null;
-
-                // vehicles.stopFollowVehicle();
-                navigator.stop();
+                vehicles.stopFollowVehicle();
 
             } else if ( editorMode === EDITOR_MODE_ENUM.movePoint ) {
 
@@ -2527,7 +2537,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            if ( currentGraphSegment === null ) {
+            if ( currentGraphSegment === null && editorMode !== EDITOR_MODE_ENUM.followVehicle ) {
 
                 const graphIndex = 0;
 
@@ -3908,7 +3918,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
             for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
 
                 const route = graph.routes[ i ];
-                const routeColor = Settings.ROUTE_COLORS[ i ];
+                const routeColor = route.color;
+                //const routeColor = Settings.ROUTE_COLORS[ i ];
                 // const routeColor = Tools.getRouteColorRGBA( i );
 
                 if ( route.startPoint !== null ) {
@@ -4003,17 +4014,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const graph = graphsHolder[ graphIndex ];
 
-                for ( let i = 0, l = graph.routes.length; i < l; i ++ ) {
+                const route = graph.routes[ vehicles.vehicleSelected.routeIndex ];
+                const routeColor = route.color;
 
-                    const route = graph.routes[ i ];
+                for ( let i = 0, l = route.graphSegments.length; i < l; i ++ ) {
 
-                    for ( let j = 0, m = route.graphSegments.length; j < m; j ++ ) {
+                    const graphSegment = route.graphSegments[ i ];
 
-                        const graphSegment = route.graphSegments[ j ];
-
-                        drawQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 25, 255, 0, 0, 255 );
-
-                    }
+                    drawQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 25, routeColor.r, routeColor.g, routeColor.b, routeColor.a );
 
                 }
 

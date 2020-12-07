@@ -19,6 +19,8 @@ class Navigator {
 
         this._canvasManager = new CanvasManager();
 
+        // this._vehicles = new Vehicles();
+
         this._active = false;
         this._positionInit = { x: 0, y: 0 };
         this._positionTarget = { x: 0, y: 0 };
@@ -124,7 +126,7 @@ class Navigator {
 
         this._x += dx;
         this._y += dy;
-
+        
         if ( this._x > this._borders.left ) {
 
             this._x = this._borders.left;
