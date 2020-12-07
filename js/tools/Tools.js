@@ -143,4 +143,30 @@ class Tools {
 
     }
 
+    //---
+
+    static getNewPosXYObj( x = 0, y = 0 ) {
+
+        return { x: x, y: y };
+
+    }
+
+    static getNewPosXYZObj( x = 0, y = 0, z = 0 ) {
+
+        return { x: x, y: y, z: 0 };
+
+    }
+
+    static getNewColRGBObj( r = 255, g = 255, b = 255 ) {
+
+        return { r: r, g: g, b: b };
+
+    }
+
+    static getNewColRGBAObj( r = 255, g = 255, b = 255, a = 255 ) {
+
+        return { r: r, g: g, b: b, a: a };
+
+    }
+
 }

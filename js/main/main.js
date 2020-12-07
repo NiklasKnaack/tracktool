@@ -3,7 +3,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
     console.clear();
-    console.log( 'Track Tool' );
+    console.log( Settings.NAME );
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
@@ -2756,7 +2756,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                             // const angleStart = Math.PI * 0.98;
                             const angleStart = streetSegment.angle0;
                             const angleEnd = Math.atan2( tempP1.y - streetSegment.controlPoint.y, tempP1.x - streetSegment.controlPoint.x );
-                            const angleAdjacent = angleStart + Math.PI * 0.50;
+                            // const angleAdjacent = angleStart + Math.PI * 0.50;
+                            const angleAdjacent = angleStart + Settings.DIR_BOTTOM;
                             const angleOpposite = angleStart;
                             const angleIntersection = Math.atan2( tempP1.y - streetSegment.p0.y, tempP1.x - streetSegment.p0.x );
 

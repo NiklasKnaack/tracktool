@@ -1,5 +1,9 @@
 class Settings {
 
+    static NAME = 'TRAFFIC MANAGER';
+
+    static VERSION = '0.09';
+
     static FIELD_SIZE = { width: 100000, height: 100000 };
 
     static ROUTE_COLORS = [
@@ -35,5 +39,10 @@ class Settings {
         { r:   0, g:   0, b: 255, a: 255 },
 
     ];
+
+    static DIR_LEFT = Math.PI * 1.00;
+    static DIR_TOP = Math.PI * 1.50;
+    static DIR_RIGHT = Math.PI * 0.00;
+    static DIR_BOTTOM = Math.PI * 0.50;
 
 }

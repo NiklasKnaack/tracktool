@@ -7,6 +7,16 @@ class Vehicles {
 
     constructor( graphIndex, border ) {
 
+        if ( Vehicles._instance ) {
+
+            return Vehicles._instance;
+
+        }
+
+        Vehicles._instance = this;
+        
+        //---
+
         this._canvasManager = new CanvasManager();
         this._graphsManager = new GraphsManager();
         this._navigator = new Navigator();
@@ -20,8 +30,7 @@ class Vehicles {
         this._vehiclesTimer = null;
         this._vehiclesHolder = [];
         this._vehiclesImageHolder = [];
-        // this._vehiclesAngle = Math.PI * 0.50;
-        this._vehiclesAngle = Math.PI * -0.50;
+        this._vehiclesAngle = Settings.DIR_BOTTOM;
 
         this.init();
 
@@ -80,8 +89,8 @@ class Vehicles {
             vehicle.position.x += x;
             vehicle.position.y += y;
 
-            vehicle.lastPosition.x += x;
-            vehicle.lastPosition.y += y;
+            // vehicle.lastPosition.x += x;
+            // vehicle.lastPosition.y += y;
 
         }
 
@@ -177,6 +186,7 @@ class Vehicles {
 
         const vehicle = {
 
+            id: Tools.getUID(),
             position: { x: position.x, y: position.y },
             lastPosition: { x: position.x, y: position.y },
             angle: angle,
@@ -200,8 +210,8 @@ class Vehicles {
 
             const vehicle = this._vehiclesHolder[ i ];
 
-            // vehicle.lastPosition = { x: 0, y: 0 };//vehicle.position;
             vehicle.lastPosition = vehicle.position;
+            // vehicle.lastPosition = { x: vehicle.position.x, y: vehicle.position.y };
 
             const route = this._graph.routes[ vehicle.routeIndex ];
             // const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.routeIndex, vehicle.lastPosition );
@@ -277,10 +287,11 @@ class Vehicles {
 
                 const point0 = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment );
                 const point1 = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment + 0.001 );
-                //const point1 = lastPosition;
+                // const point1 = lastPosition;
 
                 output.point = point0;
-                output.angle = Math.atan2( point0.y - point1.y, point0.x - point1.x );
+                output.angle = Math.atan2( point1.y - point0.y, point1.x - point0.x );
+                // output.angle = Math.atan2( point0.y - point1.y, point0.x - point1.x );
 
                 break;
 

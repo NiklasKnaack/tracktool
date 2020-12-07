@@ -108,17 +108,24 @@ class Navigator {
         const moveDistanceMax = 500;
         const moveDistance = Tools.getDistance( this._positionInit, this._positionTarget ) * 50;
         
-        this._angle = Math.atan2( this._positionTarget.y - this._positionInit.y, this._positionTarget.x - this._positionInit.x ) + Math.PI * 0.50;
+        this._angle = Math.atan2( this._positionTarget.y - this._positionInit.y, this._positionTarget.x - this._positionInit.x ) + Settings.DIR_BOTTOM;
 
         this._sin = Math.sin( this._angle );
         this._cos = Math.cos( this._angle );
 
-        let dx = -this._sin * ( moveDistance / moveDistanceMax );
-        let dy = this._cos * ( moveDistance / moveDistanceMax );
+        const dx = -this._sin * ( moveDistance / moveDistanceMax );
+        const dy = this._cos * ( moveDistance / moveDistanceMax );
 
         //---
 
         this.move( dx, dy );
+
+        //---
+
+        //this._vehicles.updateVehiclesPositions( dx, dy );
+        //this._vehicles.test( dx, dy );
+
+        //this._background.move( dx, dy );
 
     }
 
@@ -236,7 +243,8 @@ class Navigator {
 
         //---
 
-        // vehicles.update( dx, dy );
+        //this._vehicles.updateVehiclesPositions( dx, dy );
+        //this._vehicles.test( dx, dy );
 
         this._background.move( dx, dy );
 
