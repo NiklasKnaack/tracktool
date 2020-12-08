@@ -20,6 +20,7 @@ class Vehicles {
         this._canvasManager = new CanvasManager();
         this._graphsManager = new GraphsManager();
         this._navigator = new Navigator();
+        this._collisionDetection = new CollisionDetection();
 
         this._graphIndex = graphIndex;
         this._graph = null;
@@ -206,6 +207,8 @@ class Vehicles {
 
     simulate() {
 
+        this._collisionDetection.clearGridCells();
+
         for ( let i = 0, l = this._vehiclesHolder.length; i < l; i ++ ) {
 
             const vehicle = this._vehiclesHolder[ i ];
@@ -219,6 +222,14 @@ class Vehicles {
             
             vehicle.position = routePositionObject.point;
             vehicle.angle = routePositionObject.angle;
+
+            const gridCell = this._collisionDetection.getGridCellByPosition( vehicle.position );
+
+            if ( gridCell !== null ) {
+
+                gridCell.vehicles.push( vehicle );
+
+            }
 
             const radius = Vehicles.VEHICLE_RADIUS;
 

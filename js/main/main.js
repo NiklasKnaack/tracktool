@@ -57,6 +57,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     const fileManager = new FileManager();
 
     let vehicles = null;
+    let collisionDetection = null;
     let background = null;
     let navigator = null;
 
@@ -468,6 +469,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         streetSegmentTexture = ImageFactory.getStreetSegmentTexture();
 
         vehicles = new Vehicles( 0, border );
+        collisionDetection = new CollisionDetection();
         background = new Background();
         navigator = new Navigator();
 
@@ -3503,7 +3505,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     }
 
-    /*
     function drawBox( vector, width, height, r, g, b, a ) {
 
         if ( vector.x + width / 2 < border.left || vector.x - width / 2 > border.right || vector.y + height / 2 < border.top || vector.y - height / 2 > border.bottom ) {
@@ -3551,7 +3552,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
         drawLine( bottomLeftX | 0, bottomLeftY | 0, topLeftX | 0, topLeftY | 0, r, g, b, a );
 
     }
-    */
 
     function drawQuadraticBezier( sv, cv, ev, segments, r, g, b, a ) {
 
@@ -3634,6 +3634,34 @@ document.addEventListener( 'DOMContentLoaded', () => {
         mouseCursor.position.x = mousePos.x;
         mouseCursor.position.y = mousePos.y;
         mouseCursor.color = { r: 255, g: 255, b: 255, a: 255 };
+
+        //---
+
+        const grid = collisionDetection.grid;
+
+        for ( let i = 0, l = grid.length; i < l; i ++ ) {
+
+            const gridCell = grid[ i ];
+
+            const boxPosition = { x: gridCell.x + gridCell.width / 2, y: gridCell.y + gridCell.height / 2 };
+
+            if ( gridCell.vehicles.length === 0 ) {
+
+                drawBoxOutline( boxPosition, gridCell.width, gridCell.height, 155, 0, 0, 255 );
+
+            } else {
+
+                // drawBox( boxPosition, gridCell.width, gridCell.height, 0, 0, 155, 55 );
+                drawBoxOutline( boxPosition, gridCell.width, gridCell.height, 0, 0, 155, 255 );
+                drawLine( gridCell.x | 0, gridCell.y | 0, gridCell.x + gridCell.width | 0, gridCell.y + gridCell.height | 0, 0, 0, 155, 255 );
+                drawLine( gridCell.x | 0, gridCell.y + gridCell.height | 0, gridCell.x + gridCell.width | 0, gridCell.y | 0, 0, 0, 155, 255 );
+
+            }
+
+            
+            drawCircle( gridCell, 2, 255, 0, 0, 255 );
+
+        }
 
         //---
 

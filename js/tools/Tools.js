@@ -91,6 +91,19 @@ class Tools {
 
     }
 
+    static getFieldGridBorders( width, height ) {
+
+        return { 
+            
+            left: -Settings.FIELD_SIZE.width / 2, 
+            top: -Settings.FIELD_SIZE.height / 2, 
+            right: width + Settings.FIELD_SIZE.width / 2, 
+            bottom: height + Settings.FIELD_SIZE.height / 2 
+        
+        };
+
+    }
+
     static getFieldLimitationBorders() {
 
         return {

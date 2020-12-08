@@ -21,6 +21,8 @@ class Navigator {
 
         // this._vehicles = new Vehicles();
 
+        this._collisionDetection = new CollisionDetection();
+
         this._active = false;
         this._positionInit = { x: 0, y: 0 };
         this._positionTarget = { x: 0, y: 0 };
@@ -247,6 +249,8 @@ class Navigator {
         //this._vehicles.test( dx, dy );
 
         this._background.move( dx, dy );
+
+        this._collisionDetection.moveGrid( dx, dy );
 
     }
 

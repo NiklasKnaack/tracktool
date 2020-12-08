@@ -4,7 +4,7 @@ class Settings {
 
     static VERSION = '0.09';
 
-    static FIELD_SIZE = { width: 100000, height: 100000 };
+    static FIELD_SIZE = { width: 25000, height: 25000 };
 
     static ROUTE_COLORS = [
 
