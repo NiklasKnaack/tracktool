@@ -1,7 +1,7 @@
 class CollisionDetection {
 
-    static GRID_SIZE_X = 1500;
-    static GRID_SIZE_Y = 1500;
+    static GRID_SIZE_X = 1000;
+    static GRID_SIZE_Y = 1000;
 
     constructor() {
 
@@ -72,63 +72,63 @@ class CollisionDetection {
         }
 
         //set gridCell neighbors
-        for ( let y = 0, yl = this._gridYX.length; y < yl; y ++ ) {
+        // for ( let y = 0, yl = this._gridYX.length; y < yl; y ++ ) {
 
-            for ( let x = 0, xl = this._gridYX[ y ].length; x < xl; x ++ ) {
+        //     for ( let x = 0, xl = this._gridYX[ y ].length; x < xl; x ++ ) {
 
-                const gridCell = this._gridYX[ y ][ x ];
+        //         const gridCell = this._gridYX[ y ][ x ];
 
-                if ( y > 0 && x > 0 ) {
+        //         if ( y > 0 && x > 0 ) {
 
-                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x - 1 ] );
+        //             gridCell.neighbors.push( this._gridYX[ y - 1 ][ x - 1 ] );
 
-                }
+        //         }
 
-                if ( y > 0 ) {
+        //         if ( y > 0 ) {
 
-                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x ] );
+        //             gridCell.neighbors.push( this._gridYX[ y - 1 ][ x ] );
 
-                }
+        //         }
 
-                if ( y > 0 && x < xl - 2 ) {
+        //         if ( y > 0 && x < xl - 2 ) {
 
-                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x + 1 ] );
+        //             gridCell.neighbors.push( this._gridYX[ y - 1 ][ x + 1 ] );
 
-                }
+        //         }
 
-                if ( x > 0 ) {
+        //         if ( x > 0 ) {
 
-                    gridCell.neighbors.push( this._gridYX[ y ][ x - 1 ] );
+        //             gridCell.neighbors.push( this._gridYX[ y ][ x - 1 ] );
 
-                }
+        //         }
 
-                if ( x < xl - 2 ) {
+        //         if ( x < xl - 2 ) {
 
-                    gridCell.neighbors.push( this._gridYX[ y ][ x + 1 ] );
+        //             gridCell.neighbors.push( this._gridYX[ y ][ x + 1 ] );
 
-                }
+        //         }
 
-                if ( y < yl - 2 && x > 0 ) {
+        //         if ( y < yl - 2 && x > 0 ) {
 
-                    gridCell.neighbors.push( this._gridYX[ y + 1 ][ x - 1 ] );
+        //             gridCell.neighbors.push( this._gridYX[ y + 1 ][ x - 1 ] );
 
-                }
+        //         }
 
-                if ( y < yl - 2 ) {
+        //         if ( y < yl - 2 ) {
 
-                    gridCell.neighbors.push( this._gridYX[ y + 1 ][ x ] );
+        //             gridCell.neighbors.push( this._gridYX[ y + 1 ][ x ] );
 
-                }
+        //         }
 
-                if ( y < yl - 2 && x < xl - 2 ) {
+        //         if ( y < yl - 2 && x < xl - 2 ) {
 
-                    gridCell.neighbors.push( this._gridYX[ y + 1 ][ x + 1 ] );
+        //             gridCell.neighbors.push( this._gridYX[ y + 1 ][ x + 1 ] );
 
-                }
+        //         }
 
-            }
+        //     }
 
-        }
+        // }
 
     }
 
@@ -213,17 +213,17 @@ class CollisionDetection {
 
             }
 
-            if ( gridCell.neighbors.length > 0 ) {
+            // if ( gridCell.neighbors.length > 0 ) {
 
-                for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
+            //     for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
 
-                    const gridCellNeighbor = gridCell.neighbors[ j ];
+            //         const gridCellNeighbor = gridCell.neighbors[ j ];
 
-                    this._getVehiclesOfGridCell( gridCellNeighbor, vehiclesFound );
+            //         this._getVehiclesOfGridCell( gridCellNeighbor, vehiclesFound );
 
-                }
+            //     }
 
-            }
+            // }
 
             //---
 
@@ -248,8 +248,9 @@ class CollisionDetection {
 
             }
 
-            //for ( let j = i, m = Math.min( vehicles.length, 500 ); j < m; j ++ ) {
-            for ( let j = 0, m = vehicles.length; j < m; j ++ ) {   
+            // for ( let j = i, m = Math.min( vehicles.length, 500 ); j < m; j ++ ) {
+            // for ( let j = 0, m = vehicles.length; j < m; j ++ ) {   
+            for ( let j = i + 1, m = vehicles.length; j < m; j ++ ) {   
 
                 const vehicle1 = vehicles[ j ];
 
@@ -259,7 +260,7 @@ class CollisionDetection {
 
                 }
 
-                if ( vehicle0.id !== vehicle1.id ) {
+                // if ( vehicle0.id !== vehicle1.id ) {
 
                     if ( Tools.getDistance( vehicle0.position, vehicle1.position ) < Vehicles.VEHICLE_RADIUS * 2 ) {
 
@@ -268,7 +269,7 @@ class CollisionDetection {
 
                     }
 
-                }
+                // }
 
             }
 
