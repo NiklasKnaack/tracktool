@@ -63,6 +63,8 @@ class Vehicles {
         // this.updateGraph();
         // this.startSimulation();
 
+        this._vehiclesTimer = new AnimationFrameTimer( () => this.addVehicle(), Vehicles.INTERVAL );
+
     }
 
     clear() {
@@ -101,23 +103,32 @@ class Vehicles {
 
     startSimulation() {
 
-        this.stopSimulation();
+        //this.stopSimulation();
 
-        this._vehiclesTimer = setInterval( this.addVehicle.bind( this ), Vehicles.INTERVAL );
+        //this._vehiclesTimer = setInterval( this.addVehicle.bind( this ), Vehicles.INTERVAL );
+        //this._vehiclesTimer = new AnimationFrameTimer( () => this.addVehicle(), Vehicles.INTERVAL );
 
-        this.addVehicle();
+        //this._vehiclesTimer = new AnimationFrameTimer( () => this.addVehicle(), Vehicles.INTERVAL );
+
+        this._vehiclesTimer.start();
+
+        //this.addVehicle();
 
     }
 
     stopSimulation() {
 
-        if ( this._vehiclesTimer !== null ) {
+        // if ( this._vehiclesTimer !== null ) {
 
-            clearInterval( this._vehiclesTimer );
+            //clearInterval( this._vehiclesTimer );
 
-            this._vehiclesTimer = null;
+            // this._vehiclesTimer = null;
 
-        }
+            // this._vehiclesTimer = null;
+
+        //}
+
+        this._vehiclesTimer.stop();
 
     }
 
@@ -195,7 +206,8 @@ class Vehicles {
             routeIndex: routeIndex,
             speed: speed,
             image: image,
-            context: this._canvasManager.getContextByName( 'main' )
+            context: this._canvasManager.getContextByName( 'main' ),
+            collisionDetected: false
 
         }
 
@@ -208,6 +220,8 @@ class Vehicles {
     simulate() {
 
         this._collisionDetection.clearGridCells();
+
+        //---
 
         for ( let i = 0, l = this._vehiclesHolder.length; i < l; i ++ ) {
 
@@ -223,6 +237,8 @@ class Vehicles {
             vehicle.position = routePositionObject.point;
             vehicle.angle = routePositionObject.angle;
 
+            //---
+
             const gridCell = this._collisionDetection.getGridCellByPosition( vehicle.position );
 
             if ( gridCell !== null ) {
@@ -230,6 +246,8 @@ class Vehicles {
                 gridCell.vehicles.push( vehicle );
 
             }
+
+            //---
 
             const radius = Vehicles.VEHICLE_RADIUS;
 
@@ -371,6 +389,18 @@ class Vehicles {
     }
 
     //---
+
+    get vehiclesTimer() {
+
+        return this._vehiclesTimer;
+
+    }
+
+    get allVehicles() {
+
+        return this._vehiclesHolder;
+
+    }
 
     get vehiclesSimulation() {
 

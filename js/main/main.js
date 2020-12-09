@@ -3658,10 +3658,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            
             drawCircle( gridCell, 2, 255, 0, 0, 255 );
 
         }
+
+        collisionDetection.check();
 
         //---
 
@@ -4031,11 +4032,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
+        const allVehicles = vehicles.allVehicles;
+
+        // console.clear();
+        // console.log( allVehicles.length );
+
+        for ( let i = 0, l = allVehicles.length; i < l; i ++ ) {
+
+            const vehicle = allVehicles[ i ];
+
+            if ( vehicle.collisionDetected === true ) {
+
+                drawCircleOutline( vehicle.position, Vehicles.VEHICLE_RADIUS, 255, 0, 0, 255, 0.50 );
+
+            }
+
+        }
+
         if ( vehicles.vehicleSelected !== null ) {
 
             if ( vehicles.vehicleSelected.t < 1 ) {
 
-                drawCircleOutline( vehicles.vehicleSelected.position, Vehicles.VEHICLE_RADIUS, 0, 255, 0, 255 );
+                drawCircleOutline( vehicles.vehicleSelected.position, Vehicles.VEHICLE_RADIUS, 0, 255, 0, 255, 0.50 );
 
                 //---
 
@@ -4078,7 +4096,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
+    //const testAnimationFrameTimer = new AnimationFrameTimer( () => console.log( 'tick' ), 500 );
     function render( timestamp ) {
+
+        //testAnimationFrameTimer.call( timestamp );
+
+        //if ( vehicles.vehiclesTimer !== null ) {
+
+        vehicles.vehiclesTimer.call( timestamp );
+
+        // if ( vehicles.vehiclesTimer.active === true ) {
+            
+        //     vehicles.vehiclesTimer.call( timestamp );
+
+        // }
+
+        // console.log( timestamp );
 
         clearImageData();
 
