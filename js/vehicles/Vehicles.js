@@ -283,7 +283,29 @@ class Vehicles {
 
         this._vehiclesHolder = this._vehiclesHolder.filter( ( v ) => v.t !== 1 );
 
+        //this._vehiclesHolder = this._removeFinishedVehicles( this._vehiclesHolder );
+
     }
+
+    // _removeFinishedVehicles( inp ) {
+
+    //     const result = [ ...inp ];
+
+    //     for ( let i = this._vehiclesHolder.length - 1, l = 0; i > l; i -- ) {
+
+    //         const vehicle = this._vehiclesHolder[ i ];
+
+    //         if ( vehicle.t >= 1 ) {
+
+    //             this._vehiclesHolder.splice( i, 1 );
+
+    //         }
+
+    //     }
+
+    //     return inp;
+
+    // }
 
     //---
 

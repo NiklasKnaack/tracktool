@@ -4034,8 +4034,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const allVehicles = vehicles.allVehicles;
 
-        // console.clear();
-        // console.log( allVehicles.length );
+        console.clear();
+        console.log( allVehicles.length );
 
         for ( let i = 0, l = allVehicles.length; i < l; i ++ ) {
 
