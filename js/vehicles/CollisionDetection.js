@@ -20,7 +20,7 @@ class CollisionDetection {
         // this._navigator = new Navigator();
         this._vehicles = new Vehicles();
 
-        this._canvasObject = this._canvasManager.getCanvasObjectByName( 'main' );
+        // this._canvasObject = this._canvasManager.getCanvasObjectByName( 'main' );
         // this._context = this._canvasObject.context;
         this._gridBorders = Tools.getFieldGridBorders( this._canvasManager.width, this._canvasManager.height );
 
@@ -72,63 +72,63 @@ class CollisionDetection {
         }
 
         //set gridCell neighbors
-        // for ( let y = 0, yl = this._gridYX.length; y < yl; y ++ ) {
+        for ( let y = 0, yl = this._gridYX.length; y < yl; y ++ ) {
 
-        //     for ( let x = 0, xl = this._gridYX[ y ].length; x < xl; x ++ ) {
+            for ( let x = 0, xl = this._gridYX[ y ].length; x < xl; x ++ ) {
 
-        //         const gridCell = this._gridYX[ y ][ x ];
+                const gridCell = this._gridYX[ y ][ x ];
 
-        //         if ( y > 0 && x > 0 ) {
+                if ( y > 0 && x > 0 ) {
 
-        //             gridCell.neighbors.push( this._gridYX[ y - 1 ][ x - 1 ] );
+                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x - 1 ] );
 
-        //         }
+                }
 
-        //         if ( y > 0 ) {
+                if ( y > 0 ) {
 
-        //             gridCell.neighbors.push( this._gridYX[ y - 1 ][ x ] );
+                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x ] );
 
-        //         }
+                }
 
-        //         if ( y > 0 && x < xl - 2 ) {
+                if ( y > 0 && x < xl - 2 ) {
 
-        //             gridCell.neighbors.push( this._gridYX[ y - 1 ][ x + 1 ] );
+                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x + 1 ] );
 
-        //         }
+                }
 
-        //         if ( x > 0 ) {
+                if ( x > 0 ) {
 
-        //             gridCell.neighbors.push( this._gridYX[ y ][ x - 1 ] );
+                    gridCell.neighbors.push( this._gridYX[ y ][ x - 1 ] );
 
-        //         }
+                }
 
-        //         if ( x < xl - 2 ) {
+                if ( x < xl - 2 ) {
 
-        //             gridCell.neighbors.push( this._gridYX[ y ][ x + 1 ] );
+                    gridCell.neighbors.push( this._gridYX[ y ][ x + 1 ] );
 
-        //         }
+                }
 
-        //         if ( y < yl - 2 && x > 0 ) {
+                if ( y < yl - 2 && x > 0 ) {
 
-        //             gridCell.neighbors.push( this._gridYX[ y + 1 ][ x - 1 ] );
+                    gridCell.neighbors.push( this._gridYX[ y + 1 ][ x - 1 ] );
 
-        //         }
+                }
 
-        //         if ( y < yl - 2 ) {
+                if ( y < yl - 2 ) {
 
-        //             gridCell.neighbors.push( this._gridYX[ y + 1 ][ x ] );
+                    gridCell.neighbors.push( this._gridYX[ y + 1 ][ x ] );
 
-        //         }
+                }
 
-        //         if ( y < yl - 2 && x < xl - 2 ) {
+                if ( y < yl - 2 && x < xl - 2 ) {
 
-        //             gridCell.neighbors.push( this._gridYX[ y + 1 ][ x + 1 ] );
+                    gridCell.neighbors.push( this._gridYX[ y + 1 ][ x + 1 ] );
 
-        //         }
+                }
 
-        //     }
+            }
 
-        // }
+        }
 
     }
 
@@ -213,17 +213,17 @@ class CollisionDetection {
 
             }
 
-            // if ( gridCell.neighbors.length > 0 ) {
+            if ( gridCell.neighbors.length > 0 ) {
 
-            //     for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
+                for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
 
-            //         const gridCellNeighbor = gridCell.neighbors[ j ];
+                    const gridCellNeighbor = gridCell.neighbors[ j ];
 
-            //         this._getVehiclesOfGridCell( gridCellNeighbor, vehiclesFound );
+                    this._getVehiclesOfGridCell( gridCellNeighbor, vehiclesFound );
 
-            //     }
+                }
 
-            // }
+            }
 
             //---
 
@@ -241,12 +241,6 @@ class CollisionDetection {
         for ( let i = 0, l = vehicles.length; i < l; i ++ ) {
 
             const vehicle0 = vehicles[ i ];
-
-            if ( vehicle0.collisionDetected === true ) {
-
-                continue;
-
-            }
 
             // for ( let j = i, m = Math.min( vehicles.length, 500 ); j < m; j ++ ) {
             // for ( let j = 0, m = vehicles.length; j < m; j ++ ) {   
@@ -278,9 +272,11 @@ class CollisionDetection {
                         vehicle0.collisionDetected = true;
                         vehicle1.collisionDetected = true;
 
-                        //funktioniert noch nicht so wie es soll. wenn die vehicles langsamer werden oder zum stehen kommen scheint die collision detection nicht mehr korrekt zu arbeiten
-                        // vehicle0.speed = this._vehicles.getVehicleSpeed( vehicle0, 0.50 );
-                        // vehicle1.speed = this._vehicles.getVehicleSpeed( vehicle1, 0.50 );
+                        //deaktiviert, weil es aktuell sonst zu unendlich langen Rückstaus kommt die für immer mehr vehicles sorgen und die performance dann irgendwann in den Keller geht.
+                        // vehicle0.speed = this._vehicles.getVehicleSpeed( vehicle0, 0.0001 );
+                        // vehicle1.speed = this._vehicles.getVehicleSpeed( vehicle1, 0.0001 );
+                        // vehicle0.speed = 0;
+                        // vehicle1.speed = 0;
 
                     }
 

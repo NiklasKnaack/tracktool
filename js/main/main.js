@@ -3662,7 +3662,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        collisionDetection.check();
+        // collisionDetection.check();
 
         //---
 
@@ -4083,6 +4083,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         drawStreetSegments();
 
         vehicles.simulate();
+
+        collisionDetection.check();
 
         //---
 
