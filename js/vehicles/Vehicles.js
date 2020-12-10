@@ -60,7 +60,7 @@ class Vehicles {
 
         }
 
-        // this.updateGraph();
+        this.updateGraph();
         // this.startSimulation();
 
         this._vehiclesTimer = new AnimationFrameTimer( () => this.addVehicle(), Vehicles.INTERVAL );
@@ -149,8 +149,8 @@ class Vehicles {
 
                 }
 
-                // const routePositionObject = this.getPointAndAngleOnRouteByT( 0, routeIndex, { x: 0, y: 0 } );
-                const routePositionObject = this.getPointAndAngleOnRouteByT( 0, routeIndex );
+                // const routePositionObject = this.getPointAndAngleOnRouteByT( 0, route, { x: 0, y: 0 } );
+                const routePositionObject = this.getPointAndAngleOnRouteByT( 0, route );
 
                 if ( routePositionObject === null ) {
 
@@ -160,9 +160,9 @@ class Vehicles {
 
                 //const vehicleSpeed = ( 1 / route.length ) * 2.5;
                 const vehicleImage = this._vehiclesImageHolder[ Math.floor( Math.random() * this._vehiclesImageHolder.length ) ];
-                const vehicle = this.getVehicle( routePositionObject.point, routePositionObject.angle, 0, route, routeIndex, 0, vehicleImage );
+                const vehicle = this.getVehicleObject( routePositionObject.point, routePositionObject.angle, 0, route, routeIndex, 2.5, vehicleImage );
 
-                vehicle.speed = this.getVehicleSpeed( vehicle, 2.5 );
+                vehicle.speed = this.getVehicleSpeed( vehicle, vehicle.maxSpeed );
 
                 this._vehiclesHolder.push( vehicle );
 
@@ -196,7 +196,7 @@ class Vehicles {
 
     //---
 
-    getVehicle( position, angle = 0, t = 0, route = null, routeIndex = 0, speed = 0.0015, image = null ) {
+    getVehicleObject( position, angle = 0, t = 0, route = null, routeIndex = 0, maxSpeed = 2.50, image = null ) {
 
         const vehicle = {
 
@@ -207,7 +207,9 @@ class Vehicles {
             t: t,
             route: route,
             routeIndex: routeIndex,
-            speed: speed,
+            speed: 0,
+            minSpeed: 0,
+            maxSpeed: maxSpeed,
             image: image,
             context: this._canvasManager.getContextByName( 'main' ),
             collisionDetected: false
@@ -239,22 +241,24 @@ class Vehicles {
             vehicle.lastPosition = vehicle.position;
             // vehicle.lastPosition = { x: vehicle.position.x, y: vehicle.position.y };
 
-            const route = this._graph.routes[ vehicle.routeIndex ];
-            // const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.routeIndex, vehicle.lastPosition );
-            const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.routeIndex );
+            //const route = this._graph.routes[ vehicle.routeIndex ];
+            // const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
+            const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route );
             
             vehicle.position = routePositionObject.point;
             vehicle.angle = routePositionObject.angle;
 
             //---
 
-            const gridCell = this._collisionDetection.getGridCellByPosition( vehicle.position );
+            // const gridCell = this._collisionDetection.getGridCellByPosition( vehicle.position );
 
-            if ( gridCell !== null ) {
+            // if ( gridCell !== null ) {
 
-                gridCell.vehicles.push( vehicle );
+            //     gridCell.vehicles.push( vehicle );
 
-            }
+            // }
+
+            this._collisionDetection.addVehicleToGrid( vehicle );
 
             //---
 
@@ -276,7 +280,7 @@ class Vehicles {
 
             }
 
-            if ( route.complete === true && this._vehiclesSimulation === true ) {
+            if ( vehicle.route.complete === true && this._vehiclesSimulation === true ) {
 
                 vehicle.t += vehicle.speed;
 
@@ -290,37 +294,33 @@ class Vehicles {
 
         }
 
-        this._vehiclesHolder = this._vehiclesHolder.filter( ( v ) => v.t !== 1 );
+        //---
 
-        //this._vehiclesHolder = this._removeFinishedVehicles( this._vehiclesHolder );
+        //this._vehiclesHolder = this._vehiclesHolder.filter( ( v ) => v.t !== 1 );
+
+        this._removeFinishedVehicles();
 
     }
 
-    // _removeFinishedVehicles( inp ) {
+    _removeFinishedVehicles() {
 
-    //     const result = [ ...inp ];
+        for ( let i = this._vehiclesHolder.length - 1, l = -1; i > l; i -- ) {
 
-    //     for ( let i = this._vehiclesHolder.length - 1, l = 0; i > l; i -- ) {
+            const vehicle = this._vehiclesHolder[ i ];
 
-    //         const vehicle = this._vehiclesHolder[ i ];
+            if ( vehicle.t >= 1 ) {
+                
+                this._vehiclesHolder.splice( i, 1 );
 
-    //         if ( vehicle.t >= 1 ) {
+            }
 
-    //             this._vehiclesHolder.splice( i, 1 );
+        }
 
-    //         }
-
-    //     }
-
-    //     return inp;
-
-    // }
+    }
 
     //---
 
-    getPointAndAngleOnRouteByT( t, routeIndex/*, lastPosition*/ ) {
-
-        const route = this._graph.routes[ routeIndex ];
+    getPointAndAngleOnRouteByT( t, route/*, lastPosition*/ ) {
 
         const output = {
 

@@ -1,7 +1,7 @@
 class CollisionDetection {
 
-    static GRID_SIZE_X = 1000;
-    static GRID_SIZE_Y = 1000;
+    static GRID_CELL_SIZE_X = 1000;
+    static GRID_CELL_SIZE_Y = 1000;
 
     constructor() {
 
@@ -36,21 +36,33 @@ class CollisionDetection {
     init() {
 
         //add grid
-        let ix = 0;
-        let iy = 0;
+        const gridCellsX = Math.ceil( ( Math.abs( this._gridBorders.left ) + this._gridBorders.right ) / CollisionDetection.GRID_CELL_SIZE_X );
+        const gridCellsY = Math.ceil( ( Math.abs( this._gridBorders.top ) + this._gridBorders.bottom ) / CollisionDetection.GRID_CELL_SIZE_Y );
 
-        for ( let y = this._gridBorders.top, yl = this._gridBorders.bottom + this._canvasManager.height; y < yl; y += CollisionDetection.GRID_SIZE_Y ) {
+        // const xl = gridCellsX * ( CollisionDetection.GRID_CELL_SIZE_X - CollisionDetection.GRID_CELL_OVERLAP );
+        // const yl = gridCellsY * ( CollisionDetection.GRID_CELL_SIZE_Y - CollisionDetection.GRID_CELL_OVERLAP );
+        // console.log( Math.abs( this._gridBorders.left ) + this._gridBorders.right, Math.abs( this._gridBorders.top ) + this._gridBorders.bottom );
+        // console.log( gridCellsX, gridCellsY );
+        // console.log( xl, yl );
+        // console.log( this._gridBorders.left, this._gridBorders.top );
 
-            this._gridYX[ iy ] = [];
+        for ( let y = 0; y < gridCellsY; y ++ ) {
 
-            for ( let x = this._gridBorders.left, xl = this._gridBorders.right + this._canvasManager.width; x < xl; x += CollisionDetection.GRID_SIZE_X ) {
+            this._gridYX[ y ] = [];
+
+            for ( let x = 0; x < gridCellsX; x ++ ) {
+
+                const xPos = x * CollisionDetection.GRID_CELL_SIZE_X + this._gridBorders.left;
+                const yPos = y * CollisionDetection.GRID_CELL_SIZE_Y + this._gridBorders.top;
 
                 const gridCell = {
 
-                    x: x,
-                    y: y,
-                    width: CollisionDetection.GRID_SIZE_X,
-                    height: CollisionDetection.GRID_SIZE_Y,
+                    x: xPos,
+                    y: yPos,
+                    width: CollisionDetection.GRID_CELL_SIZE_X,
+                    height: CollisionDetection.GRID_CELL_SIZE_Y,
+                    xe: xPos + CollisionDetection.GRID_CELL_SIZE_X,
+                    ye: yPos + CollisionDetection.GRID_CELL_SIZE_Y,
                     neighbors: [],
                     vehicles: [],
                     // visited: false
@@ -59,15 +71,11 @@ class CollisionDetection {
 
                 this._grid.push( gridCell );
 
-                this._gridYX[ iy ][ ix ] = gridCell;
-
-                ix++;
+                this._gridYX[ y ][ x ] = gridCell;
 
 
             }
 
-            ix = 0;
-            iy++;
 
         }
 
@@ -142,6 +150,8 @@ class CollisionDetection {
 
             gridCell.x += dx;
             gridCell.y += dy;
+            gridCell.xe += dx;
+            gridCell.ye += dy;
 
         }
 
@@ -172,6 +182,52 @@ class CollisionDetection {
 
     //---
 
+    addVehicleToGrid( vehicle ) {
+
+        const gridCell = this.getGridCellByPosition( vehicle.position );
+
+        if ( gridCell !== null ) {
+
+            gridCell.vehicles.push( vehicle );
+
+            //---
+
+            // if ( gridCell.neighbors.length > 0 ) {
+
+            //     for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
+
+            //         const gridCellNeighbor = gridCell.neighbors[ j ];
+
+            //         if ( this._isPositionInGridCell( vehicle.position, gridCellNeighbor ) === true ) {
+
+            //             gridCell.vehicles.push( vehicle );
+
+            //         }
+
+            //     }
+
+            // }
+
+        }
+
+    }
+
+    //---
+
+    _isPositionInGridCell( position, gridCell ) {
+
+        if ( position.x >= gridCell.x && position.x < gridCell.xe && position.y >= gridCell.y && position.y < gridCell.ye ) {
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+    //---
+
     getGridCellByPosition( position ) {
 
         let gridCell = null;
@@ -180,7 +236,8 @@ class CollisionDetection {
 
             const gC = this._grid[ i ];
 
-            if ( position.x >= gC.x && position.x < gC.x + gC.width && position.y >= gC.y && position.y < gC.y + gC.height ) {
+            // if ( position.x >= gC.x && position.x < gC.xe && position.y >= gC.y && position.y < gC.ye ) {
+            if ( this._isPositionInGridCell( position, gC ) === true ) {
 
                 gridCell = gC;
 
@@ -249,6 +306,12 @@ class CollisionDetection {
                 const vehicle1 = vehicles[ j ];
 
                 if ( vehicle0.collisionDetected === true && vehicle1.collisionDetected === true ) {
+
+                    continue;
+
+                }
+
+                if ( vehicle0.id === vehicle1.id ) {
 
                     continue;
 

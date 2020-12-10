@@ -468,16 +468,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         streetSegmentTexture = ImageFactory.getStreetSegmentTexture();
 
-        vehicles = new Vehicles( 0, border );
-        collisionDetection = new CollisionDetection();
+        
+        
         background = new Background();
-        navigator = new Navigator();
+        
 
         //---
 
         window.addEventListener( 'resize', onResize, false );
 
         restart();
+
+        //---
+
+        vehicles = new Vehicles( 0, border );
+        collisionDetection = new CollisionDetection();
+        navigator = new Navigator();
 
     }
 
@@ -520,11 +526,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        vehicles.updateGraph();
-        
-        if ( vehicles.vehiclesSimulation === true ) {
+        if ( vehicles !== null ) {
 
-            vehicles.startSimulation();
+            vehicles.updateGraph();
+        
+            if ( vehicles.vehiclesSimulation === true ) {
+
+                vehicles.startSimulation();
+
+            }
 
         }
 
@@ -3647,12 +3657,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( gridCell.vehicles.length === 0 ) {
 
-                drawBoxOutline( boxPosition, gridCell.width, gridCell.height, 155, 0, 0, 255 );
+                drawBoxOutline( boxPosition, gridCell.width - 1, gridCell.height - 1, 155, 0, 0, 255 );
 
             } else {
 
                 // drawBox( boxPosition, gridCell.width, gridCell.height, 0, 0, 155, 55 );
-                drawBoxOutline( boxPosition, gridCell.width, gridCell.height, 0, 0, 155, 255 );
+                drawBoxOutline( boxPosition, gridCell.width - 1, gridCell.height - 1, 0, 0, 155, 255 );
                 drawLine( gridCell.x | 0, gridCell.y | 0, gridCell.x + gridCell.width | 0, gridCell.y + gridCell.height | 0, 0, 0, 155, 255 );
                 drawLine( gridCell.x | 0, gridCell.y + gridCell.height | 0, gridCell.x + gridCell.width | 0, gridCell.y | 0, 0, 0, 155, 255 );
 
@@ -4034,8 +4044,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const allVehicles = vehicles.allVehicles;
 
-        console.clear();
-        console.log( allVehicles.length );
+        // console.clear();
+        // console.log( allVehicles.length );
 
         for ( let i = 0, l = allVehicles.length; i < l; i ++ ) {
 
