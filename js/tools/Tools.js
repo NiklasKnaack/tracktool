@@ -152,7 +152,10 @@ class Tools {
 
     static positionInCircle( x, y, cx, cy, radius ) {
 
-        return ( x - cx ) * ( x - cx ) + ( y - cy ) * ( y - cy ) <= radius * radius;
+        const a = x - cx;
+        const b = y - cy;
+
+        return a * a + b * b <= radius * radius;
 
     }
 

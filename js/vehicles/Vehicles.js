@@ -158,9 +158,11 @@ class Vehicles {
 
                 }
 
-                const vehicleSpeed = ( 1 / route.length ) * 2.5;
+                //const vehicleSpeed = ( 1 / route.length ) * 2.5;
                 const vehicleImage = this._vehiclesImageHolder[ Math.floor( Math.random() * this._vehiclesImageHolder.length ) ];
-                const vehicle = this.getVehicle( routePositionObject.point, routePositionObject.angle, 0, routeIndex, vehicleSpeed, vehicleImage );
+                const vehicle = this.getVehicle( routePositionObject.point, routePositionObject.angle, 0, route, routeIndex, 0, vehicleImage );
+
+                vehicle.speed = this.getVehicleSpeed( vehicle, 2.5 );
 
                 this._vehiclesHolder.push( vehicle );
 
@@ -194,7 +196,7 @@ class Vehicles {
 
     //---
 
-    getVehicle( position, angle = 0, t = 0, routeIndex = 0, speed = 0.0015, image = null ) {
+    getVehicle( position, angle = 0, t = 0, route = null, routeIndex = 0, speed = 0.0015, image = null ) {
 
         const vehicle = {
 
@@ -203,6 +205,7 @@ class Vehicles {
             lastPosition: { x: position.x, y: position.y },
             angle: angle,
             t: t,
+            route: route,
             routeIndex: routeIndex,
             speed: speed,
             image: image,
@@ -212,6 +215,12 @@ class Vehicles {
         }
 
         return vehicle;
+
+    }
+
+    getVehicleSpeed( vehicle, speed ) {
+
+        return ( 1 / vehicle.route.length ) * speed;
 
     }
 

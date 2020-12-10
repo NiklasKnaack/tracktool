@@ -262,10 +262,25 @@ class CollisionDetection {
 
                 // if ( vehicle0.id !== vehicle1.id ) {
 
-                    if ( Tools.getDistance( vehicle0.position, vehicle1.position ) < Vehicles.VEHICLE_RADIUS * 2 ) {
+                    // if ( Tools.getDistance( vehicle0.position, vehicle1.position ) < Vehicles.VEHICLE_RADIUS * 2 ) {
+
+                    //     vehicle0.collisionDetected = true;
+                    //     vehicle1.collisionDetected = true;
+
+                    //     // vehicle0.speed = this._vehicles.getVehicleSpeed( vehicle0, 0.05 );
+                    //     // vehicle1.speed = this._vehicles.getVehicleSpeed( vehicle1, 0.05 );
+
+                    // }
+
+                    //better performance then getDistance
+                    if ( Tools.positionInCircle( vehicle1.position.x, vehicle1.position.y, vehicle0.position.x, vehicle0.position.y, Vehicles.VEHICLE_RADIUS * 2 ) === true ) {
 
                         vehicle0.collisionDetected = true;
                         vehicle1.collisionDetected = true;
+
+                        //funktioniert noch nicht so wie es soll. wenn die vehicles langsamer werden oder zum stehen kommen scheint die collision detection nicht mehr korrekt zu arbeiten
+                        // vehicle0.speed = this._vehicles.getVehicleSpeed( vehicle0, 0.50 );
+                        // vehicle1.speed = this._vehicles.getVehicleSpeed( vehicle1, 0.50 );
 
                     }
 
