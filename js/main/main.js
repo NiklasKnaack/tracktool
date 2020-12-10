@@ -48,7 +48,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let height = 512;
 
     const border = { left: 1, top: 1, right: width, bottom: height };
-    const center = { x: width / 2, y: height / 2 };
 
     const debugElements = new DebugElements( document.body );
     const pathfinder = new Pathfinder();
@@ -312,7 +311,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 vehicles.clear();
                 vehicles.updateGraph();
-                vehicles.startSimulation();
+                
+                if ( vehicles.vehiclesSimulation === true ) {
+
+                    vehicles.startSimulation();
+    
+                }
 
                 debugElements.clear();
 
@@ -498,10 +502,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
         height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-        canvasManager.width = width;
-        canvasManager.height = height;
-
-        //background.resize();
+        canvasManager.resize( width, height );
 
         imageDataMain = contextMain.getImageData( 0, 0, width, height );
         dataMain = imageDataMain.data;
@@ -510,9 +511,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         border.right = width;
         border.bottom = height;
-
-        center.x = width / 2;
-        center.y = height / 2;
 
         //---
 
@@ -523,20 +521,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
         animationFrame = requestAnimFrame( render );
-
-        //---
-
-        if ( vehicles !== null ) {
-
-            vehicles.updateGraph();
-        
-            if ( vehicles.vehiclesSimulation === true ) {
-
-                vehicles.startSimulation();
-
-            }
-
-        }
 
         //---
 
@@ -2389,7 +2373,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            navigator.setPositionInit( center.x, center.y );
+            navigator.setPositionInit( canvasManager.center.x, canvasManager.center.y );
             navigator.active = true;
 
             if ( debugMode === true ) {

@@ -31,7 +31,7 @@ class Navigator {
         this._cos = 0;
         this._x = 0;
         this._y = 0;
-        this._borders = Tools.getFieldLimitationBorders();
+        this._borders = Tools.getFieldLimitationBorders( this._canvasManager.width, this._canvasManager.height );
 
     }
 
@@ -167,6 +167,8 @@ class Navigator {
             dy = 0;
 
         }
+
+        // console.log( this._x, this._y );
 
         //---
         

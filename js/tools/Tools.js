@@ -99,19 +99,23 @@ class Tools {
             top: -Settings.FIELD_SIZE.height / 2, 
             right: width + Settings.FIELD_SIZE.width / 2, 
             bottom: height + Settings.FIELD_SIZE.height / 2 
+            // left: -Settings.FIELD_SIZE.width / 2 - width / 2, 
+            // top: -Settings.FIELD_SIZE.height / 2 - height / 2,  
+            // right: 0 + Settings.FIELD_SIZE.width / 2 + width / 2, 
+            // bottom: 0 + Settings.FIELD_SIZE.height / 2 + height / 2
         
         };
 
     }
 
-    static getFieldLimitationBorders() {
+    static getFieldLimitationBorders( width, height ) {
 
         return {
 
-            left: Settings.FIELD_SIZE.width / 2, 
-            top: Settings.FIELD_SIZE.height / 2, 
-            right: -Settings.FIELD_SIZE.width / 2, 
-            bottom: -Settings.FIELD_SIZE.height / 2
+            left: Settings.FIELD_SIZE.width / 2 - width / 2, 
+            top: Settings.FIELD_SIZE.height / 2 - height / 2, 
+            right: -Settings.FIELD_SIZE.width / 2 + width / 2, 
+            bottom: -Settings.FIELD_SIZE.height / 2 + width / 2
 
         };
 

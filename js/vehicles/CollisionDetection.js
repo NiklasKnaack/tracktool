@@ -35,6 +35,8 @@ class CollisionDetection {
 
     init() {
 
+        console.log( this._gridBorders.left, this._gridBorders.top );
+
         //add grid
         const gridCellsX = Math.ceil( ( Math.abs( this._gridBorders.left ) + this._gridBorders.right ) / CollisionDetection.GRID_CELL_SIZE_X );
         const gridCellsY = Math.ceil( ( Math.abs( this._gridBorders.top ) + this._gridBorders.bottom ) / CollisionDetection.GRID_CELL_SIZE_Y );

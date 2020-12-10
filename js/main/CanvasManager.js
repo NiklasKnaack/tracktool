@@ -15,6 +15,8 @@ class CanvasManager {
         this._width = width;
         this._height = height;
 
+        this._center = { x: width / 2, y: height / 2 };
+
         //---
 
         this._style = {
@@ -27,6 +29,16 @@ class CanvasManager {
         };
 
         this._canvasObjectHolder = [];
+
+    }
+
+    resize( width, height ) {
+
+        this.width = width;
+        this.height = height;
+
+        this._center.x = width / 2;
+        this._center.y = height / 2;
 
     }
 
@@ -227,6 +239,12 @@ class CanvasManager {
             this._canvasObjectHolder[ i ].canvas.height = h;
 
         }
+
+    }
+
+    get center() {
+
+        return this._center;
 
     }
 
