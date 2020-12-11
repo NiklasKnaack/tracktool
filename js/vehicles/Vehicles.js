@@ -1,6 +1,6 @@
 class Vehicles {
 
-    static INTERVAL = 500;
+    static INTERVAL = 250;//500;//250
     static VEHICLE_RADIUS = 20;
 
     //---
@@ -31,6 +31,7 @@ class Vehicles {
         this._vehiclesTimer = null;
         this._vehiclesHolder = [];
         this._vehiclesImageHolder = [];
+        this._vehiclesInitalGridCellHolder = [];
         this._vehiclesAngle = Settings.DIR_BOTTOM;
 
         this.init();
@@ -80,6 +81,23 @@ class Vehicles {
     updateGraph() {
 
         this._graph = this._graphsManager.graphs[ this._graphIndex ];
+
+        //---
+
+        for ( let i = 0, l = this._graph.routes.length; i < l; i ++ ) {
+
+            const routeIndex = i;
+            const route = this._graph.routes[ routeIndex ];
+
+            if ( route.startPoint === null ) {
+
+                continue;
+
+            }
+
+            this._vehiclesInitalGridCellHolder.push( this._collisionDetection.getGridCellByPosition( route.startPoint ) );
+
+        }
 
     }
 
@@ -163,6 +181,7 @@ class Vehicles {
                 const vehicle = this.getVehicleObject( routePositionObject.point, routePositionObject.angle, 0, route, routeIndex, 2.5, vehicleImage );
 
                 vehicle.speed = this.getVehicleSpeed( vehicle, vehicle.maxSpeed );
+                vehicle.gridCell = this._vehiclesInitalGridCellHolder[ routeIndex ];// this._collisionDetection.getGridCellByPosition( vehicle.position );
 
                 this._vehiclesHolder.push( vehicle );
 
@@ -212,7 +231,8 @@ class Vehicles {
             maxSpeed: maxSpeed,
             image: image,
             context: this._canvasManager.getContextByName( 'main' ),
-            collisionDetected: false
+            collisionDetected: false,
+            gridCell: null
 
         }
 
@@ -250,6 +270,26 @@ class Vehicles {
 
             //---
 
+            if ( vehicle.gridCell !== null ) { 
+
+                if ( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) === true ) {
+
+                    vehicle.gridCell.vehicles.push( vehicle );
+
+                } else {
+
+                    vehicle.gridCell = this._collisionDetection.getNeighborGridCellByPosition( vehicle.position, vehicle.gridCell );
+                    vehicle.gridCell.vehicles.push( vehicle );
+
+                }
+
+            }
+
+            //continue;
+
+
+            //console.log( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) );
+
             // const gridCell = this._collisionDetection.getGridCellByPosition( vehicle.position );
 
             // if ( gridCell !== null ) {
@@ -258,7 +298,10 @@ class Vehicles {
 
             // }
 
-            this._collisionDetection.addVehicleToGrid( vehicle );
+
+            
+
+            // this._collisionDetection.addVehicleToGrid( vehicle );
 
             //---
 

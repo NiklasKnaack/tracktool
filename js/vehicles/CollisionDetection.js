@@ -1,7 +1,7 @@
 class CollisionDetection {
 
-    static GRID_CELL_SIZE_X = 1000;
-    static GRID_CELL_SIZE_Y = 1000;
+    static GRID_CELL_SIZE_X = 500;
+    static GRID_CELL_SIZE_Y = 500;
 
     constructor() {
 
@@ -41,15 +41,15 @@ class CollisionDetection {
         const gridCellsX = Math.ceil( this._gridBorders.right / CollisionDetection.GRID_CELL_SIZE_X );
         const gridCellsY = Math.ceil( this._gridBorders.bottom / CollisionDetection.GRID_CELL_SIZE_Y );
 
-        const xl = gridCellsX * CollisionDetection.GRID_CELL_SIZE_X;
-        const yl = gridCellsY * CollisionDetection.GRID_CELL_SIZE_Y;
-        console.log( '-------------------------------------------' );
-        console.log( Math.abs( this._gridBorders.left ) + this._gridBorders.right, Math.abs( this._gridBorders.top ) + this._gridBorders.bottom );
-        console.log( gridCellsX, gridCellsY );
-        console.log( xl, yl );
-        console.log( this._gridBorders.left, this._gridBorders.top );
-        console.log( this._gridBorders.right, this._gridBorders.bottom );
-        console.log( '-------------------------------------------' );
+        // const xl = gridCellsX * CollisionDetection.GRID_CELL_SIZE_X;
+        // const yl = gridCellsY * CollisionDetection.GRID_CELL_SIZE_Y;
+        // console.log( '-------------------------------------------' );
+        // console.log( Math.abs( this._gridBorders.left ) + this._gridBorders.right, Math.abs( this._gridBorders.top ) + this._gridBorders.bottom );
+        // console.log( gridCellsX, gridCellsY );
+        // console.log( xl, yl );
+        // console.log( this._gridBorders.left, this._gridBorders.top );
+        // console.log( this._gridBorders.right, this._gridBorders.bottom );
+        // console.log( '-------------------------------------------' );
 
         for ( let y = 0; y < gridCellsY; y ++ ) {
 
@@ -91,51 +91,63 @@ class CollisionDetection {
 
                 const gridCell = this._gridYX[ y ][ x ];
 
-                if ( y > 0 && x > 0 ) {
+                //first direct neighbors
 
-                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x - 1 ] );
-
-                }
-
+                //top center
                 if ( y > 0 ) {
 
                     gridCell.neighbors.push( this._gridYX[ y - 1 ][ x ] );
 
                 }
 
-                if ( y > 0 && x < xl - 2 ) {
-
-                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x + 1 ] );
-
-                }
-
+                //center left
                 if ( x > 0 ) {
 
                     gridCell.neighbors.push( this._gridYX[ y ][ x - 1 ] );
 
                 }
 
+                //center right
                 if ( x < xl - 2 ) {
 
                     gridCell.neighbors.push( this._gridYX[ y ][ x + 1 ] );
 
                 }
 
-                if ( y < yl - 2 && x > 0 ) {
-
-                    gridCell.neighbors.push( this._gridYX[ y + 1 ][ x - 1 ] );
-
-                }
-
+                //bottom center
                 if ( y < yl - 2 ) {
 
                     gridCell.neighbors.push( this._gridYX[ y + 1 ][ x ] );
 
                 }
 
+                //then diagonal neighbors
+
+                //bottom left
+                if ( y < yl - 2 && x > 0 ) {
+
+                    gridCell.neighbors.push( this._gridYX[ y + 1 ][ x - 1 ] );
+
+                }
+
+                //bottom right
                 if ( y < yl - 2 && x < xl - 2 ) {
 
                     gridCell.neighbors.push( this._gridYX[ y + 1 ][ x + 1 ] );
+
+                }
+
+                //top left
+                if ( y > 0 && x > 0 ) {
+
+                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x - 1 ] );
+
+                }
+
+                //top right
+                if ( y > 0 && x < xl - 2 ) {
+
+                    gridCell.neighbors.push( this._gridYX[ y - 1 ][ x + 1 ] );
 
                 }
 
@@ -187,39 +199,39 @@ class CollisionDetection {
 
     //---
 
-    addVehicleToGrid( vehicle ) {
+    // addVehicleToGrid( vehicle ) {
 
-        const gridCell = this.getGridCellByPosition( vehicle.position );
+    //     const gridCell = this.getGridCellByPosition( vehicle.position );
 
-        if ( gridCell !== null ) {
+    //     if ( gridCell !== null ) {
 
-            gridCell.vehicles.push( vehicle );
+    //         gridCell.vehicles.push( vehicle );
 
-            //---
+    //         //---
 
-            // if ( gridCell.neighbors.length > 0 ) {
+    //         // if ( gridCell.neighbors.length > 0 ) {
 
-            //     for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
+    //         //     for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
 
-            //         const gridCellNeighbor = gridCell.neighbors[ j ];
+    //         //         const gridCellNeighbor = gridCell.neighbors[ j ];
 
-            //         if ( this._isPositionInGridCell( vehicle.position, gridCellNeighbor ) === true ) {
+    //         //         if ( this.isPositionInGridCell( vehicle.position, gridCellNeighbor ) === true ) {
 
-            //             gridCell.vehicles.push( vehicle );
+    //         //             gridCell.vehicles.push( vehicle );
 
-            //         }
+    //         //         }
 
-            //     }
+    //         //     }
 
-            // }
+    //         // }
 
-        }
+    //     }
 
-    }
+    // }
 
     //---
 
-    _isPositionInGridCell( position, gridCell ) {
+    isPositionInGridCell( position, gridCell ) {
 
         if ( position.x >= gridCell.x && position.x < gridCell.xe && position.y >= gridCell.y && position.y < gridCell.ye ) {
 
@@ -241,8 +253,29 @@ class CollisionDetection {
 
             const gC = this._grid[ i ];
 
-            // if ( position.x >= gC.x && position.x < gC.xe && position.y >= gC.y && position.y < gC.ye ) {
-            if ( this._isPositionInGridCell( position, gC ) === true ) {
+            if ( this.isPositionInGridCell( position, gC ) === true ) {
+
+                gridCell = gC;
+
+                break;
+
+            }
+
+        }
+
+        return gridCell;
+
+    }
+
+    getNeighborGridCellByPosition( position, gridCellInput ) {
+
+        let gridCell = null;
+
+        for ( let i = 0, l = gridCellInput.neighbors.length; i < l; i ++ ) {
+
+            const gC = gridCellInput.neighbors[ i ];
+
+            if ( this.isPositionInGridCell( position, gC ) === true ) {
 
                 gridCell = gC;
 
@@ -272,6 +305,10 @@ class CollisionDetection {
             if ( gridCell.vehicles.length > 0 ) {
 
                 this._getVehiclesOfGridCell( gridCell, vehiclesFound );
+
+            } else {
+
+                continue;
 
             }
 
@@ -316,11 +353,11 @@ class CollisionDetection {
 
                 }
 
-                if ( vehicle0.id === vehicle1.id ) {
+                // if ( vehicle0.id === vehicle1.id ) {
+                    
+                //     continue;
 
-                    continue;
-
-                }
+                // }
 
                 // if ( vehicle0.id !== vehicle1.id ) {
 

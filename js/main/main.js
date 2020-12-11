@@ -3632,7 +3632,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
         mouseCursor.color = { r: 255, g: 255, b: 255, a: 255 };
 
         //---
-
+        //visualizes the grid for debug purposes
+        
         const grid = collisionDetection.grid;
 
         for ( let i = 0, l = grid.length; i < l; i ++ ) {
@@ -3657,6 +3658,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             drawCircle( gridCell, 2, 255, 0, 0, 255 );
 
         }
+        
 
         // collisionDetection.check();
 
