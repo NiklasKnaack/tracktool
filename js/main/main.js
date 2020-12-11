@@ -317,7 +317,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 navigator.updateGraph();
 
                 vehicles.clear();
-                vehicles.updateGraph();
+                vehicles.update();
                 
                 if ( vehicles.vehiclesSimulation === true ) {
 
@@ -2571,9 +2571,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 } );
 
                 //---
-                //dieser part hier muss erneut überprüft werden. 
+                //dieser part hier muss erneut überprüft werden. ist es überhaupt noch nötig. vielleicht zudem besser im computeRoutes callback aufgehoben.
 
-                vehicles.updateGraph();
+                vehicles.update();
 
                 if ( vehicles.vehiclesSimulation === true ) {
 

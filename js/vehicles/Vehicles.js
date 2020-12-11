@@ -23,7 +23,7 @@ class Vehicles {
         this._collisionDetection = new CollisionDetection();
 
         this._graphIndex = graphIndex;
-        this._graph = null;
+        this._graph = this._graphsManager.graphs[ this._graphIndex ];
         this._border = border;
 
         this._vehicleSelected = null;
@@ -62,7 +62,7 @@ class Vehicles {
 
         }
 
-        this.updateGraph();
+        this.update();
         // this.startSimulation();
 
         this._vehiclesTimer = new AnimationFrameTimer( () => this.addVehicle(), Vehicles.INTERVAL );
@@ -79,9 +79,9 @@ class Vehicles {
 
     //---
 
-    updateGraph() {
+    update() {
 
-        this._graph = this._graphsManager.graphs[ this._graphIndex ];
+        // this._graph = this._graphsManager.graphs[ this._graphIndex ];
 
         //---
 
@@ -101,6 +101,16 @@ class Vehicles {
             this._vehiclesInitalGridCellHolder.push( this._collisionDetection.getGridCellByPosition( route.startPoint ) );
 
         }
+
+        //---
+
+        // for ( let i = 0, l = this._vehiclesHolder.length; i < l; i ++ ) {
+
+        //     const vehicle = this._vehiclesHolder[ i ];
+
+        //     vehicle.route = this._graph.routes[ vehicle.routeIndex ]
+
+        // }
 
     }
 
@@ -261,8 +271,9 @@ class Vehicles {
             vehicle.lastPosition = vehicle.position;
             // vehicle.lastPosition = { x: vehicle.position.x, y: vehicle.position.y };
 
-            //const route = this._graph.routes[ vehicle.routeIndex ];
-            const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
+            const route = this._graph.routes[ vehicle.routeIndex ];
+            const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, route, vehicle.lastPosition );
+            //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
             //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route );
             
             vehicle.position = routePositionObject.point;
@@ -294,7 +305,6 @@ class Vehicles {
             //     gridCell.vehicles.push( vehicle );
 
             // }
-
 
             
 
