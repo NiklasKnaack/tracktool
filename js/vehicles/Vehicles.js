@@ -464,6 +464,24 @@ class Vehicles {
 
     //---
 
+    removeVehicle( vehicle ) {
+
+        for ( let i = this._vehiclesHolder.length - 1, l = -1; i > l; i -- ) {
+
+            const v = this._vehiclesHolder[ i ];
+
+            if ( v.id === vehicle.id ) {
+                
+                this._vehiclesHolder.splice( i, 1 );
+
+            }
+
+        }
+
+    }
+
+    //---
+
     get vehiclesTimer() {
 
         return this._vehiclesTimer;

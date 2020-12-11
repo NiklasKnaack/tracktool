@@ -32,6 +32,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         getGraphSegment: 'getGraphSegment',
         getVehicle: 'getVehicle',
         followVehicle: 'followVehicle',
+        removeVehicle: 'removeVehicle',
         togglePointWalkable: 'togglePointWalkable',
         movePoint: 'movePoint',
         showRoute: 'showRoute',
@@ -216,6 +217,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        const _removeVehicle = () => {
+
+            editorMode = EDITOR_MODE_ENUM.removeVehicle;
+
+        }
+
         const _clearAll = () => {
 
             const graphIndex = 0;
@@ -374,6 +381,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Get GraphSegment': _getGraphSegment,
             'Get Vehicle': _getVehicle,
             'Follow Vehicle': _followVehicle,
+            'Remove Vehicle': _removeVehicle,
             'Log Graph': _logGraph,
             'Show Route': _showRoute,
             'Toggle Debug Mode': _toggleDebugMode,
@@ -417,6 +425,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderAnalyze.add( guiSetting, 'Get GraphSegment' );
         folderAnalyze.add( guiSetting, 'Get Vehicle' );
         folderAnalyze.add( guiSetting, 'Follow Vehicle' );
+        folderAnalyze.add( guiSetting, 'Remove Vehicle' );
         folderAnalyze.add( guiSetting, 'Log Graph' );
         folderAnalyze.add( guiSetting, 'Show Route' );
         folderAnalyze.add( guiSetting, 'Toggle Debug Mode' );
@@ -2434,6 +2443,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 }
 
+            } else if ( editorMode === EDITOR_MODE_ENUM.removeVehicle ) {
+                
+                const vehicle = vehicles.getVehicleByPosition( mousePos );
+
+                if ( vehicle !== null ) {
+
+                    vehicles.removeVehicle( vehicle );
+
+                }
+            
             } else if ( editorMode === EDITOR_MODE_ENUM.togglePointWalkable ) {
 
                 togglePointWalkable( mouseCursor.position );
