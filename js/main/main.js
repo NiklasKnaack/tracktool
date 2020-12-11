@@ -3695,7 +3695,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
         //TEMP
-        //visualizes all vehicle points
+        //visualizes all vehicle points for debug purposes
 
         // for ( let i = 0, l = vehicles.allVehicles.length; i < l; i ++ ) {
 

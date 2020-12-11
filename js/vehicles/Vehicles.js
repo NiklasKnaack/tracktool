@@ -85,6 +85,8 @@ class Vehicles {
 
         //---
 
+        this._vehiclesInitalGridCellHolder = [];
+
         for ( let i = 0, l = this._graph.routes.length; i < l; i ++ ) {
 
             const routeIndex = i;
