@@ -81,7 +81,7 @@ class Vehicles {
 
     update() {
 
-        // this._graph = this._graphsManager.graphs[ this._graphIndex ];
+        this._graph = this._graphsManager.graphs[ this._graphIndex ];
 
         //---
 

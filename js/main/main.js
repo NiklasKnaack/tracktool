@@ -3709,6 +3709,42 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
+        //TEMP
+        //visualizes all vehicle hitTest/collision angles
+        // for ( let i = 0, l = vehicles.allVehicles.length; i < l; i ++ ) {
+
+        //     const radius = Vehicles.VEHICLE_RADIUS * 2;
+
+        //     const vehicle = vehicles.allVehicles[ i ];
+
+        //     //---
+
+        //     const angleRight = vehicle.angle + Math.PI * 1.00;
+  
+        //     const sinRight = Math.sin( angleRight );
+        //     const cosRight = Math.cos( angleRight );
+            
+        //     const pxRight = sinRight * radius + vehicle.position.x;
+        //     const pyRight = -cosRight * radius + vehicle.position.y;
+
+        //     drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxRight | 0, pyRight | 0, 0, 191, 255, 255 );
+
+        //     //---
+
+        //     const angleFront = vehicle.angle + Math.PI * 0.50;
+  
+        //     const sinFront = Math.sin( angleFront );
+        //     const cosFront = Math.cos( angleFront );
+            
+        //     const pxFront = sinFront * radius + vehicle.position.x;
+        //     const pyFront = -cosFront * radius + vehicle.position.y;
+
+        //     drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxFront | 0, pyFront | 0, 0, 191, 255, 255 );
+
+        // }
+
+        //---
+
         graphsHolder.forEach( ( graph, index ) => {
 
             // let distanceAtTheMoment = Infinity;
