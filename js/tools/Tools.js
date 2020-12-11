@@ -82,10 +82,10 @@ class Tools {
 
         return { 
             
-            x: -Settings.FIELD_SIZE.width / 2, 
-            y: -Settings.FIELD_SIZE.height / 2, 
-            width: width + Settings.FIELD_SIZE.width, 
-            height: height + Settings.FIELD_SIZE.height 
+            x: -( Settings.FIELD_SIZE.width - width ) / 2,
+            y: -( Settings.FIELD_SIZE.height - height ) / 2,
+            width: Settings.FIELD_SIZE.width, 
+            height: Settings.FIELD_SIZE.height 
         
         };
 
@@ -95,14 +95,10 @@ class Tools {
 
         return { 
             
-            left: -Settings.FIELD_SIZE.width / 2, 
-            top: -Settings.FIELD_SIZE.height / 2, 
-            right: width + Settings.FIELD_SIZE.width / 2, 
-            bottom: height + Settings.FIELD_SIZE.height / 2 
-            // left: -Settings.FIELD_SIZE.width / 2 - width / 2, 
-            // top: -Settings.FIELD_SIZE.height / 2 - height / 2,  
-            // right: 0 + Settings.FIELD_SIZE.width / 2 + width / 2, 
-            // bottom: 0 + Settings.FIELD_SIZE.height / 2 + height / 2
+            left: -( Settings.FIELD_SIZE.width - width ) / 2,
+            top: -( Settings.FIELD_SIZE.height - height ) / 2,
+            right: Settings.FIELD_SIZE.width, 
+            bottom: Settings.FIELD_SIZE.height 
         
         };
 
@@ -115,7 +111,7 @@ class Tools {
             left: Settings.FIELD_SIZE.width / 2 - width / 2, 
             top: Settings.FIELD_SIZE.height / 2 - height / 2, 
             right: -Settings.FIELD_SIZE.width / 2 + width / 2, 
-            bottom: -Settings.FIELD_SIZE.height / 2 + width / 2
+            bottom: -Settings.FIELD_SIZE.height / 2 + height / 2
 
         };
 

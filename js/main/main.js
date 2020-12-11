@@ -504,6 +504,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         canvasManager.resize( width, height );
 
+        console.log( width, height );
+
         imageDataMain = contextMain.getImageData( 0, 0, width, height );
         dataMain = imageDataMain.data;
 
@@ -2425,8 +2427,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 //centers the selected vehicle in the middle of the screen
                 if ( vehicles.vehicleSelected !== null ) {
 
-                    const dx = center.x - vehicles.vehicleSelected.position.x;
-                    const dy = center.y - vehicles.vehicleSelected.position.y;
+                    const dx = canvasManager.center.x - vehicles.vehicleSelected.position.x;
+                    const dy = canvasManager.center.y - vehicles.vehicleSelected.position.y;
 
                     vehicles.updateVehiclesPositions( dx, dy );
 

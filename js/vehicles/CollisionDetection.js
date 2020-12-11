@@ -35,18 +35,21 @@ class CollisionDetection {
 
     init() {
 
-        console.log( this._gridBorders.left, this._gridBorders.top );
+        // console.log( this._gridBorders.left, this._gridBorders.top );
 
         //add grid
-        const gridCellsX = Math.ceil( ( Math.abs( this._gridBorders.left ) + this._gridBorders.right ) / CollisionDetection.GRID_CELL_SIZE_X );
-        const gridCellsY = Math.ceil( ( Math.abs( this._gridBorders.top ) + this._gridBorders.bottom ) / CollisionDetection.GRID_CELL_SIZE_Y );
+        const gridCellsX = Math.ceil( this._gridBorders.right / CollisionDetection.GRID_CELL_SIZE_X );
+        const gridCellsY = Math.ceil( this._gridBorders.bottom / CollisionDetection.GRID_CELL_SIZE_Y );
 
-        // const xl = gridCellsX * ( CollisionDetection.GRID_CELL_SIZE_X - CollisionDetection.GRID_CELL_OVERLAP );
-        // const yl = gridCellsY * ( CollisionDetection.GRID_CELL_SIZE_Y - CollisionDetection.GRID_CELL_OVERLAP );
-        // console.log( Math.abs( this._gridBorders.left ) + this._gridBorders.right, Math.abs( this._gridBorders.top ) + this._gridBorders.bottom );
-        // console.log( gridCellsX, gridCellsY );
-        // console.log( xl, yl );
-        // console.log( this._gridBorders.left, this._gridBorders.top );
+        const xl = gridCellsX * CollisionDetection.GRID_CELL_SIZE_X;
+        const yl = gridCellsY * CollisionDetection.GRID_CELL_SIZE_Y;
+        console.log( '-------------------------------------------' );
+        console.log( Math.abs( this._gridBorders.left ) + this._gridBorders.right, Math.abs( this._gridBorders.top ) + this._gridBorders.bottom );
+        console.log( gridCellsX, gridCellsY );
+        console.log( xl, yl );
+        console.log( this._gridBorders.left, this._gridBorders.top );
+        console.log( this._gridBorders.right, this._gridBorders.bottom );
+        console.log( '-------------------------------------------' );
 
         for ( let y = 0; y < gridCellsY; y ++ ) {
 

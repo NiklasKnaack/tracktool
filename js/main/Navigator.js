@@ -135,6 +135,9 @@ class Navigator {
 
         this._x += dx;
         this._y += dy;
+
+        // console.log( dx, dy );
+        // console.log( this._y, this._borders.top, this._borders.bottom );
         
         if ( this._x > this._borders.left ) {
 
@@ -168,7 +171,9 @@ class Navigator {
 
         }
 
-        // console.log( this._x, this._y );
+        // console.log( this._x, this._y, dx, dy );
+
+        // console.log( this._y, this._borders.top, this._borders.bottom );
 
         //---
         
