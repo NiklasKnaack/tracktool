@@ -33,6 +33,7 @@ class Vehicles {
         this._vehiclesImageHolder = [];
         this._vehiclesInitalGridCellHolder = [];
         this._vehiclesAngle = Settings.DIR_BOTTOM;
+        this._vehiclesInitalLastPosition = { x: 0, y: 0 };
 
         this.init();
 
@@ -110,9 +111,6 @@ class Vehicles {
             vehicle.position.x += x;
             vehicle.position.y += y;
 
-            // vehicle.lastPosition.x += x;
-            // vehicle.lastPosition.y += y;
-
         }
 
     }
@@ -167,8 +165,8 @@ class Vehicles {
 
                 }
 
-                // const routePositionObject = this.getPointAndAngleOnRouteByT( 0, route, { x: 0, y: 0 } );
-                const routePositionObject = this.getPointAndAngleOnRouteByT( 0, route );
+                const routePositionObject = this.getPointAndAngleOnRouteByT( 0, route, this._vehiclesInitalLastPosition );
+                //const routePositionObject = this.getPointAndAngleOnRouteByT( 0, route );
 
                 if ( routePositionObject === null ) {
 
@@ -262,8 +260,8 @@ class Vehicles {
             // vehicle.lastPosition = { x: vehicle.position.x, y: vehicle.position.y };
 
             //const route = this._graph.routes[ vehicle.routeIndex ];
-            // const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
-            const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route );
+            const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
+            //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route );
             
             vehicle.position = routePositionObject.point;
             vehicle.angle = routePositionObject.angle;
@@ -284,9 +282,6 @@ class Vehicles {
                 }
 
             }
-
-            //continue;
-
 
             //console.log( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) );
 
@@ -313,6 +308,7 @@ class Vehicles {
                 const angleOnRoute = vehicle.angle + this._vehiclesAngle;
                 const imagePosition = -radius / 2;
 
+                //vehicle.context.globalAlpha = 0.15;
                 vehicle.context.save();
                 vehicle.context.translate( vehicle.position.x, vehicle.position.y );
                 vehicle.context.rotate( angleOnRoute );
@@ -363,7 +359,7 @@ class Vehicles {
 
     //---
 
-    getPointAndAngleOnRouteByT( t, route/*, lastPosition*/ ) {
+    getPointAndAngleOnRouteByT( t, route, lastPosition ) {
 
         const output = {
 
@@ -389,12 +385,12 @@ class Vehicles {
                 const tGraphSegment = ( tLength - lastLength ) / graphSegment.length;
 
                 const point0 = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment );
-                const point1 = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment + 0.001 );
+                // const point1 = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment + 0.001 );
                 // const point1 = lastPosition;
 
                 output.point = point0;
-                output.angle = Math.atan2( point1.y - point0.y, point1.x - point0.x );
-                // output.angle = Math.atan2( point0.y - point1.y, point0.x - point1.x );
+                // output.angle = Math.atan2( point1.y - point0.y, point1.x - point0.x );
+                output.angle = Math.atan2( point0.y - lastPosition.y, point0.x - lastPosition.x );
 
                 break;
 
@@ -445,8 +441,8 @@ class Vehicles {
                 const dx = vehicle.lastPosition.x - vehicle.position.x;
                 const dy = vehicle.lastPosition.y - vehicle.position.y;
 
-                vehicle.position.x += dx;
-                vehicle.position.y += dy;
+                //vehicle.position.x += dx;
+                //vehicle.position.y += dy;
 
                 this._navigator.move( dx, dy );
 

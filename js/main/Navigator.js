@@ -19,7 +19,7 @@ class Navigator {
 
         this._canvasManager = new CanvasManager();
 
-        // this._vehicles = new Vehicles();
+        this._vehicles = new Vehicles();
 
         this._collisionDetection = new CollisionDetection();
 
@@ -122,13 +122,6 @@ class Navigator {
 
         this.move( dx, dy );
 
-        //---
-
-        //this._vehicles.updateVehiclesPositions( dx, dy );
-        //this._vehicles.test( dx, dy );
-
-        //this._background.move( dx, dy );
-
     }
 
     move( dx, dy ) {
@@ -172,7 +165,6 @@ class Navigator {
         }
 
         // console.log( this._x, this._y, dx, dy );
-
         // console.log( this._y, this._borders.top, this._borders.bottom );
 
         //---
@@ -252,8 +244,7 @@ class Navigator {
 
         //---
 
-        //this._vehicles.updateVehiclesPositions( dx, dy );
-        //this._vehicles.test( dx, dy );
+        this._vehicles.updateVehiclesPositions( dx, dy );
 
         this._background.move( dx, dy );
 

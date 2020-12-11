@@ -3591,17 +3591,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
-    function moveMap() {
+    function visualizeMoveMap() {
 
         if ( navigator.active === false ) {
 
             return;
 
         }
-
-        //---
-
-        navigator.navigate();
 
         //---
         //draw navigation direction arrow
@@ -3634,12 +3630,24 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const pSSX = navigator.sin * lengthEnd + cX;
         const pSSY = -navigator.cos * lengthEnd + cY;
 
-        // const pSEX = -navigator.sin * lengthEnd + cX;
-        // const pSEY = navigator.cos * lengthEnd + cY;
-
         drawLine( ( sinEnd * lengthEnd + pSSX ) | 0, ( -cosEnd * lengthEnd + pSSY ) | 0, navigator.positionTarget.x | 0, navigator.positionTarget.y | 0, 255, 255, 255, 255 );
         drawLine( ( -sinEnd * lengthEnd + pSSX ) | 0, ( cosEnd * lengthEnd + pSSY ) | 0, navigator.positionTarget.x | 0, navigator.positionTarget.y | 0, 255, 255, 255, 255 );
-        
+
+
+    }
+
+    function moveMap() {
+
+        if ( navigator.active === false ) {
+
+            return;
+
+        }
+
+        //---
+
+        navigator.navigate();
+
     }
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
@@ -3651,35 +3659,53 @@ document.addEventListener( 'DOMContentLoaded', () => {
         mouseCursor.color = { r: 255, g: 255, b: 255, a: 255 };
 
         //---
+
+        visualizeMoveMap();
+
+        //---
+        //TEMP
         //visualizes the grid for debug purposes
         
-        const grid = collisionDetection.grid;
+        // const grid = collisionDetection.grid;
 
-        for ( let i = 0, l = grid.length; i < l; i ++ ) {
+        // for ( let i = 0, l = grid.length; i < l; i ++ ) {
 
-            const gridCell = grid[ i ];
+        //     const gridCell = grid[ i ];
 
-            const boxPosition = { x: gridCell.x + gridCell.width / 2, y: gridCell.y + gridCell.height / 2 };
+        //     const boxPosition = { x: gridCell.x + gridCell.width / 2, y: gridCell.y + gridCell.height / 2 };
 
-            if ( gridCell.vehicles.length === 0 ) {
+        //     if ( gridCell.vehicles.length === 0 ) {
 
-                drawBoxOutline( boxPosition, gridCell.width - 1, gridCell.height - 1, 155, 0, 0, 255 );
+        //         drawBoxOutline( boxPosition, gridCell.width - 1, gridCell.height - 1, 155, 0, 0, 255 );
 
-            } else {
+        //     } else {
 
-                // drawBox( boxPosition, gridCell.width, gridCell.height, 0, 0, 155, 55 );
-                drawBoxOutline( boxPosition, gridCell.width - 1, gridCell.height - 1, 0, 0, 155, 255 );
-                drawLine( gridCell.x | 0, gridCell.y | 0, gridCell.x + gridCell.width | 0, gridCell.y + gridCell.height | 0, 0, 0, 155, 255 );
-                drawLine( gridCell.x | 0, gridCell.y + gridCell.height | 0, gridCell.x + gridCell.width | 0, gridCell.y | 0, 0, 0, 155, 255 );
+        //         // drawBox( boxPosition, gridCell.width, gridCell.height, 0, 0, 155, 55 );
+        //         drawBoxOutline( boxPosition, gridCell.width - 1, gridCell.height - 1, 0, 0, 155, 255 );
+        //         drawLine( gridCell.x | 0, gridCell.y | 0, gridCell.x + gridCell.width | 0, gridCell.y + gridCell.height | 0, 0, 0, 155, 255 );
+        //         drawLine( gridCell.x | 0, gridCell.y + gridCell.height | 0, gridCell.x + gridCell.width | 0, gridCell.y | 0, 0, 0, 155, 255 );
 
-            }
+        //     }
 
-            drawCircle( gridCell, 2, 255, 0, 0, 255 );
+        //     drawCircle( gridCell, 2, 255, 0, 0, 255 );
 
-        }
+        // }
         
+        // // collisionDetection.check();
 
-        // collisionDetection.check();
+        //---
+        //TEMP
+        //visualizes all vehicle points
+
+        // for ( let i = 0, l = vehicles.allVehicles.length; i < l; i ++ ) {
+
+        //     const vehicle = vehicles.allVehicles[ i ];
+
+        //     drawCircle( vehicle.position, 2, 255, 0, 0, 255 );
+        //     drawCircle( vehicle.lastPosition, 2, 0, 255, 0, 255 );
+
+
+        // }
 
         //---
 
@@ -4140,19 +4166,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        if ( editorMode === EDITOR_MODE_ENUM.moveMap ) {
-
-            moveMap();
-
-        }
-
-        //---
-
         contextMain.putImageData( imageDataMain, 0, 0 );
 
         //---
 
         drawContext();
+        
+        //---
+
+        if ( editorMode === EDITOR_MODE_ENUM.moveMap ) {
+
+            moveMap();
+
+        }
 
         //---
 
