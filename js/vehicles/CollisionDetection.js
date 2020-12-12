@@ -1,7 +1,8 @@
 class CollisionDetection {
 
-    static GRID_CELL_SIZE_X = 250;
-    static GRID_CELL_SIZE_Y = 250;
+    //die optimale größe für die tiles muss noch genau bestimmt werden. on movement scheint größer besser
+    static GRID_CELL_SIZE_X = 500;
+    static GRID_CELL_SIZE_Y = 500;
 
     constructor() {
 
