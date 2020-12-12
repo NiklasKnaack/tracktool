@@ -81,6 +81,8 @@ class Vehicles {
 
     update() {
 
+        //man könnte die beiden parts dieser method evtl separieren. es ist eigentlich nur beim laden neuer maps nötig den graph zu aktualisieren.
+
         this._graph = this._graphsManager.graphs[ this._graphIndex ];
 
         //---
@@ -281,7 +283,7 @@ class Vehicles {
 
             //---
 
-            if ( vehicle.gridCell !== null ) { 
+            //if ( vehicle.gridCell !== null ) { 
 
                 if ( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) === true ) {
 
@@ -294,7 +296,7 @@ class Vehicles {
 
                 }
 
-            }
+            //}
 
             //console.log( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) );
 

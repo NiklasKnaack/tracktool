@@ -1,7 +1,7 @@
 class CollisionDetection {
 
-    static GRID_CELL_SIZE_X = 500;
-    static GRID_CELL_SIZE_Y = 500;
+    static GRID_CELL_SIZE_X = 100;
+    static GRID_CELL_SIZE_Y = 100;
 
     constructor() {
 
