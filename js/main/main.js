@@ -61,6 +61,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let background = null;
     let navigator = null;
 
+    // const canvasInstructions = [ 'empty', 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
     const canvasInstructions = [ 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
 
     let canvasMainObject = null;
@@ -3367,14 +3368,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function clearImageData() {
 
-        for ( let i = 0, l = dataMain.length; i < l; i += 4 ) {
+        // for ( let i = 0, l = dataMain.length; i < l; i += 4 ) {
+
+        //     dataMain[ i ] = 0;
+        //     dataMain[ i + 1 ] = 0;
+        //     dataMain[ i + 2 ] = 0;
+        //     dataMain[ i + 3 ] = 0;
+
+        // }
+
+        for ( let i = 3, l = dataMain.length; i < l; i += 4 ) {
 
             dataMain[ i ] = 0;
-            dataMain[ i + 1 ] = 0;
-            dataMain[ i + 2 ] = 0;
-            dataMain[ i + 3 ] = 0;
 
         }
+
+        // var d = imageData.data;
+        // var L = d.length;
+        // for ( var i = 3; i < L; i += 4 )
+        // {
+        //     dataMain[ i ] = 0;
+        // }
 
     }
 
@@ -4194,7 +4208,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         // console.log( timestamp );
 
+        //---
+
+        //const test = canvasManager.getImageDataByName( 'empty' );
+
+        //contextMain.clearRect( 0, 0, width, height );
         clearImageData();
+
+        //contextMain.putImageData( test, 0, 0 );
 
         //---
 

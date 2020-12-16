@@ -56,6 +56,11 @@ class CanvasManager {
         canvas.style.left = this._style[ 'left' ];
         canvas.style.top = this._style[ 'top' ];
         canvas.style.pointerEvents = this._style[ 'pointerEvents' ];
+
+        context.imageSmoothingEnabled = false;
+        context.mozImageSmoothingEnabled = false;
+        context.webkitImageSmoothingEnabled = false;
+        context.msImageSmoothingEnabled = false;
         
         const canvasObject = {
 
@@ -139,7 +144,6 @@ class CanvasManager {
 
             const cO = this._canvasObjectHolder[ i ];
 
-            
             if ( cO.name === name ) {
 
                 canvasObject = cO;
