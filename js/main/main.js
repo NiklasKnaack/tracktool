@@ -3,7 +3,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
     console.clear();
-    console.log( Settings.NAME );
+    console.log( Settings.NAME, ' (version: ', Settings.VERSION, ')' );
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
@@ -461,11 +461,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function init() {
 
-        for ( let i = 0, l = Settings.CANVASES_TO_BUILD.length; i < l; i++ ) {
-
-            canvasManager.addCanvas( Settings.CANVASES_TO_BUILD[ i ] );
-
-        }
+        canvasManager.addMultipleCanvases( Settings.CANVASES_TO_BUILD );
 
         canvasMainObject = canvasManager.getCanvasObjectByName( 'main' );
         canvasMain = canvasMainObject.canvas;
@@ -4209,7 +4205,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //clearImageData();
 
-        //better performance than clearImageData
+        //better performance than clearImageData();
         dataMain.set( clearData );
 
         //---

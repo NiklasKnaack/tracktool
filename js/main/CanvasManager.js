@@ -42,7 +42,7 @@ class CanvasManager {
 
     }
 
-    createCanvas( name ) {
+    createCanvas( canvasObj ) {
 
         const canvas = document.createElement( 'canvas' );
         const context = canvas.getContext( '2d' );
@@ -65,7 +65,7 @@ class CanvasManager {
         const canvasObject = {
 
             index: this._canvasObjectHolder.length,
-            name: name,
+            name: canvasObj.name,
             canvas: canvas,
             context: context,
             imageData: imageData,
@@ -73,7 +73,7 @@ class CanvasManager {
 
         };
 
-        if ( name !== 'clear' ) { 
+        if ( canvasObj.add === true ) { 
         
             document.body.appendChild( canvasObject.canvas );
 
@@ -120,9 +120,19 @@ class CanvasManager {
         
     }
 
-    addCanvas( name = '' ) {
+    addCanvas( canvasObj ) {
 
-        return this.createCanvas( name );
+        return this.createCanvas( canvasObj );
+
+    }
+
+    addMultipleCanvases( canvasArray ) {
+
+        for ( let i = 0, l = canvasArray.length; i < l; i++ ) {
+
+            this.addCanvas( canvasArray[ i ] );
+
+        }
 
     }
 

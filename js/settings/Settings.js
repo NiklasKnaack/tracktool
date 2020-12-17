@@ -1,14 +1,24 @@
 class Settings {
 
     static NAME = 'TRAFFIC MANAGER';
-
-    static VERSION = '0.09';
+    static VERSION = '0.11';
 
     static FIELD_SIZE = { width: 25000, height: 25000 };
     // static FIELD_SIZE = { width: 1040, height: 932 };
     // static FIELD_SIZE = { width: 3000, height: 3000 };
 
-    static CANVASES_TO_BUILD = [ 'clear', 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
+    static CANVASES_TO_BUILD = [ 
+        
+        { name: 'clear', add: false },
+        { name: 'background', add: true },
+        { name: 'bottom', add: true },
+        { name: 'main', add: true },
+        { name: 'level1', add: true },
+        { name: 'level2', add: true },
+        { name: 'level3', add: true },
+        { name: 'debug', add: true },
+    
+    ];
 
     static ROUTE_COLORS = [
 
