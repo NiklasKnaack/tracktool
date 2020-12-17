@@ -8,6 +8,8 @@ class Settings {
     // static FIELD_SIZE = { width: 1040, height: 932 };
     // static FIELD_SIZE = { width: 3000, height: 3000 };
 
+    static CANVASES_TO_BUILD = [ 'clear', 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
+
     static ROUTE_COLORS = [
 
         { r: 255, g: 213, b:   0, a: 255 },

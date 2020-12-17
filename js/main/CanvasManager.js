@@ -72,8 +72,12 @@ class CanvasManager {
             data: data
 
         };
+
+        if ( name !== 'clear' ) { 
         
-        document.body.appendChild( canvasObject.canvas );
+            document.body.appendChild( canvasObject.canvas );
+
+        }
 
         this._canvasObjectHolder.push( canvasObject );
 
@@ -210,6 +214,13 @@ class CanvasManager {
 
     }
 
+    _updateImageData( canvasObject ) {
+
+        canvasObject.imageData = canvasObject.context.getImageData( 0, 0, this._width, this._height );
+        canvasObject.data = canvasObject.imageData.data;
+
+    }
+
     get width() {
 
         return this._width;
@@ -223,6 +234,8 @@ class CanvasManager {
         for ( let i = 0, l = this._canvasObjectHolder.length; i < l; i ++ ) {
 
             this._canvasObjectHolder[ i ].canvas.width = w;
+
+            this._updateImageData( this._canvasObjectHolder[ i ] );
 
         }
 
@@ -241,6 +254,8 @@ class CanvasManager {
         for ( let i = 0, l = this._canvasObjectHolder.length; i < l; i ++ ) {
 
             this._canvasObjectHolder[ i ].canvas.height = h;
+
+            this._updateImageData( this._canvasObjectHolder[ i ] );
 
         }
 

@@ -61,14 +61,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let background = null;
     let navigator = null;
 
-    // const canvasInstructions = [ 'empty', 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
-    const canvasInstructions = [ 'background', 'bottom', 'main', 'level1', 'level2', 'level3', 'debug' ];
-
     let canvasMainObject = null;
     let canvasMain = null;
     let contextMain = null;
     let imageDataMain = null;
     let dataMain = null;
+    let clearData = null;// canvasManager.getDataByName( 'clear' );
 
     let animationFrame = null;
 
@@ -463,9 +461,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function init() {
 
-        for ( let i = 0, l = canvasInstructions.length; i < l; i++ ) {
+        for ( let i = 0, l = Settings.CANVASES_TO_BUILD.length; i < l; i++ ) {
 
-            canvasManager.addCanvas( canvasInstructions[ i ] );
+            canvasManager.addCanvas( Settings.CANVASES_TO_BUILD[ i ] );
 
         }
 
@@ -482,11 +480,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         streetSegmentTexture = ImageFactory.getStreetSegmentTexture();
 
-        
-        
         background = new Background();
         
-
         //---
 
         window.addEventListener( 'resize', onResize, false );
@@ -518,6 +513,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         imageDataMain = contextMain.getImageData( 0, 0, width, height );
         dataMain = imageDataMain.data;
+
+        clearData = canvasManager.getDataByName( 'clear' );
 
         //---
 
@@ -4210,12 +4207,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        //const test = canvasManager.getImageDataByName( 'empty' );
+        //clearImageData();
 
-        //contextMain.clearRect( 0, 0, width, height );
-        clearImageData();
-
-        //contextMain.putImageData( test, 0, 0 );
+        //better performance than clearImageData
+        dataMain.set( clearData );
 
         //---
 
