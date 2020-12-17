@@ -1,6 +1,6 @@
 class Vehicles {
 
-    static INTERVAL = 250;//500;//250
+    static INTERVAL = 500;//250;//500;//250
     static VEHICLE_RADIUS = 20;
 
     //---

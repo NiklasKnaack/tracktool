@@ -4184,14 +4184,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 
+    // var lastUpdate = new Date();
+    // let start;
+
     //const testAnimationFrameTimer = new AnimationFrameTimer( () => console.log( 'tick' ), 500 );
     function render( timestamp ) {
+
+        // var now = new Date();
+        // var elapsed = now - lastUpdate;
+        // lastUpdate = now;
+
+        // if (start === undefined)
+        //     start = timestamp;
+        // const elapsed = timestamp - start;
+
+        // console.log( elapsed );
 
         //testAnimationFrameTimer.call( timestamp );
 
         //if ( vehicles.vehiclesTimer !== null ) {
-
+        //console.log( 'call, ', timestamp );
         vehicles.vehiclesTimer.call( timestamp );
+        //vehicles.vehiclesTimer.call( elapsed );
 
         // if ( vehicles.vehiclesTimer.active === true ) {
             
