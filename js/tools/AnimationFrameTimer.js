@@ -30,8 +30,6 @@ class AnimationFrameTimer {
 
         }
 
-        console.log( 'this._hasFocus: ', this._hasFocus );
-
     }
 
     // _blurHandler( event ) {
