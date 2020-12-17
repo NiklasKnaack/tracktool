@@ -18,9 +18,19 @@ class AnimationFrameTimer {
 
     _visibilitychangeHandler( event ) {
 
-        this._timestamp = event.timeStamp;
+        if ( document.visibilityState === 'visible' ) {
 
-        this._hasFocus = !this._hasFocus;
+            this._timestamp = event.timeStamp;
+
+            this._hasFocus = true;
+
+        } else {
+
+            this._hasFocus = false;
+
+        }
+
+        console.log( 'this._hasFocus: ', this._hasFocus );
 
     }
 
