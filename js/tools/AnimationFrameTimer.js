@@ -6,9 +6,10 @@ class AnimationFrameTimer {
         this._ms = ms;
         this._time = this._ms;// * 2;
         this._timestamp = 0;
+        this._currentTimestamp = 0;
         this._isActive = true;
         this._hasFocus = true;
-
+        
         // window.addEventListener( 'blur', this._blurHandler.bind( this ), false );
         // window.addEventListener( 'focus', this._focusHandler.bind( this ), false );
 
@@ -20,7 +21,11 @@ class AnimationFrameTimer {
 
         if ( document.visibilityState === 'visible' ) {
 
+            // console.log( this._timestamp, event.timeStamp );
+
             this._timestamp = event.timeStamp;
+
+            // console.log( this._timestamp + '\n' );
 
             this._hasFocus = true;
 
@@ -50,17 +55,19 @@ class AnimationFrameTimer {
 
     call( timestamp ) {
 
+        this._currentTimestamp = timestamp;
+
         if ( this._isActive === false || this._hasFocus === false ) {
 
             return;
 
         }
 
-        if ( timestamp - this._timestamp >= this._time ) {
+        if ( this._currentTimestamp - this._timestamp >= this._time ) {
 
-            // console.log( timestamp, this._timestamp, ( timestamp - this._timestamp ), this._time );
+            // console.log( timestamp, this._timestamp, ( this._currentTimestamp - this._timestamp ), this._time );
 
-            this._timestamp = timestamp;
+            this._timestamp = this._currentTimestamp;
 
             this._callback();
 
@@ -71,6 +78,12 @@ class AnimationFrameTimer {
     //---
 
     start() {
+
+        // console.log( ( this._currentTimestamp - this._timestamp ), this._time );
+
+        this._timestamp = this._currentTimestamp;
+
+        // console.log( this._timestamp + '\n' );
 
         this._isActive = true;
 

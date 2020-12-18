@@ -272,17 +272,7 @@ class Vehicles {
 
             if ( this._vehiclesSimulation === true ) { 
 
-                // if ( this._vehiclesSimulation === true ) {
-
-                    vehicle.lastPosition = vehicle.position;
-                    // vehicle.lastPosition = { x: vehicle.position.x, y: vehicle.position.y };
-
-                // } /*else {
-
-                    // vehicle.lastPosition = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment + 0.001 );
-                    //vehicle.lastPosition = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
-
-                //}*/
+                vehicle.lastPosition = vehicle.position;
 
                 const route = this._graph.routes[ vehicle.routeIndex ];
                 const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, route, vehicle.lastPosition );
@@ -291,25 +281,7 @@ class Vehicles {
                 
                 vehicle.position = routePositionObject.point;
                 vehicle.angle = routePositionObject.angle;
-
-                //---
-
                 
-
-                //console.log( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) );
-
-                // const gridCell = this._collisionDetection.getGridCellByPosition( vehicle.position );
-
-                // if ( gridCell !== null ) {
-
-                //     gridCell.vehicles.push( vehicle );
-
-                // }
-
-                
-
-                // this._collisionDetection.addVehicleToGrid( vehicle );
-
                 //---
 
                 if ( vehicle.route.complete === true && this._vehiclesSimulation === true ) {
