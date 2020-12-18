@@ -270,16 +270,61 @@ class Vehicles {
 
             const vehicle = this._vehiclesHolder[ i ];
 
-            vehicle.lastPosition = vehicle.position;
-            // vehicle.lastPosition = { x: vehicle.position.x, y: vehicle.position.y };
+            if ( this._vehiclesSimulation === true ) { 
 
-            const route = this._graph.routes[ vehicle.routeIndex ];
-            const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, route, vehicle.lastPosition );
-            //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
-            //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route );
-            
-            vehicle.position = routePositionObject.point;
-            vehicle.angle = routePositionObject.angle;
+                // if ( this._vehiclesSimulation === true ) {
+
+                    vehicle.lastPosition = vehicle.position;
+                    // vehicle.lastPosition = { x: vehicle.position.x, y: vehicle.position.y };
+
+                // } /*else {
+
+                    // vehicle.lastPosition = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment + 0.001 );
+                    //vehicle.lastPosition = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
+
+                //}*/
+
+                const route = this._graph.routes[ vehicle.routeIndex ];
+                const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, route, vehicle.lastPosition );
+                //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
+                //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route );
+                
+                vehicle.position = routePositionObject.point;
+                vehicle.angle = routePositionObject.angle;
+
+                //---
+
+                
+
+                //console.log( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) );
+
+                // const gridCell = this._collisionDetection.getGridCellByPosition( vehicle.position );
+
+                // if ( gridCell !== null ) {
+
+                //     gridCell.vehicles.push( vehicle );
+
+                // }
+
+                
+
+                // this._collisionDetection.addVehicleToGrid( vehicle );
+
+                //---
+
+                if ( vehicle.route.complete === true && this._vehiclesSimulation === true ) {
+
+                    vehicle.t += vehicle.speed;
+
+                    if ( vehicle.t > 1 ) {
+
+                        vehicle.t = 1;
+
+                    }
+
+                }
+
+            }
 
             //---
 
@@ -297,20 +342,6 @@ class Vehicles {
                 }
 
             //}
-
-            //console.log( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) );
-
-            // const gridCell = this._collisionDetection.getGridCellByPosition( vehicle.position );
-
-            // if ( gridCell !== null ) {
-
-            //     gridCell.vehicles.push( vehicle );
-
-            // }
-
-            
-
-            // this._collisionDetection.addVehicleToGrid( vehicle );
 
             //---
 
@@ -330,18 +361,6 @@ class Vehicles {
                 vehicle.context.rotate( -angleOnRoute );
                 vehicle.context.translate( -vehicle.position.x, -vehicle.position.y );
                 vehicle.context.restore();
-
-            }
-
-            if ( vehicle.route.complete === true && this._vehiclesSimulation === true ) {
-
-                vehicle.t += vehicle.speed;
-
-                if ( vehicle.t > 1 ) {
-
-                    vehicle.t = 1;
-
-                }
 
             }
 
