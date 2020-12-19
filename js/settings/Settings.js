@@ -59,9 +59,9 @@ class Settings {
     static DIR_RIGHT = Math.PI * 0.00;
     static DIR_BOTTOM = Math.PI * 0.50;
 
-    static DIR_LEFT_TOP = Math.PI * 1.25;
-    static DIR_RIGHT_TOP = Math.PI * 1.75;
-    static DIR_LEFT_BOTTOM = Math.PI * 0.75;
-    static DIR_RIGHT_BOTTOM = Math.PI * 0.25;
+    // static DIR_LEFT_TOP = Math.PI * 1.25;
+    // static DIR_RIGHT_TOP = Math.PI * 1.75;
+    // static DIR_LEFT_BOTTOM = Math.PI * 0.75;
+    // static DIR_RIGHT_BOTTOM = Math.PI * 0.25;
 
 }

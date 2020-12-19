@@ -61,7 +61,7 @@ class Tools {
         //https://stackoverflow.com/questions/8012002/create-a-unique-number-with-javascript-time
         //https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
         return window.crypto.getRandomValues( new Uint8Array( 10 ) ).join( '' );
-      
+
     }
 
     static getUNumber() {
@@ -150,7 +150,7 @@ class Tools {
 
     //---
 
-    static positionInCircle( x, y, cx, cy, radius ) {
+    static isPositionInCircle( x, y, cx, cy, radius ) {
 
         const a = x - cx;
         const b = y - cy;
@@ -161,28 +161,46 @@ class Tools {
 
     //---
 
-    static getNewPosXYObj( x = 0, y = 0 ) {
+    //https://stackoverflow.com/questions/10343448/javascript-atan2-function-not-giving-expected-results
+    static getAtan2Normalized( y, x ) {
 
-        return { x: x, y: y };
-
-    }
-
-    static getNewPosXYZObj( x = 0, y = 0, z = 0 ) {
-
-        return { x: x, y: y, z: 0 };
+        return Math.atan2( -y, -x ) + Math.PI;
 
     }
 
-    static getNewColRGBObj( r = 255, g = 255, b = 255 ) {
+    //---
 
-        return { r: r, g: g, b: b };
+    //https://stackoverflow.com/questions/12234574/calculating-if-an-angle-is-between-two-angles
+    static isInsideAngle( a0, a1 ) {
 
-    }
-
-    static getNewColRGBAObj( r = 255, g = 255, b = 255, a = 255 ) {
-
-        return { r: r, g: g, b: b, a: a };
+        return Math.acos( Math.cos( a0 ) * Math.cos( a1 ) + Math.sin( a0 ) * Math.sin( a1 ) ) <= Math.PI / 4;
 
     }
+
+    //---
+
+    // static getNewPosXYObj( x = 0, y = 0 ) {
+
+    //     return { x: x, y: y };
+
+    // }
+
+    // static getNewPosXYZObj( x = 0, y = 0, z = 0 ) {
+
+    //     return { x: x, y: y, z: 0 };
+
+    // }
+
+    // static getNewColRGBObj( r = 255, g = 255, b = 255 ) {
+
+    //     return { r: r, g: g, b: b };
+
+    // }
+
+    // static getNewColRGBAObj( r = 255, g = 255, b = 255, a = 255 ) {
+
+    //     return { r: r, g: g, b: b, a: a };
+
+    // }
 
 }

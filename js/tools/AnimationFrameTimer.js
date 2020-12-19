@@ -15,6 +15,12 @@ class AnimationFrameTimer {
 
         document.addEventListener( 'visibilitychange', this._visibilitychangeHandler.bind( this ), false );
 
+        if ( document.visibilityState === 'hidden' ) {
+
+            this._hasFocus = false;
+
+        }
+
     }
 
     _visibilitychangeHandler( event ) {

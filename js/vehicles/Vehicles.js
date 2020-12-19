@@ -395,7 +395,8 @@ class Vehicles {
 
                 output.point = point0;
                 // output.angle = Math.atan2( point1.y - point0.y, point1.x - point0.x );
-                output.angle = Math.atan2( point0.y - lastPosition.y, point0.x - lastPosition.x );
+                //output.angle = Math.atan2( point0.y - lastPosition.y, point0.x - lastPosition.x );
+                output.angle = Tools.getAtan2Normalized( point0.y - lastPosition.y, point0.x - lastPosition.x );
 
                 break;
 
@@ -421,7 +422,7 @@ class Vehicles {
 
             const vehicle = this._vehiclesHolder[ i ];
 
-            if ( Tools.positionInCircle( position.x, position.y, vehicle.position.x, vehicle.position.y, Vehicles.VEHICLE_RADIUS ) === true ) {
+            if ( Tools.isPositionInCircle( position.x, position.y, vehicle.position.x, vehicle.position.y, Vehicles.VEHICLE_RADIUS ) === true ) {
 
                 result = vehicle;
 

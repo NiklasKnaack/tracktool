@@ -373,7 +373,7 @@ class CollisionDetection {
                     // }
 
                     //better performance then getDistance
-                    if ( Tools.positionInCircle( vehicle1.position.x, vehicle1.position.y, vehicle0.position.x, vehicle0.position.y, Vehicles.VEHICLE_RADIUS * 2 ) === true ) {
+                    if ( Tools.isPositionInCircle( vehicle1.position.x, vehicle1.position.y, vehicle0.position.x, vehicle0.position.y, Vehicles.VEHICLE_RADIUS * 2 ) === true ) {
 
                         vehicle0.collisionDetected = true;
                         vehicle1.collisionDetected = true;
@@ -383,6 +383,23 @@ class CollisionDetection {
                         // vehicle1.speed = this._vehicles.getVehicleSpeed( vehicle1, 0.0001 );
                         // vehicle0.speed = 0;
                         // vehicle1.speed = 0;
+
+                        //funktioniert zwar, aber kostet extrem viel performance
+                        // const angle0 = Tools.getAtan2Normalized( vehicle1.position.y - vehicle0.position.y, vehicle1.position.x - vehicle0.position.x );
+                        // const angle1 = Tools.getAtan2Normalized( vehicle0.position.y - vehicle1.position.y, vehicle0.position.x - vehicle1.position.x );
+                        
+                        // //https://jsfiddle.net/NiklasKnaack/tq7a4bwg/
+                        // if ( Tools.isInsideAngle( vehicle0.angle, angle0 ) === true ) {
+
+                        //     vehicle0.collisionDetected = true;
+                        
+                        // }
+
+                        // if ( Tools.isInsideAngle( vehicle1.angle, angle1 ) === true ) {
+
+                        //     vehicle1.collisionDetected = true;
+                        
+                        // }
 
                     }
 

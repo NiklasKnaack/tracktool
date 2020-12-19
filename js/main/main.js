@@ -1732,7 +1732,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        removeVehiclesByRouteIndex( routeIndex );
+        vehicles.removeVehiclesByRouteIndex( routeIndex );
 
         //---
 
