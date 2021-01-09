@@ -179,6 +179,23 @@ class Tools {
 
     //---
 
+    //https://stackoverflow.com/questions/1560492/how-to-tell-whether-a-point-is-to-the-right-or-left-side-of-a-line
+    static isLeft( a, b, c ) {
+
+        return ( b.x - a.x ) * ( c.y - a.y ) > ( b.y - a.y ) * ( c.x - a.x );
+
+    }
+
+    //---
+
+    static normalizeAngle( angle ) {
+
+        return Math.atan2( Math.sin( angle ), Math.cos( angle ) );
+        
+    }
+
+    //---
+
     // static getNewPosXYObj( x = 0, y = 0 ) {
 
     //     return { x: x, y: y };

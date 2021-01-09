@@ -3750,6 +3750,49 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         // }
 
+        for ( let i = 0, l = vehicles.allVehicles.length; i < l; i ++ ) {
+
+            const radius = Vehicles.VEHICLE_RADIUS * 2;
+
+            const vehicle = vehicles.allVehicles[ i ];
+
+            //---
+            //front angles
+
+            // const angleFront = Tools.normalizeAngle( vehicle.angle ) + Settings.MATH_PI_050;
+            const angleFront = vehicle.angle + Settings.MATH_PI_050;
+
+            const angleLeft = angleFront - Settings.MATH_PI_025;
+            const angleRight = angleFront + Settings.MATH_PI_025;
+
+            const sinLeft = Math.sin( angleLeft );
+            const cosLeft = Math.cos( angleLeft );
+            const sinRight = Math.sin( angleRight );
+            const cosRight = Math.cos( angleRight );
+
+            const pxLeft = sinLeft * radius + vehicle.position.x;
+            const pyLeft = -cosLeft * radius + vehicle.position.y;
+            const pxRight = sinRight * radius + vehicle.position.x;
+            const pyRight = -cosRight * radius + vehicle.position.y;
+
+            drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxLeft | 0, pyLeft | 0, 255, 0, 0, 255 );
+            drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxRight | 0, pyRight | 0, 0, 191, 255, 255 );
+
+            //---
+
+            if ( vehicle.drawTempStuff ) {
+                //console.clear()
+                //console.log( 'sdfsdfsdfsd' );
+                vehicle.drawTempStuff.forEach( ( stuff, index ) => {
+                   // console.log( stuff );
+                    drawLine( stuff.x0 | 0, stuff.y0 | 0, stuff.x1 | 0, stuff.y1 | 0, stuff.r, stuff.g, stuff.b, stuff.a );
+
+                } );
+
+            }
+
+        }
+
         //---
 
         graphsHolder.forEach( ( graph, index ) => {
@@ -4130,6 +4173,36 @@ document.addEventListener( 'DOMContentLoaded', () => {
             if ( vehicle.collisionDetected === true ) {
 
                 drawCircleOutline( vehicle.position, Vehicles.VEHICLE_RADIUS, 255, 0, 0, 255, 0.50 );
+
+                //---
+
+                // const radius = Vehicles.VEHICLE_RADIUS * 2;
+
+                // const angleFront = vehicle.angle + Settings.MATH_PI_050;
+
+                // const angleLeft = angleFront - Settings.MATH_PI_025;
+                // const angleRight = angleFront + Settings.MATH_PI_025;
+
+                // const sinLeft = Math.sin( angleLeft );
+                // const cosLeft = Math.cos( angleLeft );
+                // const sinRight = Math.sin( angleRight );
+                // const cosRight = Math.cos( angleRight );
+
+                // const pxLeft = sinLeft * radius + vehicle.position.x;
+                // const pyLeft = -cosLeft * radius + vehicle.position.y;
+                // const pxRight = sinRight * radius + vehicle.position.x;
+                // const pyRight = -cosRight * radius + vehicle.position.y;
+
+                // drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxLeft | 0, pyLeft | 0, 255, 0, 0, 255 );
+                // drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxRight | 0, pyRight | 0, 0, 191, 255, 255 );
+
+                //---
+
+                vehicle.speed = 0;
+
+            } else {
+
+                vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
 
             }
 

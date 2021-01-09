@@ -1,7 +1,8 @@
 class Vehicles {
 
-    static INTERVAL = 500;//250;//500;//250
+    static INTERVAL = 750;//250;//500;//250
     static VEHICLE_RADIUS = 20;
+    static VEHICLE_SPEED = 2.50;
 
     //---
 
@@ -190,7 +191,7 @@ class Vehicles {
 
                 //const vehicleSpeed = ( 1 / route.length ) * 2.5;
                 const vehicleImage = this._vehiclesImageHolder[ Math.floor( Math.random() * this._vehiclesImageHolder.length ) ];
-                const vehicle = this.getVehicleObject( routePositionObject.point, routePositionObject.angle, 0, route, routeIndex, 2.5, vehicleImage );
+                const vehicle = this.getVehicleObject( routePositionObject.point, routePositionObject.angle, 0, route, routeIndex, Vehicles.VEHICLE_SPEED, vehicleImage );
 
                 vehicle.speed = this.getVehicleSpeed( vehicle, vehicle.maxSpeed );
                 vehicle.gridCell = this._vehiclesInitalGridCellHolder[ routeIndex ];// this._collisionDetection.getGridCellByPosition( vehicle.position );
@@ -244,7 +245,11 @@ class Vehicles {
             image: image,
             context: this._canvasManager.getContextByName( 'main' ),
             collisionDetected: false,
-            gridCell: null
+            gridCell: null,
+            drawTempStuff: [],
+            distanceToVehicle: 0,
+            lastDistanceToVehicle: 0,
+            collisions: [],
 
         }
 
@@ -270,7 +275,7 @@ class Vehicles {
 
             const vehicle = this._vehiclesHolder[ i ];
 
-            if ( this._vehiclesSimulation === true ) { 
+            if ( this._vehiclesSimulation === true && vehicle.speed > 0 ) { 
 
                 vehicle.lastPosition = vehicle.position;
 
@@ -395,8 +400,8 @@ class Vehicles {
 
                 output.point = point0;
                 // output.angle = Math.atan2( point1.y - point0.y, point1.x - point0.x );
-                //output.angle = Math.atan2( point0.y - lastPosition.y, point0.x - lastPosition.x );
-                output.angle = Tools.getAtan2Normalized( point0.y - lastPosition.y, point0.x - lastPosition.x );
+                output.angle = Math.atan2( point0.y - lastPosition.y, point0.x - lastPosition.x );
+                // output.angle = Tools.getAtan2Normalized( point0.y - lastPosition.y, point0.x - lastPosition.x );
 
                 break;
 
