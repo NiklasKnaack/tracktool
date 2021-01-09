@@ -447,11 +447,31 @@ class CollisionDetection {
 
                         // console.log( Tools.isLeft( vehicle0.lastPosition, vehicle0.position, vehicle1.position ) );
 
+                        const radius = Vehicles.VEHICLE_RADIUS;
+
+                        // const angleBack0 = vehicle0.angle + Settings.MATH_PI_050;
+                        // const angleBack1 = vehicle1.angle + Settings.MATH_PI_050;
+
+                        // const sin01 = Math.sin( angleFront0 );
+                        // const cos01 = Math.cos( angleFront0 );
+                        // const sin10 = Math.sin( angleFront1 );
+                        // const cos10 = Math.cos( angleFront1 );
+
+                        // const px01 = sin01 * radius + vehicle0.position.x;
+                        // const py01 = -cos01 * radius + vehicle0.position.y;
+                        // const px10 = sin10 * radius + vehicle1.position.x;
+                        // const py10 = -cos10 * radius + vehicle1.position.y;
+
+                        // const p0 = { x: px01, y: py01 };
+                        // const p1 = { x: px10, y: py10 };
+
                         if ( vehicle0CollisionDetected === false && vehicle1CollisionDetected === false ) {
                         //if ( vehicle0CollisionDetected === false ) {
 
                             //vehicle0.position, vehicle0.lastPosition = rechts vor links, vehicle0.lastPosition, vehicle0.position = links vor rechts
-                            if ( Tools.isLeft( vehicle0.position, vehicle0.lastPosition, vehicle1.position ) === true && vehicle0.distanceToVehicle < vehicle0.lastDistanceToVehicle ) {
+                            // if ( Tools.isLeft( vehicle0.position, vehicle0.lastPosition, vehicle1.position ) === true && vehicle0.distanceToVehicle < vehicle0.lastDistanceToVehicle ) {
+                            //if ( Tools.isLeft( vehicle0.position, p0, vehicle1.position ) === true && vehicle0.distanceToVehicle < vehicle0.lastDistanceToVehicle ) {
+                            if ( Tools.isLeft( vehicle0.lastPosition, vehicle0.position, vehicle1.position ) === true && vehicle0.distanceToVehicle < vehicle0.lastDistanceToVehicle ) {
 
                                 //vehicle0.collisionDetected = true;
                                 vehicle0CollisionDetected = true;
@@ -463,7 +483,9 @@ class CollisionDetection {
 
                         //if ( vehicle1CollisionDetected === false ) {
 
-                            if ( Tools.isLeft( vehicle1.position, vehicle1.lastPosition, vehicle0.position ) === true && vehicle1.distanceToVehicle < vehicle1.lastDistanceToVehicle ) {
+                            // if ( Tools.isLeft( vehicle1.position, vehicle1.lastPosition, vehicle0.position ) === true && vehicle1.distanceToVehicle < vehicle1.lastDistanceToVehicle ) {
+                            //if ( Tools.isLeft( vehicle1.position, p1, vehicle0.position ) === true && vehicle1.distanceToVehicle < vehicle1.lastDistanceToVehicle ) {
+                            if ( Tools.isLeft( vehicle1.lastPosition, vehicle1.position, vehicle0.position ) === true && vehicle1.distanceToVehicle < vehicle1.lastDistanceToVehicle ) {
 
                                 //vehicle1.collisionDetected = true;
                                 vehicle1CollisionDetected = true;
