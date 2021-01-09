@@ -249,7 +249,7 @@ class Vehicles {
             drawTempStuff: [],
             distanceToVehicle: 0,
             lastDistanceToVehicle: 0,
-            collisions: [],
+            // collisions: [],
 
         }
 
