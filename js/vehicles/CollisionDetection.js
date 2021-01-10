@@ -389,11 +389,8 @@ class CollisionDetection {
                         const angle01 = Math.atan2( vehicle1.position.y - vehicle0.position.y, vehicle1.position.x - vehicle0.position.x ) + Settings.MATH_PI_050;
                         const angle10 = Math.atan2( vehicle0.position.y - vehicle1.position.y, vehicle0.position.x - vehicle1.position.x ) + Settings.MATH_PI_050;
 
-                        //---
-
                         let vehicle0CollisionDetected = false;
                         let vehicle1CollisionDetected = false;
-
 
                         const angleFront0 = vehicle0.angle + Settings.MATH_PI_050;
                         const angleFront1 = vehicle1.angle + Settings.MATH_PI_050;
