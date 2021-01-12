@@ -73,9 +73,12 @@ class CollisionDetection {
                     ye: yPos + CollisionDetection.GRID_CELL_SIZE_Y,
                     neighbors: [],
                     vehicles: [],
+                    visible: false,
                     // visited: false
 
                 };
+
+                gridCell.visible = this._isGridCellVisible( gridCell );
 
                 this._grid.push( gridCell );
 
@@ -173,7 +176,23 @@ class CollisionDetection {
             gridCell.xe += dx;
             gridCell.ye += dy;
 
+            gridCell.visible = this._isGridCellVisible( gridCell );
+
         }
+
+    }
+
+    //---
+
+    _isGridCellVisible( gridCell ) {
+
+        //https://stackoverflow.com/questions/123999/how-can-i-tell-if-a-dom-element-is-visible-in-the-current-viewport
+        return (
+            gridCell.ye > 0 &&
+            gridCell.xe > 0 &&
+            gridCell.x < this._canvasManager.height &&
+            gridCell.y < this._canvasManager.width
+        );
 
     }
 
@@ -431,6 +450,8 @@ class CollisionDetection {
 
                         }
 
+                        //---
+
                         if ( vehicle00CollisionDetected === false || vehicle10CollisionDetected === false ) {
 
                             //distance um zu prüfen ob sich die vehicles annähern oder entfernen.
@@ -441,8 +462,16 @@ class CollisionDetection {
 
                         }
 
+                        //---
+                        
+                        // const a0 = vehicle0.angle + Settings.RIGHT;
+                        // const a1 = vehicle1.angle + Settings.RIGHT;
+
+                        //---
+
                         if ( vehicle00CollisionDetected === false && vehicle10CollisionDetected === false ) {
 
+                            // if ( a0 - Settings.MATH_PI_025 < angle01 && a0 + Settings.MATH_PI_025 > angle01 ) {
                             if ( Tools.isLeft( vehicle0.lastPosition, vehicle0.position, vehicle1.position ) === true && vehicle0.distanceToVehicle < vehicle0.lastDistanceToVehicle ) {
 
                                 // vehicle0CollisionDetected = true;
@@ -450,6 +479,7 @@ class CollisionDetection {
 
                             }
 
+                            // if ( a1 - Settings.MATH_PI_025 < angle10 && a1 + Settings.MATH_PI_025 > angle10 ) {
                             if ( Tools.isLeft( vehicle1.lastPosition, vehicle1.position, vehicle0.position ) === true && vehicle1.distanceToVehicle < vehicle1.lastDistanceToVehicle ) {
 
                                 // vehicle1CollisionDetected = true;

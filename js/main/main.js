@@ -3761,6 +3761,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //     // const angleFront = Tools.normalizeAngle( vehicle.angle ) + Settings.MATH_PI_050;
         //     const angleFront = vehicle.angle + Settings.MATH_PI_050;
+        //     //const angleFront = vehicle.angle + Settings.DIR_LEFT;
 
         //     const angleLeft = angleFront - Settings.MATH_PI_015;
         //     const angleRight = angleFront + Settings.MATH_PI_015;
