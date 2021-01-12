@@ -297,42 +297,47 @@ class CollisionDetection {
 
     //---
 
+    _getAllVehiclesToCheckAgainst( gridCell ) {
+
+        const vehiclesFound = [];
+
+        if ( gridCell.vehicles.length > 0 ) {
+
+            this._getVehiclesOfGridCell( gridCell, vehiclesFound );
+
+        } else {
+
+            return vehiclesFound;
+
+        }
+
+        if ( gridCell.neighbors.length > 0 ) {
+
+            for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
+
+                const gridCellNeighbor = gridCell.neighbors[ j ];
+
+                this._getVehiclesOfGridCell( gridCellNeighbor, vehiclesFound );
+
+            }
+
+        }
+
+        return vehiclesFound;
+
+    }
+
+    //---
+
     checkCollisions() {
 
         for ( let i = 0, l = this._grid.length; i < l; i ++ ) {
 
-            //collect all vehicles of grid cell and its neighbors
-            const vehiclesFound = [];
+            const vehiclesFound = this._getAllVehiclesToCheckAgainst( this._grid[ i ] );
 
             //---
 
-            const gridCell = this._grid[ i ];
-            
-            if ( gridCell.vehicles.length > 0 ) {
-
-                this._getVehiclesOfGridCell( gridCell, vehiclesFound );
-
-            } else {
-
-                continue;
-
-            }
-
-            if ( gridCell.neighbors.length > 0 ) {
-
-                for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
-
-                    const gridCellNeighbor = gridCell.neighbors[ j ];
-
-                    this._getVehiclesOfGridCell( gridCellNeighbor, vehiclesFound );
-
-                }
-
-            }
-
-            //---
-
-            this._getCollisions( vehiclesFound );
+            this._setCollisions( vehiclesFound );
 
         }
 
@@ -340,13 +345,17 @@ class CollisionDetection {
 
     checkCollisionsToVehicle( vehicle ) {
 
-        return this._getCollisionToVehicle( vehicle );
+        const vehiclesFound = this._getAllVehiclesToCheckAgainst( vehicle.gridCell );
+
+        //---
+
+        return this._getCollisionToVehicle( vehiclesFound, vehicle );
 
     }
 
     //---
 
-    _getCollisions( vehicles ) {
+    _setCollisions( vehicles ) {
 
         // for ( let i = 0, l = Math.min( vehicles.length, 500 ); i < l; i ++ ) {
         for ( let i = 0, l = vehicles.length; i < l; i ++ ) {
@@ -488,11 +497,9 @@ class CollisionDetection {
 
     }
 
-    _getCollisionToVehicle( vehicle ) {
+    _getCollisionToVehicle( vehicles, vehicle ) {
 
         let foundCollision = false;
-
-        const vehicles = this._vehicles.allVehicles;
 
         for ( let i = 0, l = vehicles.length; i < l; i ++ ) {
 
