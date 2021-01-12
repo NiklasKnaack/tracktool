@@ -313,9 +313,9 @@ class CollisionDetection {
 
         if ( gridCell.neighbors.length > 0 ) {
 
-            for ( let j = 0, m = gridCell.neighbors.length; j < m; j ++ ) {
+            for ( let i = 0, l = gridCell.neighbors.length; i < l; i ++ ) {
 
-                const gridCellNeighbor = gridCell.neighbors[ j ];
+                const gridCellNeighbor = gridCell.neighbors[ i ];
 
                 this._getVehiclesOfGridCell( gridCellNeighbor, vehiclesFound );
 
@@ -417,14 +417,14 @@ class CollisionDetection {
                         const angleFront0 = vehicle0.angle + Settings.MATH_PI_050;
                         const angleFront1 = vehicle1.angle + Settings.MATH_PI_050;
 
-                        if ( angleFront0 - Settings.MATH_PI_025 < angle01 && angleFront0 + Settings.MATH_PI_025 > angle01 ) {
+                        if ( angleFront0 - Settings.MATH_PI_015 < angle01 && angleFront0 + Settings.MATH_PI_015 > angle01 ) {
 
                             // vehicle0CollisionDetected = true;
                             vehicle00CollisionDetected = true;
 
                         }
 
-                        if ( angleFront1 - Settings.MATH_PI_025 < angle10 && angleFront1 + Settings.MATH_PI_025 > angle10 ) {
+                        if ( angleFront1 - Settings.MATH_PI_015 < angle10 && angleFront1 + Settings.MATH_PI_015 > angle10 ) {
 
                             // vehicle1CollisionDetected = true;
                             vehicle10CollisionDetected = true;
