@@ -464,9 +464,20 @@ class CollisionDetection {
 
                         //---
 
+                        //wenn sich beide fahrzeuge gegenüber stehen darf eins fahren und das andere muss warten
                         if ( vehicle00CollisionDetected === true && vehicle01CollisionDetected === false && vehicle10CollisionDetected === true && vehicle11CollisionDetected === false ) {
 
                             vehicle0.collisionDetected = true;
+                            vehicle1.collisionDetected = false;
+
+                            return;
+
+                        }
+
+                        //wenn beide fahrzeuge auf der rechten seite eine kollision habe dann können sie sich nicht mehr gegenseitig stören 
+                        if ( vehicle00CollisionDetected === false && vehicle01CollisionDetected === true && vehicle10CollisionDetected === false && vehicle11CollisionDetected === true ) {
+
+                            vehicle0.collisionDetected = false;
                             vehicle1.collisionDetected = false;
 
                             return;
