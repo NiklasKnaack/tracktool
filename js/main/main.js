@@ -3698,7 +3698,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         // }
         
-        // // collisionDetection.check();
+        // // collisionDetection.checkCollisions();
 
         //---
         //TEMP
@@ -4243,7 +4243,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         vehicles.simulate();
 
-        collisionDetection.check();
+        //collisionDetection.check();
+        collisionDetection.checkCollisions();
 
         //---
 

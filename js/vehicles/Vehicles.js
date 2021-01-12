@@ -196,7 +196,15 @@ class Vehicles {
                 vehicle.speed = this.getVehicleSpeed( vehicle, vehicle.maxSpeed );
                 vehicle.gridCell = this._vehiclesInitalGridCellHolder[ routeIndex ];// this._collisionDetection.getGridCellByPosition( vehicle.position );
 
-                this._vehiclesHolder.push( vehicle );
+                // this._vehiclesHolder.push( vehicle );
+
+                //---
+
+                if( this._collisionDetection.checkCollisionsToVehicle( vehicle ) === false ) {
+
+                    this._vehiclesHolder.push( vehicle );
+
+                };
 
             }
 

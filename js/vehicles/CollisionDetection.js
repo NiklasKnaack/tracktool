@@ -4,6 +4,8 @@ class CollisionDetection {
     static GRID_CELL_SIZE_X = 500;
     static GRID_CELL_SIZE_Y = 500;
 
+    static COLLISION_DISTANCE = 2;
+
     constructor() {
 
         if ( CollisionDetection._instance ) {
@@ -295,7 +297,7 @@ class CollisionDetection {
 
     //---
 
-    check() {
+    checkCollisions() {
 
         for ( let i = 0, l = this._grid.length; i < l; i ++ ) {
 
@@ -332,11 +334,17 @@ class CollisionDetection {
 
             this._getCollisions( vehiclesFound );
 
-            //console.log( vehiclesFound.length );
-
         }
 
     }
+
+    checkCollisionsToVehicle( vehicle ) {
+
+        return this._getCollisionToVehicle( vehicle );
+
+    }
+
+    //---
 
     _getCollisions( vehicles ) {
 
@@ -377,7 +385,7 @@ class CollisionDetection {
 
                     //better performance then getDistance
                     // if ( Tools.isPositionInCircle( vehicle1.position.x, vehicle1.position.y, vehicle0.position.x, vehicle0.position.y, Vehicles.VEHICLE_RADIUS ) === true ) {
-                    if ( Tools.isPositionInCircle( vehicle1.position.x, vehicle1.position.y, vehicle0.position.x, vehicle0.position.y, Vehicles.VEHICLE_RADIUS * 2 ) === true ) {
+                    if ( Tools.isPositionInCircle( vehicle1.position.x, vehicle1.position.y, vehicle0.position.x, vehicle0.position.y, Vehicles.VEHICLE_RADIUS * CollisionDetection.COLLISION_DISTANCE ) === true ) {
                     // if ( Tools.isPositionInCircle( vehicle1.position.x, vehicle1.position.y, vehicle0.position.x, vehicle0.position.y, Vehicles.VEHICLE_RADIUS * 3 ) === true ) {
                     // if ( Tools.isPositionInCircle( vehicle1.position.x, vehicle1.position.y, vehicle0.position.x, vehicle0.position.y, Vehicles.VEHICLE_RADIUS * 4 ) === true ) {//* 4 for testing
 
@@ -389,25 +397,32 @@ class CollisionDetection {
                         const angle01 = Math.atan2( vehicle1.position.y - vehicle0.position.y, vehicle1.position.x - vehicle0.position.x ) + Settings.MATH_PI_050;
                         const angle10 = Math.atan2( vehicle0.position.y - vehicle1.position.y, vehicle0.position.x - vehicle1.position.x ) + Settings.MATH_PI_050;
 
-                        let vehicle0CollisionDetected = false;
-                        let vehicle1CollisionDetected = false;
+                        // let vehicle0CollisionDetected = false;
+                        // let vehicle1CollisionDetected = false;
+
+                        let vehicle00CollisionDetected = false;
+                        let vehicle01CollisionDetected = false;
+                        let vehicle10CollisionDetected = false;
+                        let vehicle11CollisionDetected = false;
 
                         const angleFront0 = vehicle0.angle + Settings.MATH_PI_050;
                         const angleFront1 = vehicle1.angle + Settings.MATH_PI_050;
 
                         if ( angleFront0 - Settings.MATH_PI_025 < angle01 && angleFront0 + Settings.MATH_PI_025 > angle01 ) {
 
-                            vehicle0CollisionDetected = true;
+                            // vehicle0CollisionDetected = true;
+                            vehicle00CollisionDetected = true;
 
                         }
 
                         if ( angleFront1 - Settings.MATH_PI_025 < angle10 && angleFront1 + Settings.MATH_PI_025 > angle10 ) {
 
-                            vehicle1CollisionDetected = true;
+                            // vehicle1CollisionDetected = true;
+                            vehicle10CollisionDetected = true;
 
                         }
 
-                        if ( vehicle0CollisionDetected === false || vehicle1CollisionDetected === false ) {
+                        if ( vehicle00CollisionDetected === false || vehicle10CollisionDetected === false ) {
 
                             //distance um zu prüfen ob sich die vehicles annähern oder entfernen.
                             const distance = Tools.getDistance( vehicle0.position, vehicle1.position );
@@ -417,17 +432,19 @@ class CollisionDetection {
 
                         }
 
-                        if ( vehicle0CollisionDetected === false && vehicle1CollisionDetected === false ) {
+                        if ( vehicle00CollisionDetected === false && vehicle10CollisionDetected === false ) {
 
                             if ( Tools.isLeft( vehicle0.lastPosition, vehicle0.position, vehicle1.position ) === true && vehicle0.distanceToVehicle < vehicle0.lastDistanceToVehicle ) {
 
-                                vehicle0CollisionDetected = true;
+                                // vehicle0CollisionDetected = true;
+                                vehicle10CollisionDetected = true;
 
                             }
 
                             if ( Tools.isLeft( vehicle1.lastPosition, vehicle1.position, vehicle0.position ) === true && vehicle1.distanceToVehicle < vehicle1.lastDistanceToVehicle ) {
 
-                                vehicle1CollisionDetected = true;
+                                // vehicle1CollisionDetected = true;
+                                vehicle11CollisionDetected = true;
 
                             }
 
@@ -438,13 +455,24 @@ class CollisionDetection {
 
                         //---
 
-                        if ( vehicle0CollisionDetected === true ) {
+                        if ( vehicle00CollisionDetected === true && vehicle01CollisionDetected === false && vehicle10CollisionDetected === true && vehicle11CollisionDetected === false ) {
+
+                            vehicle0.collisionDetected = true;
+                            vehicle1.collisionDetected = false;
+
+                            return;
+
+                        }
+
+                        //---
+
+                        if ( vehicle00CollisionDetected === true || vehicle01CollisionDetected === true ) {
 
                             vehicle0.collisionDetected = true;
 
                         }
 
-                        if ( vehicle1CollisionDetected === true ) {
+                        if ( vehicle10CollisionDetected === true || vehicle11CollisionDetected === true ) {
 
                             vehicle1.collisionDetected = true;
 
@@ -459,6 +487,36 @@ class CollisionDetection {
         }
 
     }
+
+    _getCollisionToVehicle( vehicle ) {
+
+        let foundCollision = false;
+
+        const vehicles = this._vehicles.allVehicles;
+
+        for ( let i = 0, l = vehicles.length; i < l; i ++ ) {
+
+            const v = vehicles[ i ];
+
+            if ( vehicle.id !== v.id ) {
+
+                if ( Tools.isPositionInCircle( vehicle.position.x, vehicle.position.y, v.position.x, v.position.y, Vehicles.VEHICLE_RADIUS * CollisionDetection.COLLISION_DISTANCE ) === true ) {
+
+                    foundCollision = true;
+
+                    break;
+
+                }
+
+            }
+
+        }
+        
+        return foundCollision;
+
+    }
+
+    //---
 
     _getVehiclesOfGridCell( gridCell, array ) {
 
