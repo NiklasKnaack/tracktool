@@ -83,6 +83,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let tempGraphSegments = [];
 
     let streetSegmentTexture = null;
+    let streetSegmentImageObjects = [];
 
     let currentStreetSegment = null;
 
@@ -241,6 +242,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             currentGraphSegment = null;
             currentStreetSegment = null;
             selectedGraphSegments = [];
+            streetSegmentImageObjects = [];
 
             debugElements.clear();
             graphsManager.clear();
@@ -892,7 +894,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 id: graph.streetSegments.length,
 
-                p0: { x: position.x, y: position.y },
+                p0: { x: Tools.unifyNumber( position.x ), y: Tools.unifyNumber( position.y ) },
                 p1: null,
                 centerPoint: { x: 0, y: 0 },
                 controlPoint: { x: 0, y: 0 },
@@ -914,7 +916,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 laneDistance: laneDistance,
 
                 boundingClientRect: { x: 0, y: 0, width: 0, height: 0 },
-                image: null,
+                // image: null,
+                imageId: Tools.getUID()
 
             };
 
@@ -924,36 +927,29 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         } else {
 
-            currentStreetSegment.p1 = { x: position.x, y: position.y };
-
-            console.log( currentStreetSegment );
+            currentStreetSegment.p1 = { x: Tools.unifyNumber( position.x ), y: Tools.unifyNumber( position.y ) };
 
             //---
 
             const convertLaneToGraphSegment = ( lane ) => {
 
-                const p0 = getGraphSegmentPoint( lane.p0 );
-                const p0Array = graph.points.find( ( point ) => point.x === lane.p0.x && point.y === lane.p0.y );
-                const p1 = getGraphSegmentPoint( lane.p1 );
-                const p1Array = graph.points.find( ( point ) => point.x === lane.p1.x && point.y === lane.p1.y );
+                let graphSegmentPoint0 = getPointByPosition( lane.p0 );
+                let graphSegmentPoint1 = getPointByPosition( lane.p1 );
 
-                let graphSegmentPoint0 = p0Array;
-                let graphSegmentPoint1 = p1Array;
+                if ( graphSegmentPoint0 === null ) {
 
-                if ( typeof graphSegmentPoint0 === 'undefined' ) {
+                    graphSegmentPoint0 = getGraphSegmentPoint( lane.p0 );
 
-                    graphSegmentPoint0 = p0;
-    
                     graph.points.push( graphSegmentPoint0 );
-    
+
                 }
-    
-                if ( typeof graphSegmentPoint1 === 'undefined' ) {
-    
-                    graphSegmentPoint1 = p1;
-    
+
+                if ( graphSegmentPoint1 === null ) {
+
+                    graphSegmentPoint1 = getGraphSegmentPoint( lane.p1 );
+
                     graph.points.push( graphSegmentPoint1 );
-    
+
                 }
 
                 const graphSegment = {
@@ -1063,13 +1059,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     _context.save();
                     // _context.globalAlpha = 1.0;
                     
-                    _context.beginGraph();
+                    _context.beginPath();
                     _context.moveTo( pTL.x - minX, pTL.y - minY );
                     _context.lineTo( pTR.x - minX, pTR.y - minY );
                     _context.lineTo( pBR.x - minX, pBR.y - minY );
                     _context.lineTo( pBL.x - minX, pBL.y - minY );
                     // _context.lineWidth = 2;
-                    _context.closeGraph();
+                    _context.closePath();
 
                     // _context.strokeStyle = 'rgba( 63, 59, 58, 1.00 )';
                     // _context.stroke(); 
@@ -1088,14 +1084,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            _context.beginGraph();
+            _context.beginPath();
             _context.moveTo( streetBorder0.p0.x - minX, streetBorder0.p0.y - minY );
             _context.quadraticCurveTo( streetBorder0.controlPoint.x - minX, streetBorder0.controlPoint.y - minY, streetBorder0.p1.x - minX, streetBorder0.p1.y - minY );
             _context.lineWidth = 2;
             _context.strokeStyle = 'rgba( 135, 135, 135, 1.00 )';
             _context.stroke();
 
-            _context.beginGraph();
+            _context.beginPath();
             _context.moveTo( streetBorder1.p0.x - minX, streetBorder1.p0.y - minY );
             _context.quadraticCurveTo( streetBorder1.controlPoint.x - minX, streetBorder1.controlPoint.y - minY, streetBorder1.p1.x - minX, streetBorder1.p1.y - minY );
             _context.lineWidth = 2;
@@ -1104,14 +1100,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( streetSegment.lanes.length > 1 ) {
 
-                _context.beginGraph();
+                _context.beginPath();
                 _context.moveTo( streetSegment.p0.x - minX, streetSegment.p0.y - minY );
                 _context.quadraticCurveTo( streetSegment.controlPoint.x - minX, streetSegment.controlPoint.y - minY, streetSegment.p1.x - minX, streetSegment.p1.y - minY );
                 _context.lineWidth = 6;
                 _context.strokeStyle = 'rgba( 135, 135, 135, 1.00 )';
                 _context.stroke();
 
-                _context.beginGraph();
+                _context.beginPath();
                 _context.moveTo( streetSegment.p0.x - minX, streetSegment.p0.y - minY );
                 _context.quadraticCurveTo( streetSegment.controlPoint.x - minX, streetSegment.controlPoint.y - minY, streetSegment.p1.x - minX, streetSegment.p1.y - minY );
                 _context.lineWidth = 2;
@@ -1124,7 +1120,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             streetSegment.centerLanes.forEach( ( centerLane ) => {
 
                 _context.setLineDash( [ 8, 18 ] );
-                _context.beginGraph();
+                _context.beginPath();
                 _context.moveTo( centerLane.p0.x - minX, centerLane.p0.y - minY );
                 _context.quadraticCurveTo( centerLane.controlPoint.x - minX, centerLane.controlPoint.y - minY, centerLane.p1.x - minX, centerLane.p1.y - minY );
                 _context.lineWidth = 3;
@@ -1134,9 +1130,20 @@ document.addEventListener( 'DOMContentLoaded', () => {
             } );
 
             //---
+            //funktioniert so nicht mehr weil keine bilder an den worker übergeben werden können.
 
-            streetSegment.image = new Image( streetSegment.boundingClientRect.width, streetSegment.boundingClientRect.height );
-            streetSegment.image.src = _canvas.toDataURL();
+            // streetSegment.image = new Image( streetSegment.boundingClientRect.width, streetSegment.boundingClientRect.height );
+            // streetSegment.image.src = _canvas.toDataURL();
+
+            //---
+
+            const streetImage = new Image( streetSegment.boundingClientRect.width, streetSegment.boundingClientRect.height );
+
+            streetImage.src = _canvas.toDataURL();
+
+            const streetImageObject = getNewStreetImageObject( streetImage, streetSegment.boundingClientRect, streetSegment.imageId );
+
+            streetSegmentImageObjects.push( streetImageObject );
 
         }
 
@@ -1144,6 +1151,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     function drawStreetSegments() {
 
+        /*
         const graphIndex = 0;
 
         const graph = graphsHolder[ graphIndex ];
@@ -1163,8 +1171,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
             }
 
         }
+        */
+        
+        for ( let i = 0, l = streetSegmentImageObjects.length; i < l; i ++ ) {
 
+            const streetImageObject = streetSegmentImageObjects[ i ];
 
+            contextMain.drawImage( streetImageObject.image, streetImageObject.boundingClientRect.x, streetImageObject.boundingClientRect.y, streetImageObject.boundingClientRect.width, streetImageObject.boundingClientRect.height );
+
+        }
+
+    }
+
+    function getNewStreetImageObject( image, boundingClientRect, id ) {
+
+        return {
+
+            image: image,
+            boundingClientRect: boundingClientRect,
+            id: id
+
+        }
 
     }
 
@@ -2548,14 +2575,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
-            if ( currentGraphSegment === null && editorMode !== EDITOR_MODE_ENUM.followVehicle ) {
+            // if ( currentGraphSegment === null && editorMode !== EDITOR_MODE_ENUM.followVehicle ) {
+            if ( currentGraphSegment === null && currentStreetSegment === null && editorMode !== EDITOR_MODE_ENUM.followVehicle ) {
 
                 const graphIndex = 0;
 
                 const graph = graphsHolder[ graphIndex ];
 
                 //---
-
+                
                 pathfinder.computeRoutes( graph, ( routes, time ) => {
 
                     graph.routes = routes;
@@ -3727,7 +3755,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //     //---
 
         //     const angleRight = vehicle.angle + Math.PI * 1.00;
-  
+
         //     const sinRight = Math.sin( angleRight );
         //     const cosRight = Math.cos( angleRight );
             
@@ -3739,7 +3767,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //     //---
 
         //     const angleFront = vehicle.angle + Math.PI * 0.50;
-  
+
         //     const sinFront = Math.sin( angleFront );
         //     const cosFront = Math.cos( angleFront );
             
