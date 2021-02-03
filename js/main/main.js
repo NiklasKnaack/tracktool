@@ -952,18 +952,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 }
 
-                const graphSegment = {
+                // const graphSegment = {
 
-                    id: graph.segments.length,
-                    p0: { x: graphSegmentPoint0.x, y: graphSegmentPoint0.y },
-                    p1: { x: graphSegmentPoint1.x, y: graphSegmentPoint1.y },
-                    controlPoint: { x: lane.controlPoint.x, y: lane.controlPoint.y },
-                    centerPoint: { x: lane.centerPoint.x, y: lane.centerPoint.y },
-                    length: getGraphSegmentLength( lane.p0, lane.p1, lane.controlPoint ),
-                    walkable: currentStreetSegment.walkable,
-                    direction: currentStreetSegment.direction,
+                //     id: graph.segments.length,
+                //     p0: { x: graphSegmentPoint0.x, y: graphSegmentPoint0.y },
+                //     p1: { x: graphSegmentPoint1.x, y: graphSegmentPoint1.y },
+                //     controlPoint: { x: lane.controlPoint.x, y: lane.controlPoint.y },
+                //     centerPoint: { x: lane.centerPoint.x, y: lane.centerPoint.y },
+                //     length: getGraphSegmentLength( lane.p0, lane.p1, lane.controlPoint ),
+                //     walkable: currentStreetSegment.walkable,
+                //     direction: currentStreetSegment.direction,
 
-                };
+                // };
+
+                //function getGraphSegmentObject( id, p0, p1 = null, controlPoint = null, centerPoint = null, length = 0, walkable = true, direction = '><' ) {
+                const graphSegment = getGraphSegmentObject( graph.segments.length, graphSegmentPoint0, graphSegmentPoint1, lane.controlPoint, lane.centerPoint, getGraphSegmentLength( lane.p0, lane.p1, lane.controlPoint ), currentStreetSegment.walkable, currentStreetSegment.direction );
 
                 setGraphSegmentPointNeighbours( getPointByPosition( graphSegment.p0 ) );
                 setGraphSegmentPointNeighbours( getPointByPosition( graphSegment.p1 ) );
@@ -1234,16 +1237,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             }
 
-            currentGraphSegment = {};
-            currentGraphSegment.id = graph.segments.length;
-            currentGraphSegment.p0 = { x: Tools.unifyNumber( graphSegmentPoint.x ), y: Tools.unifyNumber( graphSegmentPoint.y ) };
-            currentGraphSegment.p1 = null;
-            // currentGraphSegment.p1 = { x: position.x, y: position.y };
-            // currentGraphSegment.centerPoint = getGraphSegmentCenter( currentGraphSegment );
-            // currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
-            // currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //Tools.getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
-            // currentGraphSegment.walkable = true;
-            // currentGraphSegment.direction = '><';
+            currentGraphSegment = getGraphSegmentObject( graph.segments.length, graphSegmentPoint );
 
             graph.segments.push( currentGraphSegment );
 
@@ -1293,8 +1287,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 currentGraphSegment.centerPoint = getGraphSegmentCenter( currentGraphSegment );
                 currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
                 currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //Tools.getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
-                currentGraphSegment.walkable = true;
-                currentGraphSegment.direction = '><';
 
                 setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p0 ) );
                 setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p1 ) );
@@ -1418,6 +1410,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
         tempGraphSegments = [];
+
+    }
+
+    function getGraphSegmentObject( id, p0, p1 = null, controlPoint = null, centerPoint = null, length = 0, walkable = true, direction = '><' ) {
+
+        p0 = { x: Tools.unifyNumber( p0.x ), y: Tools.unifyNumber( p0.y ) };
+        p1 = p1 === null ? null : { x: Tools.unifyNumber( p1.x ), y: Tools.unifyNumber( p1.y ) };
+        controlPoint = controlPoint === null ? null : { x: controlPoint.x, y: controlPoint.y };
+        centerPoint = centerPoint === null ? null : { x: centerPoint.x, y: centerPoint.y };
+
+        return {
+
+            id: id,
+            p0: p0,
+            p1: p1,
+            controlPoint: controlPoint,
+            centerPoint: centerPoint,
+            length: length,
+            walkable: walkable,
+            direction: direction,
+
+        };
 
     }
 
