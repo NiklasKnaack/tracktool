@@ -84,9 +84,7 @@ class CollisionDetection {
 
                 this._gridYX[ y ][ x ] = gridCell;
 
-
             }
-
 
         }
 
@@ -188,10 +186,10 @@ class CollisionDetection {
 
         //https://stackoverflow.com/questions/123999/how-can-i-tell-if-a-dom-element-is-visible-in-the-current-viewport
         return (
-            gridCell.ye > 0 &&
             gridCell.xe > 0 &&
-            gridCell.x < this._canvasManager.height &&
-            gridCell.y < this._canvasManager.width
+            gridCell.ye > 0 &&
+            gridCell.x < this._canvasManager.width &&
+            gridCell.y < this._canvasManager.height
         );
 
     }

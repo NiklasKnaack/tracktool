@@ -109,4 +109,28 @@ class DebugElements {
 
     }
 
+    addRectangleElement( x, y, width, height, message = '', textColor = 'white', color = 'red', opacity = 1.00 ) {
+
+        const debugElement = document.createElement( 'div' );
+
+        debugElement.style.position = 'absolute';
+        debugElement.style.left = ( x ).toString() + 'px';
+        debugElement.style.top = ( y ).toString() + 'px';
+        debugElement.style.width = ( width ).toString() + 'px';
+        debugElement.style.height = ( height ).toString() + 'px';
+        debugElement.style.color = textColor;
+        debugElement.style.backgroundColor = color;
+        debugElement.style.opacity = opacity.toString();
+        debugElement.style.pointerEvents = 'none';
+
+        debugElement.className = 'debug-rectangle-' + Tools.getUID();
+
+        debugElement.innerHTML = message;
+
+        this._node.appendChild( debugElement );
+
+        this._elements.push( debugElement );
+
+    }
+
 }
