@@ -4,7 +4,7 @@
 
 //---
 
-class Pathfinder {
+class PathFinder {
 
     constructor( type = 'AStar' ) {
 
@@ -27,10 +27,11 @@ class Pathfinder {
             this._worker.terminate();
             this._worker.removeEventListener( 'message', this.resultHandler );
             this._worker.removeEventListener( 'error', this.errorHandler );
+            this._worker = null;
 
         }
 
-        this._worker = new Worker( './js/services/pathsearch' + this._type + '.js' );
+        this._worker = new Worker( './js/services/workers/pathsearch' + this._type + '.js' );
         this._worker.addEventListener( 'message', this.resultHandler.bind( this ), false );
         this._worker.addEventListener( 'error', this.errorHandler.bind( this ), false );
 

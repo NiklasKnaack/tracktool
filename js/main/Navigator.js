@@ -190,8 +190,13 @@ class Navigator {
 
                 const point = graph.points[ i ];
 
+                // const pointOldX = point.x;
+                // const pointOldY = point.y;
+
                 point.x += dx;
                 point.y += dy;
+
+                // this._graphsManager.updateLookupForPoints( index, GraphsManager.getLookupPointId( point ), point, '' + pointOldX + pointOldY );
 
             }
 
@@ -243,6 +248,9 @@ class Navigator {
         } );
 
         //---
+
+        this._graphsManager.buildLookupForPointsForAllGraphs();
+        // this._graphsManager.buildLookupForPoints( 0 );
 
         this._vehicles.updateVehiclesPositions( dx, dy );
 
@@ -326,6 +334,8 @@ class Navigator {
             // }
 
         } );
+
+        this._graphsManager.buildLookupForPointsForAllGraphs();
 
     }
 

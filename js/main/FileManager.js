@@ -90,7 +90,17 @@ class FileManager {
 
     saveJSON() {
 
-        const str = JSON.stringify( this._graphsManager.graphs );
+        let str = JSON.stringify( this._graphsManager.graphs );
+
+        //für den fall das die arrays vehiclesWaiting, vehiclesWaitingRouteIndices, neighbourGraphsegments oder neighbourPoints daten enthalten, werden diese entfernt/gelöscht. diese arrays müssen leer sein
+        str = str.replace( /"vehiclesWaiting":\["(.*?)"]/gs, '"vehiclesWaiting":[]' );
+        str = str.replace( /"vehiclesWaitingRouteIndices":\["(.*?)"]/gs, '"vehiclesWaitingRouteIndices":[]' );
+        str = str.replace( /"neighbourGraphsegments":\[{(.*?)}]/gs, '"neighbourGraphsegments":[]' );
+        str = str.replace( /"neighbourPoints":\[{(.*?)}]/gs, '"neighbourPoints":[]' );
+
+        //für den fall das newestVehicleId eine id enthält, muss diese durch null ersetzt werden
+        str = str.replace( /"newestVehicleId":\'(.*?)'/gs, '"newestVehicleId":null' );
+
         const data = this._encode( str );
 
         const blob = new Blob( [ data ], {

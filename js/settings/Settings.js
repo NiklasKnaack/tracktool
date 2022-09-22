@@ -1,7 +1,7 @@
 class Settings {
 
     static NAME = 'TRAFFIC MANAGER';
-    static VERSION = '0.11';
+    static VERSION = '0.273';
 
     static FIELD_SIZE = { width: 25000, height: 25000 };
     // static FIELD_SIZE = { width: 1040, height: 932 };
@@ -69,5 +69,12 @@ class Settings {
     static MATH_PI_050 = Math.PI * 0.50;
     static MATH_PI_075 = Math.PI * 0.75;
     static MATH_PI_150 = Math.PI * 1.50;
+
+    static MOUSE_SNAPPING = {
+
+        enabled: true,
+        distance: 25,
+
+    };
 
 }

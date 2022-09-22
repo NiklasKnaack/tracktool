@@ -13,7 +13,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     const MATHPI2 = Math.PI * 2;
 
-    const SNAP_TO_DISTANCE = 25;
+    const SNAP_TO_DISTANCE = Settings.MOUSE_SNAPPING.distance; //25;
 
     const EDITOR_MODE_ENUM = Object.freeze( {
 
@@ -21,6 +21,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         addGraphSegment: 'addGraphSegment',
         removeGraphSegment: 'removeGraphSegment',
         bendGraphSegment: 'bendGraphSegment',
+        autoBendGraphSegment: 'autoBendGraphSegment',
         straightenGraphSegment: 'straightenGraphSegment',
         splitGraphSegment: 'splitGraphSegment',
         splitGraphSegmentAt: 'splitGraphSegmentAt',
@@ -31,11 +32,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
         removeStartEndPoints: 'removeStartEndPoints',
         getGraphSegment: 'getGraphSegment',
         getVehicle: 'getVehicle',
+        getPoint: 'getPoint',
+        toggleVehicleHalted: 'toggleVehicleHalted',
         followVehicle: 'followVehicle',
         removeVehicle: 'removeVehicle',
         togglePointWalkable: 'togglePointWalkable',
         movePoint: 'movePoint',
         showRoute: 'showRoute',
+        showPointNeighbours: 'showPointNeighbours',
+        showPointVehicleQueue: 'showPointVehicleQueue',
+        showVehicleCheckpoints: 'showVehicleCheckpoints',
+        showVehicleGridCells: 'showVehicleGridCells',
         addStreetSegment: 'addStreetSegment',
 
     } );
@@ -50,16 +57,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     const border = { left: 1, top: 1, right: width, bottom: height };
 
+    const animationFrameManager = new AnimationFrameManager( [ render ] );
     const debugElements = new DebugElements( document.body );
-    const pathfinder = new Pathfinder();
     const graphsManager = new GraphsManager();
     const canvasManager = new CanvasManager( width, height );
     const fileManager = new FileManager();
+    const statistics = new Statistics();
+    const stopwatch = new Stopwatch();
 
     let vehicles = null;
     let collisionDetection = null;
     let background = null;
     let navigator = null;
+    // let menu = null;
 
     let canvasMainObject = null;
     let canvasMain = null;
@@ -68,7 +78,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let dataMain = null;
     let clearData = null;// canvasManager.getDataByName( 'clear' );
 
-    let animationFrame = null;
+    //let animationFrame = null;
 
     let mouseDown = false;
     let mousePos = { x: 0, y: 0 };
@@ -87,21 +97,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let currentStreetSegment = null;
 
-    let graphsHolder = graphsManager.graphs;
+    //let graphsHolder = graphsManager.graphs;
 
-    setAllGraphSegmentPointNeighbours();
+    graphsManager.setAllGraphSegmentPointNeighbours( 0 );
 
-    pathfinder.computeRoutes( graphsHolder[ 0 ], ( routes, time ) => {
+    const computeRoutes = true;
+    const computeIntersections = true;
+    const updateLookup = computeIntersections;
 
-        graphsHolder[ 0 ].routes = routes;
-
-        console.log( 'Der Aufruf von computeRoutes dauerte ' + time + ' Millisekunden.' );
-
-    } );
+    graphsManager.computeGraphRoutesAndIntersections( 0, computeRoutes, computeIntersections, updateLookup );
 
     if ( debugMode === true ) {
 
-        debugElements.addElementsByGraph( graphsHolder[ 0 ] );
+        debugElements.addElementsByGraph( graphsManager.graphs[ 0 ] );
 
     }
 
@@ -136,6 +144,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const _bendGraphSegment = () => {
 
             editorMode = EDITOR_MODE_ENUM.bendGraphSegment;
+
+        }
+
+        const _autoBendGraphSegment = () => {
+
+            editorMode = EDITOR_MODE_ENUM.autoBendGraphSegment;
 
         }
 
@@ -199,6 +213,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        const _toggleMouseSnapping = () => {
+
+            Settings.MOUSE_SNAPPING.enabled = !Settings.MOUSE_SNAPPING.enabled;
+
+        }
+
         const _getGraphSegment = () => {
 
             editorMode = EDITOR_MODE_ENUM.getGraphSegment;
@@ -208,6 +228,42 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const _getVehicle = () => {
 
             editorMode = EDITOR_MODE_ENUM.getVehicle;
+
+        }
+
+        const _getPoint = () => {
+
+            editorMode = EDITOR_MODE_ENUM.getPoint;
+
+        }
+
+        const _showPointNeighbours = () => {
+
+            editorMode = EDITOR_MODE_ENUM.showPointNeighbours;
+
+        }
+
+        const _showPointVehicleQueue = () => {
+
+            editorMode = EDITOR_MODE_ENUM.showPointVehicleQueue;
+
+        }
+
+        const _showVehicleCheckpoints = () => {
+
+            editorMode = EDITOR_MODE_ENUM.showVehicleCheckpoints;
+
+        }
+
+        const _showVehicleGridCells = () => {
+
+            editorMode = EDITOR_MODE_ENUM.showVehicleGridCells;
+
+        }
+
+        const _toggleVehicleHalted = () => {
+
+            editorMode = EDITOR_MODE_ENUM.toggleVehicleHalted;
 
         }
 
@@ -223,11 +279,29 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
+        const _removeAllVehicles = () => {
+
+            vehicles.removeAllVehicles();
+
+            //---
+
+            // const graphIndex = 0;
+
+            // const graph = graphsManager.graphs[ graphIndex ];
+
+            // for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
+
+            //     graph.points[ i ].vehiclesWaiting = [];
+    
+            // }
+
+        }
+
         const _clearAll = () => {
 
             const graphIndex = 0;
 
-            graphsHolder[ graphIndex ] = {
+            graphsManager.graphs[ graphIndex ] = {
                 id: graphIndex,
                 routes: [],
                 points: [],
@@ -270,7 +344,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( debugMode === true ) {
 
-                debugElements.addElementsByGraph( graphsHolder[ 0 ] );
+                debugElements.addElementsByGraph( graphsManager.graphs[ 0 ] );
 
             } else {
 
@@ -325,26 +399,32 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     vehicles.startSimulation();
     
                 }
-
+                
                 debugElements.clear();
 
                 //---
 
-                graphsHolder = graphs;// graphsManager.graphs;
+                graphsManager.graphs = graphs;// graphsManager.graphs;
 
-                setAllGraphSegmentPointNeighbours();
+                graphsManager.setAllGraphSegmentPointNeighbours( 0 );
 
-                pathfinder.computeRoutes( graphsHolder[ 0 ], ( routes, time ) => {
+                //console.log(Object.keys(graphsManager._graphsLookupForPoints).length, ' <---');
+                
+                graphsManager.graphs = graphs;
+                graphsManager.clearLookupForPointsForAllGraphs();
+                graphsManager.buildLookupForPointsForAllGraphs();
 
-                    graphsHolder[ 0 ].routes = routes;
+                //console.log(Object.keys(graphsManager._graphsLookupForPoints).length, ' <---');
 
-                    console.log( 'Der Aufruf von computeRoutes dauerte ' + time + ' Millisekunden.' );
+                const computeRoutes = true;
+                const computeIntersections = true;
+                const updateLookup = computeIntersections;
 
-                } );
+                graphsManager.computeGraphRoutesAndIntersections( 0, computeRoutes, computeIntersections, updateLookup );
 
                 if ( debugMode === true ) {
 
-                    debugElements.addElementsByGraph( graphsHolder[ 0 ] );
+                    debugElements.addElementsByGraph( graphsManager.graphs[ 0 ] );
 
                 }
 
@@ -368,6 +448,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             // 'Allow Graph Segment Splitting': allowGraphSegmentSplitting,
             'Remove Graph Segment': _removeGraphSegment,
             'Bend Graph Segment': _bendGraphSegment,
+            'Auto Bend Graph Segment': _autoBendGraphSegment,
             'Straighten Graph Segment': _straightenGraphSegment,
             'Split Graph Segment': _splitGraphSegment,
             'Split Graph Segment At': _splitGraphSegmentAt,
@@ -378,13 +459,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Add End Point': _addEndPoint,
             'Remove Start & End Points': _removeStartEndPoints,
             'Toggle Walkable Point': _setToggleWalkable,
+            'Toggle Mouse Snapping': _toggleMouseSnapping,
             'Clear All': _clearAll,
             'Get GraphSegment': _getGraphSegment,
             'Get Vehicle': _getVehicle,
+            'Get Point': _getPoint,
+            'Toggle Vehicle Halted': _toggleVehicleHalted,
             'Follow Vehicle': _followVehicle,
             'Remove Vehicle': _removeVehicle,
+            'Remove All Vehicles': _removeAllVehicles,
             'Log Graph': _logGraph,
             'Show Route': _showRoute,
+            'Show Point Neighbours': _showPointNeighbours,
+            'Show Point Vehicle Queue': _showPointVehicleQueue,
+            'Show Vehicle Checkpoints': _showVehicleCheckpoints,
+            'Show Vehicle Grid Cells': _showVehicleGridCells,
             'Toggle Debug Mode': _toggleDebugMode,
             'Play/Pause Simulation': _playPauseSimulation,
             'Save Map': _saveJSON,
@@ -408,6 +497,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         // folderEdit.add( guiSetting, 'Allow Graph Segment Splitting' ).onChange( () => { allowGraphSegmentSplitting = guiSetting[ 'Allow Graph Segment Splitting' ]; } );
         folderEdit.add( guiSetting, 'Remove Graph Segment' );
         folderEdit.add( guiSetting, 'Bend Graph Segment' );
+        folderEdit.add( guiSetting, 'Auto Bend Graph Segment' );
         folderEdit.add( guiSetting, 'Straighten Graph Segment' );
         folderEdit.add( guiSetting, 'Split Graph Segment' );
         folderEdit.add( guiSetting, 'Split Graph Segment At' );
@@ -418,6 +508,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderEdit.add( guiSetting, 'Add End Point' );
         folderEdit.add( guiSetting, 'Remove Start & End Points' );
         folderEdit.add( guiSetting, 'Toggle Walkable Point' );
+        folderEdit.add( guiSetting, 'Toggle Mouse Snapping' );
         folderEdit.add( guiSetting, 'Clear All' );
 
         const folderAnalyze = gui.addFolder( 'Analyze' );
@@ -425,10 +516,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderAnalyze.open();
         folderAnalyze.add( guiSetting, 'Get GraphSegment' );
         folderAnalyze.add( guiSetting, 'Get Vehicle' );
+        folderAnalyze.add( guiSetting, 'Get Point' );
+        folderAnalyze.add( guiSetting, 'Toggle Vehicle Halted' );
         folderAnalyze.add( guiSetting, 'Follow Vehicle' );
         folderAnalyze.add( guiSetting, 'Remove Vehicle' );
+        folderAnalyze.add( guiSetting, 'Remove All Vehicles' );
         folderAnalyze.add( guiSetting, 'Log Graph' );
         folderAnalyze.add( guiSetting, 'Show Route' );
+        folderAnalyze.add( guiSetting, 'Show Point Neighbours' );
+        folderAnalyze.add( guiSetting, 'Show Point Vehicle Queue' );
+        folderAnalyze.add( guiSetting, 'Show Vehicle Checkpoints' );
+        folderAnalyze.add( guiSetting, 'Show Vehicle Grid Cells' );
         folderAnalyze.add( guiSetting, 'Toggle Debug Mode' );
 
         const folderSimulation = gui.addFolder( 'Simulation' );
@@ -456,6 +554,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
         stats.domElement.style.top = '0px';
 
         document.body.appendChild( stats.domElement );
+
+        //---
+
+        statistics.init();
 
     }
 
@@ -492,6 +594,25 @@ document.addEventListener( 'DOMContentLoaded', () => {
         collisionDetection = new CollisionDetection();
         navigator = new Navigator();
 
+        setTimeout( () => {
+
+            // navigator.setPositionInit( canvasManager.center.x, canvasManager.center.y );
+            // navigator.active = true;
+            // navigator.setPositionTarget( canvasManager.center.x, canvasManager.center.y );
+            
+            // navigator.navigate();
+            // navigator.active = false;
+            //     navigator.stop();
+    
+                //graphsManager.setAllGraphSegmentPointNeighbours( 0 );
+
+        }, 1000)
+
+        
+
+
+        
+
     }
 
     function onResize( event ) {
@@ -516,18 +637,31 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
+        if ( collisionDetection !== null ) {
+
+            collisionDetection.updateGrid();
+
+        }
+
+        //---
+
         border.right = width;
         border.bottom = height;
 
         //---
 
-        if ( animationFrame !== null ) {
+        // if ( animationFrame !== null ) {
 
-            cancelAnimFrame( animationFrame );
+        //     cancelAnimFrame( animationFrame );
 
-        }
+        // }
 
-        animationFrame = requestAnimFrame( render );
+        // animationFrame = requestAnimFrame( render );
+
+        animationFrameManager.restart();
+
+        // setTimeout(()=>{animationFrameManager.stop()}, 2500)
+        // setTimeout(()=>{animationFrameManager.start()}, 5000)
 
         //---
 
@@ -546,11 +680,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
-        const point = getPointByPosition( position );
+        const point = GraphsManager.getPointByPosition( graph, position );//getPointByPosition( position );
 
         if ( point !== null ) {
 
@@ -594,125 +728,75 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //---
 
-    function setAllGraphSegmentPointNeighbours() {
+    function showVehicleCheckpoints( position ) {
 
-        const graphIndex = 0;
-
-        const graph = graphsHolder[ graphIndex ];
+        tempGraphSegments = [];
 
         //---
 
-        for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
+        const vehicle = vehicles.getVehicleByPosition( position );
 
-            const point = graph.points[ i ];
+        if ( vehicle !== null ) {
 
-            setGraphSegmentPointNeighbours( point );
+            const colorPointCheck = { r: 255, g: 255, b: 255, a: 255 };
+            const colorPointVehicle = { r: 0, g: 255, b: 0, a: 255 };
+
+            if ( vehicle.checkPoint0 !== null ) {
+
+                tempGraphSegments.push( { type: 'circ', position: { x: vehicle.checkPoint0.x, y: vehicle.checkPoint0.y }, diameter: 15, color: colorPointCheck } );
+
+            }
+
+            if ( vehicle.checkPoint1 !== null ) {
+
+                tempGraphSegments.push( { type: 'circ', position: { x: vehicle.checkPoint1.x, y: vehicle.checkPoint1.y }, diameter: 15, color: colorPointCheck } );
+
+            }
+
+            tempGraphSegments.push( { type: 'circ', position: { x: vehicle.position.x, y: vehicle.position.y }, diameter: 12, color: colorPointVehicle } );
 
         }
 
     }
 
-    function setGraphSegmentPointNeighbours( point ) {
+    function showVehicleGridCells( position ) {
 
-        const graphIndex = 0;
-
-        const graph = graphsHolder[ graphIndex ];
+        tempGraphSegments = [];
 
         //---
 
-        const neighbourGraphSegments = getNextGraphSegmentsByPoint( point, graph.segments );
+        const vehicle = vehicles.getVehicleByPosition( position );
 
-        if ( neighbourGraphSegments.length > 0 ) {
+        if ( vehicle !== null ) {
 
-            const neighbourPoints = getNextPointsByPointAndGraphSegments( point, neighbourGraphSegments );
+            const gridCells = [ vehicle.gridCell ];
 
-            point.neighbourGraphsegments = neighbourGraphSegments;
-            point.neighbourPoints = neighbourPoints;
+            for ( let i = 0, l = vehicle.gridCell.neighbors.length; i < l; i ++ ) {
 
-        }
+                gridCells.push( vehicle.gridCell.neighbors[ i ] );
 
-    }
+            }
 
-    // function getGraphSegmentByPoints( p0, p1 ) {
+            for ( let i = 0, l = gridCells.length; i < l; i ++ ) {
 
-    //     const graphIndex = 0;
+                const gridCell = gridCells[ i ];
 
-    //     const graph = graphsHolder[ graphIndex ];
+                const boxPosition = { x: gridCell.x + gridCell.width / 2, y: gridCell.y + gridCell.height / 2 };
 
-    //     //---
+                if ( i === 0 ) {
 
-    //     let result = null;
+                    tempGraphSegments.push( { type: 'box', position: boxPosition, width: gridCell.width - 1, height: gridCell.height - 1, color: { r: 0, g: 155, b: 0, a: 255 } } );
 
-    //     for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
+                } else {
 
-    //         const graphSegment = graph.segments[ i ];
+                    tempGraphSegments.push( { type: 'box', position: boxPosition, width: gridCell.width - 1, height: gridCell.height - 1, color: { r: 155, g: 0, b: 0, a: 255 } } );
 
-    //         let p0Found = false;
-    //         let p1Found = false;
+                    if ( gridCell.vehicles.length > 0 ) {
 
-    //         if ( graphSegment.p0.x === p0.x && graphSegment.p0.y === p0.y || graphSegment.p1.x === p0.x && graphSegment.p1.y === p0.y ) {
+                        tempGraphSegments.push( { type: 'line', p0: { x: gridCell.x | 0, y: gridCell.y | 0 }, p1: { x: gridCell.x + gridCell.width | 0, y: gridCell.y + gridCell.height | 0 }, color: { r: 155, g: 0, b: 0, a: 255 } } );
+                        tempGraphSegments.push( { type: 'line', p0: { x: gridCell.x | 0, y: gridCell.y + gridCell.height | 0 }, p1: { x: gridCell.x + gridCell.width | 0, y: gridCell.y | 0 }, color: { r: 155, g: 0, b: 0, a: 255 } } );
 
-    //             p0Found = true;
-
-    //         }
-
-    //         if ( graphSegment.p0.x === p1.x && graphSegment.p0.y === p1.y || graphSegment.p1.x === p1.x && graphSegment.p1.y === p1.y ) {
-
-    //             p1Found = true;
-
-    //         }
-
-    //         if ( p0Found === true && p1Found === true ) {
-
-    //             result = graphSegment;
-
-    //         }
-
-    //     }
-
-    //     return result;
-
-    // }
-
-    function getGraphSegmentPoint( position, walkable = true, cost = 0, parentPoint = null, visited = false, neighbourGraphsegments = [], neighbourPoints = [] ) {
-
-        const point = {
-
-            x: position.x,
-            y: position.y,
-            walkable: walkable,
-            gCost: 0,
-            hCost: 0,
-            cost: cost,
-            parentPoint: parentPoint,
-            parentGraphSegment: null,
-            visited: visited,
-            neighbourGraphsegments: neighbourGraphsegments,
-            neighbourPoints: neighbourPoints,
-
-        };
-
-        return point;
-
-    }
-
-    function getNextGraphSegmentsByPoint( point, graphSegments ) {
-
-        const graphSegmentsFound = [];
-
-        for ( let i = 0, l = graphSegments.length; i < l; i ++ ) {
-
-            const graphSegment = graphSegments[ i ];
-
-            if ( graphSegment.walkable === true ) {
-
-                if ( point.x === graphSegment.p0.x && point.y === graphSegment.p0.y ) {
-
-                    graphSegmentsFound.push( graphSegment );
-
-                } else if ( point.x === graphSegment.p1.x && point.y === graphSegment.p1.y ) {
-
-                    graphSegmentsFound.push( graphSegment );
+                    }
 
                 }
 
@@ -720,67 +804,71 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        return graphSegmentsFound;
-
     }
 
-    function getNextPointsByPointAndGraphSegments( point, nextGraphSegments ) {
+    //---
 
-        const pointsFound = [];
+    function showPointNeighbours( position ) {
 
-        for ( let i = 0, l = nextGraphSegments.length; i < l; i ++ ) {
-
-            const nextGraphSegment = nextGraphSegments[ i ];
-
-            if ( point.x === nextGraphSegment.p0.x && point.y === nextGraphSegment.p0.y ) {
-
-                if ( nextGraphSegment.direction === '><' || nextGraphSegment.direction === '>' ) {
-
-                    pointsFound.push( nextGraphSegment.p1 );
-
-                }
-
-            } else if ( point.x === nextGraphSegment.p1.x && point.y === nextGraphSegment.p1.y ) {
-
-                if ( nextGraphSegment.direction === '><' || nextGraphSegment.direction === '<' ) {
-
-                    pointsFound.push( nextGraphSegment.p0 );
-
-                }
-
-            }
-
-        }
-
-        return pointsFound;
-
-    }
-
-    function getPointByPosition( position ) {
-
-        const graphIndex = 0;
-
-        const graph = graphsHolder[ graphIndex ];
+        tempGraphSegments = [];
 
         //---
 
-        let point = null;
+        const graphIndex = 0;
 
-        for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
+        const graph = graphsManager.graphs[ graphIndex ];
 
-            const p = graph.points[ i ];
+        const point = GraphsManager.getPointByPosition( graph, position );//getPointByPosition( position );
 
-            if ( p.x === position.x && p.y === position.y ) {
+        if ( point !== null ) {
 
-                point = p;
+            const colorPoint = { r: 255, g: 255, b: 255, a: 255 };
+            const colorGraphsegment = { r: 255, g: 255, b: 255, a: 155 };
 
-                break;
+            for ( let i = 0, l = point.neighbourPoints.length; i < l; i ++ ) {
+
+                const pointNeighbour = point.neighbourPoints[ i ];
+
+                tempGraphSegments.push( { type: 'circ', position: { x: pointNeighbour.x, y: pointNeighbour.y }, diameter: 15, color: colorPoint } );
+
+            }
+
+            for ( let i = 0, l = point.neighbourGraphsegments.length; i < l; i ++ ) {
+
+                const graphsegmentNeighbour = point.neighbourGraphsegments[ i ];
+
+                tempGraphSegments.push( { type: 'bezier', p0: { x: graphsegmentNeighbour.p0.x, y: graphsegmentNeighbour.p0.y }, controlPoint: { x: graphsegmentNeighbour.controlPoint.x, y: graphsegmentNeighbour.controlPoint.y }, p1: { x: graphsegmentNeighbour.p1.x, y: graphsegmentNeighbour.p1.y }, color: colorGraphsegment } );
 
             }
 
         }
 
-        return point;
+    }
+
+    function showPointVehicleQueue( position ) {
+
+        tempGraphSegments = [];
+
+        //---
+
+        const graphIndex = 0;
+
+        const graph = graphsManager.graphs[ graphIndex ];
+
+        const point = GraphsManager.getPointByPosition( graph, position );//getPointByPosition( position );
+
+        if ( point !== null ) {
+
+            for ( let i = 0, l = point.vehiclesWaiting.length; i < l; i ++ ) {
+
+                const vehicle = vehicles.getVehicleById( point.vehiclesWaiting[ i ] );
+
+                tempGraphSegments.push( { type: 'circ', position: { x: vehicle.position.x, y: vehicle.position.y }, diameter: 15, color: { r: 255, g: 255, b: 255, a: 255 } } );
+
+            }
+
+        }
+
 
     }
 
@@ -790,7 +878,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
@@ -826,7 +914,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
@@ -933,12 +1021,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             const convertLaneToGraphSegment = ( lane ) => {
 
-                let graphSegmentPoint0 = getPointByPosition( lane.p0 );
-                let graphSegmentPoint1 = getPointByPosition( lane.p1 );
+                let graphSegmentPoint0 = GraphsManager.getPointByPosition( graph, lane.p0 );
+                let graphSegmentPoint1 = GraphsManager.getPointByPosition( graph, lane.p1 );
 
                 if ( graphSegmentPoint0 === null ) {
 
-                    graphSegmentPoint0 = getGraphSegmentPoint( lane.p0 );
+                    graphSegmentPoint0 = GraphsManager.getGraphSegmentPoint( lane.p0 );
 
                     graph.points.push( graphSegmentPoint0 );
 
@@ -946,7 +1034,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 if ( graphSegmentPoint1 === null ) {
 
-                    graphSegmentPoint1 = getGraphSegmentPoint( lane.p1 );
+                    graphSegmentPoint1 = GraphsManager.getGraphSegmentPoint( lane.p1 );
 
                     graph.points.push( graphSegmentPoint1 );
 
@@ -968,8 +1056,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 //function getGraphSegmentObject( id, p0, p1 = null, controlPoint = null, centerPoint = null, length = 0, walkable = true, direction = '><' ) {
                 const graphSegment = getGraphSegmentObject( graph.segments.length, graphSegmentPoint0, graphSegmentPoint1, lane.controlPoint, lane.centerPoint, getGraphSegmentLength( lane.p0, lane.p1, lane.controlPoint ), currentStreetSegment.walkable, currentStreetSegment.direction );
 
-                setGraphSegmentPointNeighbours( getPointByPosition( graphSegment.p0 ) );
-                setGraphSegmentPointNeighbours( getPointByPosition( graphSegment.p1 ) );
+                graphsManager.setGraphSegmentPointNeighbours( 0, GraphsManager.getPointByPosition( graph, graphSegment.p0 ) );
+                graphsManager.setGraphSegmentPointNeighbours( 0, GraphsManager.getPointByPosition( graph, graphSegment.p1 ) );
 
                 return graphSegment;
 
@@ -1157,7 +1245,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         /*
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
@@ -1223,25 +1311,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         if ( currentGraphSegment === null ) {
 
-            let graphSegmentPoint = getPointByPosition( position );
+            let graphSegmentPoint = GraphsManager.getPointByPosition( graph, position );
 
             if ( graphSegmentPoint === null ) {
 
-                graphSegmentPoint = getGraphSegmentPoint( position );
+                graphSegmentPoint = GraphsManager.getGraphSegmentPoint( position );
 
                 graph.points.push( graphSegmentPoint );
+
+                graphsManager.addPointForLookupForPoints( graphIndex, GraphsManager.getLookupPointId( graphSegmentPoint ), graphSegmentPoint );
 
             }
 
             currentGraphSegment = getGraphSegmentObject( graph.segments.length, graphSegmentPoint );
-
+            
             graph.segments.push( currentGraphSegment );
 
-            setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p0 ) );
+            graphsManager.setGraphSegmentPointNeighbours( 0, GraphsManager.getPointByPosition( graph, currentGraphSegment.p0 ) );
 
             if ( debugMode === true ) {
 
@@ -1251,13 +1341,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         } else {
 
-            let graphSegmentPoint = getPointByPosition( position );
+            let graphSegmentPoint = GraphsManager.getPointByPosition( graph, position );
 
             if ( graphSegmentPoint === null ) {
 
-                graphSegmentPoint = getGraphSegmentPoint( position );
+                graphSegmentPoint = GraphsManager.getGraphSegmentPoint( position );
 
                 graph.points.push( graphSegmentPoint );
+
+                graphsManager.addPointForLookupForPoints( graphIndex, GraphsManager.getLookupPointId( graphSegmentPoint ), graphSegmentPoint );
 
             }
 
@@ -1272,6 +1364,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     graph.points.splice( graph.points.findIndex( ( point ) => point.x === currentGraphSegment.p0.x && point.y === currentGraphSegment.p0.y ), 1 );
 
+                    graphsManager.removePointFromLookupForPoints( graphIndex, GraphsManager.getLookupPointId( currentGraphSegment.p0 ) );
+                
                 }
 
                 graph.segments.pop();
@@ -1288,8 +1382,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 currentGraphSegment.controlPoint = getGraphSegmentCenter( currentGraphSegment );
                 currentGraphSegment.length = getGraphSegmentLength( currentGraphSegment.p0, currentGraphSegment.p1, currentGraphSegment.controlPoint ); //Tools.getDistance( currentGraphSegment.p0, currentGraphSegment.p1 );
 
-                setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p0 ) );
-                setGraphSegmentPointNeighbours( getPointByPosition( currentGraphSegment.p1 ) );
+                graphsManager.setGraphSegmentPointNeighbours( 0, GraphsManager.getPointByPosition( graph, currentGraphSegment.p0 ) );
+                graphsManager.setGraphSegmentPointNeighbours( 0, GraphsManager.getPointByPosition( graph, currentGraphSegment.p1 ) );
 
                 // if ( allowGraphSegmentSplitting === true ) {
 
@@ -1344,12 +1438,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
-        let p0Found = getPointByPosition( graphSegment.p0 );
-        let p1Found = getPointByPosition( graphSegment.p1 );
+        let p0Found = GraphsManager.getPointByPosition( graph, graphSegment.p0 );
+        let p1Found = GraphsManager.getPointByPosition( graph, graphSegment.p1 );
 
         for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
@@ -1379,11 +1473,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             graph.points.splice( graph.points.findIndex( ( point ) => point.x === p0Found.x && point.y === p0Found.y ), 1 );
 
+            graphsManager.removePointFromLookupForPoints( graphIndex, GraphsManager.getLookupPointId( p0Found ) );
+
+
         }
 
         if ( p1Found !== null ) {
 
             graph.points.splice( graph.points.findIndex( ( point ) => point.x === p1Found.x && point.y === p1Found.y ), 1 );
+
+            graphsManager.removePointFromLookupForPoints( graphIndex, GraphsManager.getLookupPointId( p1Found ) );
 
         }
 
@@ -1397,7 +1496,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         for ( let i = 0, l = graph.points.length; i < l; i ++ ) {
 
-            setGraphSegmentPointNeighbours( graph.points[ i ] );
+            graphsManager.setGraphSegmentPointNeighbours( 0, graph.points[ i ] );
 
         }
 
@@ -1454,7 +1553,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            debugElements.addElementsByGraph( graphsHolder[ 0 ] );
+            debugElements.addElementsByGraph( graphsManager.graphs[ 0 ] );
 
         }
 
@@ -1464,6 +1563,128 @@ document.addEventListener( 'DOMContentLoaded', () => {
         tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p1.x, y: graphSegment.p1.y }, p1: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
         tempGraphSegments.push( { type: 'circfill', position: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
         tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+
+    }
+
+    function autoBendGraphSegmentByPosition( position ) {
+
+        const graphSegment = getGraphSegmentByPosition( position );
+
+        if ( graphSegment !== null ) {
+
+            autoBendGraphSegment( graphSegment );
+
+        }
+
+    }
+
+    function autoBendGraphSegment( graphSegment ) {
+
+        const graphIndex = 0;
+
+        const graph = graphsManager.graphs[ graphIndex ];
+
+        const graphSegmentControlPointSave = {
+            
+            x: graphSegment.controlPoint.x,
+            y: graphSegment.controlPoint.y,
+
+        }
+
+        //---
+
+        const neighbourGraphSegments0 = GraphsManager.getNextGraphSegmentsByPoint( graphSegment.p0, graph.segments );
+        const neighbourGraphSegments1 = GraphsManager.getNextGraphSegmentsByPoint( graphSegment.p1, graph.segments );
+
+        console.log( neighbourGraphSegments0.length, neighbourGraphSegments1.length );
+
+        if ( neighbourGraphSegments0.length !== 2 || neighbourGraphSegments1.length !== 2 ) {
+
+            console.log( 'Impossible to bend this graph segment automatically' );
+
+            return;
+
+        }
+
+        //---
+
+        const neighbourGraphSegments = [];
+
+        for ( let i = 0, l = neighbourGraphSegments0.length; i < l; i ++ ) {
+
+            const neighbourGraphSegment = neighbourGraphSegments0[ i ];
+
+            if ( neighbourGraphSegment.id !== graphSegment.id ) {
+
+                neighbourGraphSegments.push( neighbourGraphSegment );
+
+            }
+
+        }
+
+        for ( let i = 0, l = neighbourGraphSegments1.length; i < l; i ++ ) {
+
+            const neighbourGraphSegment = neighbourGraphSegments1[ i ];
+
+            if ( neighbourGraphSegment.id !== graphSegment.id ) {
+
+                neighbourGraphSegments.push( neighbourGraphSegment );
+
+            }
+
+        }
+
+        //---
+
+        const neighbourGraphSegment0 = neighbourGraphSegments[ 0 ];
+        const neighbourGraphSegment1 = neighbourGraphSegments[ 1 ];
+
+        const neighbourGraphSegment0ControlPoint = neighbourGraphSegment0.controlPoint;
+        const neighbourGraphSegment1ControlPoint = neighbourGraphSegment1.controlPoint;
+
+        const angle0 = Math.atan2( neighbourGraphSegment0ControlPoint.y - graphSegment.p0.y, neighbourGraphSegment0ControlPoint.x - graphSegment.p0.x ) - Settings.MATH_PI_050;
+        const angle1 = Math.atan2( neighbourGraphSegment1ControlPoint.y - graphSegment.p1.y, neighbourGraphSegment1ControlPoint.x - graphSegment.p1.x ) - Settings.MATH_PI_050;
+
+        const sin0 = Math.sin( angle0 );
+        const cos0 = Math.cos( angle0 );
+        const sin1 = Math.sin( angle1 );
+        const cos1 = Math.cos( angle1 );
+
+        const px0 = sin0 * 1000 + graphSegment.p0.x;
+        const py0 = -cos0 * 1000 + graphSegment.p0.y;
+        const px1 = sin1 * 1000 + graphSegment.p1.x;
+        const py1 = -cos1 * 1000 + graphSegment.p1.y;
+
+        //---
+
+        const graphSegmentControlPoint = Tools.getLinesIntersectionPoint( graphSegment.p0.x, graphSegment.p0.y, px0, py0, graphSegment.p1.x, graphSegment.p1.y, px1, py1 );
+
+        //---
+
+        graphSegment.controlPoint.x = graphSegmentControlPoint.x;
+        graphSegment.controlPoint.y = graphSegmentControlPoint.y;
+
+        graphSegment.centerPoint = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, 0.50 );
+
+        graphSegment.length = getGraphSegmentLength( graphSegment.p0, graphSegment.p1, graphSegment.controlPoint );
+
+        //---
+
+        tempGraphSegments = [];
+
+        tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegmentControlPointSave.x, y: graphSegmentControlPointSave.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 155, g: 0, b: 0, a: 255 } } );
+        tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegmentControlPoint.x, y: graphSegmentControlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 0, g: 255, b: 0, a: 255 } } );
+
+        tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, p1: { x: neighbourGraphSegment0ControlPoint.x, y: neighbourGraphSegment0ControlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+        tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p1.x, y: graphSegment.p1.y }, p1: { x: neighbourGraphSegment1ControlPoint.x, y: neighbourGraphSegment1ControlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+
+        tempGraphSegments.push( { type: 'circfill', position: { x: neighbourGraphSegment0ControlPoint.x, y: neighbourGraphSegment0ControlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
+        tempGraphSegments.push( { type: 'circfill', position: { x: neighbourGraphSegment1ControlPoint.x, y: neighbourGraphSegment1ControlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
+
+        tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, p1: { x: graphSegmentControlPoint.x, y: graphSegmentControlPoint.y }, color: { r: 230, g: 230, b: 95, a: 255 } } );
+        tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p1.x, y: graphSegment.p1.y }, p1: { x: graphSegmentControlPoint.x, y: graphSegmentControlPoint.y }, color: { r: 230, g: 230, b: 95, a: 255 } } );
+
+        tempGraphSegments.push( { type: 'circfill', position: { x: graphSegmentControlPoint.x, y: graphSegmentControlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
 
     }
 
@@ -1483,8 +1704,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const centerPoint = getGraphSegmentCenter( graphSegment );
 
-        graphSegment.centerPoint = centerPoint;
-        graphSegment.controlPoint = centerPoint;
+        graphSegment.centerPoint.x = centerPoint.x;
+        graphSegment.centerPoint.y = centerPoint.y;
+        graphSegment.controlPoint.x = centerPoint.x;
+        graphSegment.controlPoint.y = centerPoint.y;
 
         graphSegment.length = getGraphSegmentLength( graphSegment.p0, graphSegment.p1, graphSegment.controlPoint );
 
@@ -1492,7 +1715,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         if ( debugMode === true ) {
 
-            debugElements.addElementsByGraph( graphsHolder[ 0 ] );
+            debugElements.addElementsByGraph( graphsManager.graphs[ 0 ] );
 
         }
 
@@ -1516,7 +1739,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
@@ -1537,9 +1760,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             newGraphSegment.id = graph.segments.length;
 
-            const graphSegment0Point0New = getGraphSegmentPoint( newGraphSegment.p0 );
+            const graphSegment0Point0New = GraphsManager.getGraphSegmentPoint( newGraphSegment.p0 );
             const graphSegment0Point0Array = graph.points.find( ( point ) => point.x === newGraphSegment.p0.x && point.y === newGraphSegment.p0.y );
-            const graphSegment0Point1New = getGraphSegmentPoint( newGraphSegment.p1 );
+            const graphSegment0Point1New = GraphsManager.getGraphSegmentPoint( newGraphSegment.p1 );
             const graphSegment0Point1Array = graph.points.find( ( point ) => point.x === newGraphSegment.p1.x && point.y === newGraphSegment.p1.y );
 
             let graphSegmentPoint0 = graphSegment0Point0Array;
@@ -1551,6 +1774,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 graph.points.push( graphSegmentPoint0 );
 
+                graphsManager.addPointForLookupForPoints( graphIndex, GraphsManager.getLookupPointId( graphSegmentPoint0 ), graphSegmentPoint0 );
+
             }
 
             if ( typeof graphSegmentPoint1 === 'undefined' ) {
@@ -1558,6 +1783,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 graphSegmentPoint1 = graphSegment0Point1New;
 
                 graph.points.push( graphSegmentPoint1 );
+
+                graphsManager.addPointForLookupForPoints( graphIndex, GraphsManager.getLookupPointId( graphSegmentPoint1 ), graphSegmentPoint1 );
 
             }
 
@@ -1568,8 +1795,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             graph.segments.push( newGraphSegment );
 
-            setGraphSegmentPointNeighbours( getPointByPosition( graphSegmentPoint0 ) );
-            setGraphSegmentPointNeighbours( getPointByPosition( graphSegmentPoint1 ) );
+            graphsManager.setGraphSegmentPointNeighbours( 0, GraphsManager.getPointByPosition( graph, graphSegmentPoint0 ) );
+            graphsManager.setGraphSegmentPointNeighbours( 0, GraphsManager.getPointByPosition( graph, graphSegmentPoint1 ) );
 
         }
 
@@ -1653,13 +1880,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
-        const route = { startPoint: null, endPoint: null, graphSegments: [], color: Tools.getRouteColorRGBA( graph.routes.length ) };
+        const route = { startPoint: null, endPoint: null, graphSegments: [], length: 0, color: Tools.getRouteColorRGBA( graph.routes.length ), newestVehicleId: null };
 
-        const startPoint = getPointByPosition( position );
+        const startPoint = GraphsManager.getPointByPosition( graph, position );
 
         if ( startPoint !== null ) {
 
@@ -1688,7 +1915,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
@@ -1710,7 +1937,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const route = graph.routes[ routeIndex ];
 
-        const endPoint = getPointByPosition( position );
+        const endPoint = GraphsManager.getPointByPosition( graph, position );
 
         if ( endPoint !== null ) {
 
@@ -1737,7 +1964,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
@@ -1789,9 +2016,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
-        const point = getPointByPosition( position );
+        const point = GraphsManager.getPointByPosition( graph, position );
 
         if ( point !== null ) {
 
@@ -1815,7 +2042,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
@@ -1845,7 +2072,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //     const graphIndex = 0;
 
-    //     const graph = graphsHolder[ graphIndex ];
+    //     const graph = graphsManager.graphs[ graphIndex ];
 
     //     const point = currentNode;
 
@@ -1863,7 +2090,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //     const graphIndex = 0;
 
-    //     const graph = graphsHolder[ graphIndex ];
+    //     const graph = graphsManager.graphs[ graphIndex ];
 
     //     //under construction
 
@@ -1877,7 +2104,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         const point = currentNode;
 
@@ -1949,6 +2176,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             //---
 
+            graphsManager.updateLookupForPoints( graphIndex, GraphsManager.getLookupPointId( point ), point, '' + pointOldX + pointOldY );
+
+            //---
+
             if ( debugMode === true ) {
 
                 debugElements.addElementsByGraph( graph );
@@ -1967,11 +2198,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        //const graphIndex = 0;
+        const graphIndex = 0;
 
-        //const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
-        const point = getPointByPosition( position );
+        const point = GraphsManager.getPointByPosition( graph, position );
 
         if ( point !== null ) {
 
@@ -1993,7 +2224,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             graphSegment.walkable = !graphSegment.walkable;
 
-            setAllGraphSegmentPointNeighbours();//muss optimiert werden. Es sollte möglich sein nur die betroffenen Punkte upzudaten und nicht alle.
+            graphsManager.setAllGraphSegmentPointNeighbours( 0 );//muss optimiert werden. Es sollte möglich sein nur die betroffenen Punkte upzudaten und nicht alle.
 
         }
 
@@ -2007,7 +2238,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //const graphIndex = 0;
 
-        //const graph = graphsHolder[ graphIndex ];
+        //const graph = graphsManager.graphs[ graphIndex ];
 
         const graphSegment = getGraphSegmentByPosition( position );
 
@@ -2033,7 +2264,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
@@ -2071,7 +2302,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         const graphIndex = 0;
 
-        const graph = graphsHolder[ graphIndex ];
+        const graph = graphsManager.graphs[ graphIndex ];
 
         //---
 
@@ -2155,7 +2386,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         }
 
         const ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denominator;
-        const ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denominator;
+        // const ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denominator;
 
         // is the intersection along the segments
         // if ( ua < 0 || ua > 1 || ub < 0 || ub > 1 ) {
@@ -2180,7 +2411,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //     const graphIndex = 0;
 
-    //     const graph = graphsHolder[ graphIndex ];
+    //     const graph = graphsManager.graphs[ graphIndex ];
 
     //     //---
 
@@ -2229,7 +2460,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     //     const graphIndex = 0;
 
-    //     const graph = graphsHolder[ graphIndex ];
+    //     const graph = graphsManager.graphs[ graphIndex ];
 
     //     //---
 
@@ -2464,6 +2695,42 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 }
 
+            } else if ( editorMode === EDITOR_MODE_ENUM.getPoint ) { 
+            
+                const graphIndex = 0;
+
+                const graph = graphsManager.graphs[ graphIndex ];
+
+                const point = GraphsManager.getPointByPosition( graph, mouseCursor.position );
+
+                if ( point !== null ) {
+
+                    console.log( 'Found point: ', point );
+
+                    const pointInLookup = graphsManager.getPointInLookupById( 0, GraphsManager.getLookupPointId( point ) );
+
+                    if ( pointInLookup !== null ) {
+
+                        console.log( 'Found point in lookup: ', pointInLookup );
+
+                    }
+                    
+                } else {
+
+                    console.log( 'Could not find point on position: ', mouseCursor.position );
+
+                }
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.toggleVehicleHalted ) {
+
+                const vehicle = vehicles.getVehicleByPosition( mousePos );
+
+                if ( vehicle !== null ) {
+
+                    vehicle.halted = !vehicle.halted;
+
+                }
+            
             } else if ( editorMode === EDITOR_MODE_ENUM.followVehicle ) {
 
                 vehicles.vehicleSelected = vehicles.getVehicleByPosition( mousePos );
@@ -2487,7 +2754,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     vehicles.removeVehicle( vehicle );
 
                 }
-            
+
             } else if ( editorMode === EDITOR_MODE_ENUM.togglePointWalkable ) {
 
                 togglePointWalkable( mouseCursor.position );
@@ -2513,6 +2780,40 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 //---
 
+            } else if ( editorMode === EDITOR_MODE_ENUM.showPointNeighbours ) {
+
+                const graphIndex = 0;
+
+                const graph = graphsManager.graphs[ graphIndex ];
+
+                const point = GraphsManager.getPointByPosition( graph, mouseCursor.position );
+
+                console.log( 'Point: ', point );
+
+                if ( point !== null ) {
+
+                    for ( let i = 0, l = point.neighbourPoints.length; i < l; i ++ ) {
+
+                        console.log( 'Point Neighbour ', i, ': ', point.neighbourPoints[ i ] );
+    
+                    }
+    
+                    console.log( 'Point Neighbours in total: ', point.neighbourPoints.length );
+
+                } else {
+
+                    console.log( 'Could not find point on position: ', mouseCursor.position );
+
+                }
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.showVehicleCheckpoints ) {
+
+                //---
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.showVehicleGridCells ) {
+
+                //---
+
             } else if ( editorMode === EDITOR_MODE_ENUM.removeStartEndPoints ) {
 
                 removeStartEndPoints( mouseCursor.position );
@@ -2520,6 +2821,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
             } else if ( editorMode === EDITOR_MODE_ENUM.bendGraphSegment ) {
 
                 currentGraphSegment = getGraphSegmentByPosition( mouseCursor.position );
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.autoBendGraphSegment ) {
+
+                autoBendGraphSegmentByPosition( mouseCursor.position );
 
             } else if ( editorMode === EDITOR_MODE_ENUM.straightenGraphSegment ) {
 
@@ -2560,9 +2865,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
             navigator.active = false;
             navigator.stop();
 
+            graphsManager.setAllGraphSegmentPointNeighbours( 0 );
+
             if ( debugMode === true ) {
 
-                debugElements.addElementsByGraph( graphsHolder[ 0 ] );
+                debugElements.addElementsByGraph( graphsManager.graphs[ 0 ] );
         
             }
 
@@ -2592,19 +2899,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
             // if ( currentGraphSegment === null && editorMode !== EDITOR_MODE_ENUM.followVehicle ) {
             if ( currentGraphSegment === null && currentStreetSegment === null && editorMode !== EDITOR_MODE_ENUM.followVehicle ) {
 
-                const graphIndex = 0;
+                const computeRoutes = true;
+                const computeIntersections = editorMode === EDITOR_MODE_ENUM.addEndPoint || editorMode === EDITOR_MODE_ENUM.removeStartEndPoints;
+                const updateLookup = computeIntersections;
 
-                const graph = graphsHolder[ graphIndex ];
-
-                //---
-                
-                pathfinder.computeRoutes( graph, ( routes, time ) => {
-
-                    graph.routes = routes;
-
-                    console.log( 'Der Aufruf von computeRoutes dauerte ' + time + ' Millisekunden.' );
-            
-                } );
+                graphsManager.computeGraphRoutesAndIntersections( 0, computeRoutes, computeIntersections, updateLookup );
 
                 //---
                 //dieser part hier muss erneut überprüft werden. ist es überhaupt noch nötig. vielleicht zudem besser im computeRoutes callback aufgehoben.
@@ -2640,7 +2939,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 editorMode === EDITOR_MODE_ENUM.toggleGraphWalkable ||
                 editorMode === EDITOR_MODE_ENUM.toggleGraphDirections ||
                 ( editorMode === EDITOR_MODE_ENUM.bendGraphSegment && mouseDown === false ) ||
-                editorMode === EDITOR_MODE_ENUM.straightenGraphSegment ||
+                ( editorMode === EDITOR_MODE_ENUM.autoBendGraphSegment && mouseDown === false ) ||
+                ( editorMode === EDITOR_MODE_ENUM.straightenGraphSegment && mouseDown === false ) ||
                 editorMode === EDITOR_MODE_ENUM.splitGraphSegment ) {
 
                 tempGraphSegments = [];
@@ -2688,9 +2988,25 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 }
 
+            } else if ( editorMode === EDITOR_MODE_ENUM.showPointNeighbours ) {
+
+                showPointNeighbours( mouseCursor.position );
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.showPointVehicleQueue ) {
+
+                showPointVehicleQueue( mouseCursor.position );
+
             } else if ( editorMode === EDITOR_MODE_ENUM.showRoute ) {
 
                 showRoute( mouseCursor.position );
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.showVehicleCheckpoints ) {
+
+                showVehicleCheckpoints( mouseCursor.position );
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.showVehicleGridCells ) {
+
+                showVehicleGridCells( mouseCursor.position );
 
             }
 
@@ -3838,7 +4154,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        graphsHolder.forEach( ( graph, index ) => {
+        graphsManager.graphs.forEach( ( graph, index ) => {
 
             // let distanceAtTheMoment = Infinity;
             // let graphSegmentSelected = null;
@@ -3880,44 +4196,48 @@ document.addEventListener( 'DOMContentLoaded', () => {
             // //console.log( 'd: ', d );
             // //console.log( 'graphSegmentSelected: ', graphSegmentSelected );
 
-            for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
+            if ( Settings.MOUSE_SNAPPING.enabled === true ) {
 
-                const graphSegment = graph.segments[ i ];
+                for ( let i = 0, l = graph.segments.length; i < l; i ++ ) {
 
-                if ( graphSegment.p0 !== null && graphSegment.p1 !== null ) {
-
-                    //const distanceToSegment = signedDistanceToQuadraticBezier( mousePos, graphSegment.p0, graphSegment.p1, graphSegment.controlPoint, 25 );
-
-                    //console.log( distanceToSegment );
-
-
-
-                    //---
-
-                    const distancep0 = Tools.getDistance( mousePos, graphSegment.p0 );
-                    const distancep1 = Tools.getDistance( mousePos, graphSegment.p1 );
-
-                    if ( distancep0 <= SNAP_TO_DISTANCE ) {
-
-                        mouseCursor.position.x = graphSegment.p0.x;
-                        mouseCursor.position.y = graphSegment.p0.y;
-                        mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
-
-                        //console.log( 'p0: ', graphSegment.p0.x, graphSegment.p0.y, mousePos.x, mousePos.y );
-
-                    } else if ( distancep1 <= SNAP_TO_DISTANCE ) {
-
-                        mouseCursor.position.x = graphSegment.p1.x;
-                        mouseCursor.position.y = graphSegment.p1.y;
-                        mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
-
-                        //console.log( 'p1: ', graphSegment.p1.x, graphSegment.p1.y, mousePos.x, mousePos.y );
-
+                    const graphSegment = graph.segments[ i ];
+    
+                    if ( graphSegment.p0 !== null && graphSegment.p1 !== null ) {
+    
+                        //const distanceToSegment = signedDistanceToQuadraticBezier( mousePos, graphSegment.p0, graphSegment.p1, graphSegment.controlPoint, 25 );
+    
+                        //console.log( distanceToSegment );
+    
+    
+    
+                        //---
+    
+                        const distancep0 = Tools.getDistance( mousePos, graphSegment.p0 );
+                        const distancep1 = Tools.getDistance( mousePos, graphSegment.p1 );
+    
+                        if ( distancep0 <= SNAP_TO_DISTANCE ) {
+    
+                            mouseCursor.position.x = graphSegment.p0.x;
+                            mouseCursor.position.y = graphSegment.p0.y;
+                            mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
+    
+                            //console.log( 'p0: ', graphSegment.p0.x, graphSegment.p0.y, mousePos.x, mousePos.y );
+    
+                        } else if ( distancep1 <= SNAP_TO_DISTANCE ) {
+    
+                            mouseCursor.position.x = graphSegment.p1.x;
+                            mouseCursor.position.y = graphSegment.p1.y;
+                            mouseCursor.color = { r: 0, g: 255, b: 0, a: 255 };
+    
+                            //console.log( 'p1: ', graphSegment.p1.x, graphSegment.p1.y, mousePos.x, mousePos.y );
+    
+                        }
+    
                     }
-
+    
                 }
 
-            }
+            } 
 
             //---
 
@@ -4198,6 +4518,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 drawQuadraticBezier( tempGraphSegment.p0, tempGraphSegment.controlPoint, tempGraphSegment.p1, 25, tempGraphSegment.color.r, tempGraphSegment.color.g, tempGraphSegment.color.b, tempGraphSegment.color.a );
 
+            } else if ( tempGraphSegment.type === 'box' ) {
+
+                drawBoxOutline( tempGraphSegment.position, tempGraphSegment.width, tempGraphSegment.height, tempGraphSegment.color.r, tempGraphSegment.color.g, tempGraphSegment.color.b, tempGraphSegment.color.a );
+
             }
 
         }
@@ -4215,16 +4539,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             if ( vehicle.collisionDetected === true ) {
 
-                drawCircleOutline( vehicle.position, Vehicles.VEHICLE_RADIUS, 255, 0, 0, 255, 0.50 );
+                //---
+                //debug collision
+                drawCircleOutline( vehicle.position, Vehicles.VEHICLE_RADIUS / 2 + 2.5, 255, 0, 0, 255, 0.50 );
 
                 //---
+                //debug collision by angle
 
                 // const radius = Vehicles.VEHICLE_RADIUS * 2;
 
                 // const angleFront = vehicle.angle + Settings.MATH_PI_050;
 
-                // const angleLeft = angleFront - Settings.MATH_PI_025;
-                // const angleRight = angleFront + Settings.MATH_PI_025;
+                // const angleLeft = angleFront - Settings.MATH_PI_015;
+                // const angleRight = angleFront + Settings.MATH_PI_015;
 
                 // const sinLeft = Math.sin( angleLeft );
                 // const cosLeft = Math.cos( angleLeft );
@@ -4236,8 +4563,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 // const pxRight = sinRight * radius + vehicle.position.x;
                 // const pyRight = -cosRight * radius + vehicle.position.y;
 
-                // drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxLeft | 0, pyLeft | 0, 255, 0, 0, 255 );
+                // drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxLeft | 0, pyLeft | 0, 255, 255, 0, 255 );
                 // drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxRight | 0, pyRight | 0, 0, 191, 255, 255 );
+
+                //---
+                //debug collision by point in circle
+
+                // const sinFront = Math.sin( angleFront );
+                // const cosFront = Math.cos( angleFront );
+
+                // const pxFront = sinFront * Vehicles.VEHICLE_RADIUS + vehicle.position.x;
+                // const pyFront = -cosFront * Vehicles.VEHICLE_RADIUS + vehicle.position.y;
+
+                // drawLine( vehicle.position.x | 0, vehicle.position.y | 0, pxFront | 0, pyFront | 0, 255, 0, 255, 255 );
+
+                // drawCircleOutline( { x: pxFront, y: pyFront }, Vehicles.VEHICLE_RADIUS / 2 + 2.5, 255, 0, 255, 255, 0.50 );
 
                 //---
 
@@ -4245,7 +4585,63 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
             } else {
 
-                vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+                //if ( vehicle.halted === false ) {
+
+                    vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+
+                //}
+
+            }
+
+            // if ( vehicle.queueInIntersection === true ) {
+            if ( vehicle.queuePoint !== null ) {
+
+                //---
+                //debug in queue
+                drawCircleOutline( vehicle.position, Vehicles.VEHICLE_RADIUS / 2 + 2.5, 0, 255, 0, 255, 0.50 );
+
+                // if ( vehicle.queueTimer > 0 && vehicle.queuePoint.vehiclesWaiting.length > 1 ) {
+                // if ( vehicle.queueTimer > 0 ) {
+                if ( vehicle.queueWaiting === true && vehicle.queuePoint.vehiclesWaiting.length > 1 ) {
+                // if ( vehicle.queueWaiting === true && vehicle.queuePoint.vehiclesWaiting.length > 1 && vehicle.only2VehiclesFromSameRoute === false ) {
+                // if ( vehicle.queueWaiting === true && vehicle.queueIndex > 0 ) {
+                // if ( vehicle.queueWaiting === true && vehicle.queueLength > 1 ) {
+
+                    vehicle.speed = 0;
+
+                    // if ( vehicle.queuePoint.vehiclesWaiting.length === 2 && vehicle.only2VehiclesFromSameRoute === true ) {
+
+                    //     vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+                    //     //console.log("sdfsdfsdfsdfsdf");
+    
+                    // } else {
+
+                    //     vehicle.speed = 0;
+
+                    // }
+
+                } else {
+
+                    //if ( vehicle.speed === 0 ) {
+                    if ( vehicle.speed === 0 && vehicle.queuePrevious === false ) {
+
+                        //if ( vehicle.halted === false ) {
+
+                            vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+        
+                        //}
+
+                    }
+
+                }
+
+            }
+
+            if ( vehicle.halted === true ) {
+
+                drawCircleOutline( vehicle.position, Vehicles.VEHICLE_RADIUS / 2 + 2.5, 0, 255, 255, 255, 0.50 );
+
+                vehicle.speed = 0;
 
             }
 
@@ -4261,7 +4657,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 const graphIndex = 0;
 
-                const graph = graphsHolder[ graphIndex ];
+                const graph = graphsManager.graphs[ graphIndex ];
 
                 const route = graph.routes[ vehicles.vehicleSelected.routeIndex ];
                 const routeColor = route.color;
@@ -4284,10 +4680,17 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         drawStreetSegments();
 
+        if ( animationFrameManager.iteration % 4 === 1 ) collisionDetection.clearCollisions();//jedes vierte frame
+        //collisionDetection.clearCollisions();
+
         vehicles.simulate();
 
+        if ( animationFrameManager.iteration % 5 === 1 ) collisionDetection.checkIntersections();//jedes fünfte frame
+        // collisionDetection.checkIntersections();
+
         //collisionDetection.check();
-        collisionDetection.checkCollisions();
+        if ( animationFrameManager.iteration % 4 === 1 ) collisionDetection.checkCollisions();//jedes vierte frame
+        //collisionDetection.checkCollisions();
 
         //---
 
@@ -4303,6 +4706,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     // var lastUpdate = new Date();
     // let start;
+    // let last = 0;
+
+    //let ticker = 0;
 
     //const testAnimationFrameTimer = new AnimationFrameTimer( () => console.log( 'tick' ), 500 );
     function render( timestamp ) {
@@ -4365,28 +4771,52 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        animationFrame = requestAnimFrame( render );
+        stopwatch.step( timestamp );
+
+        //---
+
+        //const time = vehicles.vehiclesSimulation === true ? stopwatch.step( timestamp )
+
+        statistics.update( {
+            
+            'Vehicles ': vehicles.allVehicles.length,
+            'Points ': graphsManager.graphs[ 0 ].points.length,
+            'Segments ': graphsManager.graphs[ 0 ].segments.length,
+            'Routes ': graphsManager.graphs[ 0 ].routes.length,
+            'Intersections ': graphsManager.graphIntersectionsLength,
+            'Gridcells ': collisionDetection.grid.length,
+            //'Timer ': stopwatch.step( timestamp ),
+            
+        } );
+
+        //---
+        //ticker++;
+        //animationFrame = requestAnimFrame( render );
 
     }
 
-    window.requestAnimFrame = ( function() {
+    // window.requestAnimFrame = ( () => {
 
-        return  window.requestAnimationFrame       ||
-                window.webkitRequestAnimationFrame ||
-                window.mozRequestAnimationFrame    ||
-                window.msRequestAnimationFrame     ||
-                function( callback ) {
-                    window.setTimeout( callback, 1000 / 60 );
-                };
+    //     return  window.requestAnimationFrame       ||
+    //             window.webkitRequestAnimationFrame ||
+    //             window.mozRequestAnimationFrame    ||
+    //             window.oRequestAnimationFrame      || 
+    //             window.msRequestAnimationFrame     ||
+    //             function( callback ) {
+    //                 window.setTimeout( callback, 1000 / 60 );
+    //             };
 
-    } )();
+    // } )();
 
-    window.cancelAnimFrame = ( function() {
+    // window.cancelAnimFrame = ( () => {
 
-        return  window.cancelAnimationFrame       ||
-                window.mozCancelAnimationFrame;
+    //     return  window.cancelAnimationFrame       ||
+    //             window.mozCancelAnimationFrame    || 
+    //             function( animationFrame ) {
+    //                 clearTimeout( animationFrame )
+    //             };
 
-    } )();
+    // } )();
 
     //--- ------------------------------------------------------------------------------------------------------------------------------
 

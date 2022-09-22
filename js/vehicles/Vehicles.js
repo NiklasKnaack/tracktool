@@ -1,8 +1,8 @@
 class Vehicles {
 
-    static INTERVAL = 750;//250;//500;//250
+    static INTERVAL = 750;//2250;//750;//250;//500;//250
     static VEHICLE_RADIUS = 20;
-    static VEHICLE_SPEED = 2.50;
+    static VEHICLE_SPEED = 2.50;//1;//2.50;
 
     //---
 
@@ -38,6 +38,12 @@ class Vehicles {
 
         this.init();
 
+        // setInterval( () => {
+
+        //     console.log( 'vehicles count: ', this._vehiclesHolder.length );
+
+        // }, 1000 );
+
     }
 
     //---
@@ -57,7 +63,7 @@ class Vehicles {
             const vehicleImage = new Image();
 
             vehicleImage.crossOrigin = 'anonymous';
-            vehicleImage.src = './img/car_' + fileIndex + '.png';
+            vehicleImage.src = './img/vehicles/car_' + fileIndex + '.png';
 
             this._vehiclesImageHolder.push( vehicleImage );
 
@@ -73,6 +79,8 @@ class Vehicles {
     clear() {
 
         this.stopSimulation();
+
+        this.removeAllVehicles();
 
         this._vehiclesHolder = [];
 
@@ -167,6 +175,7 @@ class Vehicles {
 
     addVehicle() {
 
+        // if ( this._vehiclesSimulation === true && this._vehiclesHolder.length < 5 ) {
         if ( this._vehiclesSimulation === true ) {
 
             for ( let i = 0, l = this._graph.routes.length; i < l; i ++ ) {
@@ -180,26 +189,49 @@ class Vehicles {
 
                 }
 
-                const routePositionObject = this.getPointAndAngleOnRouteByT( true, 0, route, this._vehiclesInitalLastPosition );
-                //const routePositionObject = this.getPointAndAngleOnRouteByT( 0, route );
+                // const routePositionObject = this.getPointAndAngleOnRouteByT( true, 0, route, this._vehiclesInitalLastPosition );
+                // //const routePositionObject = this.getPointAndAngleOnRouteByT( 0, route );
 
-                if ( routePositionObject === null ) {
+                // if ( routePositionObject === null ) {
 
-                    continue;
+                //     continue;
 
-                }
+                // }
 
                 //const vehicleSpeed = ( 1 / route.length ) * 2.5;
                 const vehicleImage = this._vehiclesImageHolder[ Math.floor( Math.random() * this._vehiclesImageHolder.length ) ];
-                const vehicle = this.getVehicleObject( routePositionObject.point, routePositionObject.angle, 0, route, routeIndex, Vehicles.VEHICLE_SPEED, vehicleImage );
+                // const vehicle = this.getVehicleObject( routePositionObject.point, routePositionObject.angle, 0, route, routeIndex, Vehicles.VEHICLE_SPEED, vehicleImage );
+                const vehicle = this.getVehicleObject( { x: 0, y: 0 }, 0, 0, route, routeIndex, Vehicles.VEHICLE_SPEED, vehicleImage );
 
-                vehicle.speed = this.getVehicleSpeed( vehicle, vehicle.maxSpeed );
+                this._calcVehiclePositionOnRoute( vehicle, route );
+                
+                //vehicle.position = this.getPositionOnRouteByT( vehicle.t, route );
+                
                 vehicle.gridCell = this._vehiclesInitalGridCellHolder[ routeIndex ];// this._collisionDetection.getGridCellByPosition( vehicle.position );
-
-                //---
 
                 //Fahrzeuge werden nur hinzugefügt wenn sie zu begin keine Kollision aufweisen
                 if ( this._collisionDetection.checkCollisionsToVehicle( vehicle ) === false ) {
+
+                    vehicle.speed = this.getVehicleSpeed( vehicle, vehicle.maxSpeed );
+                    vehicle.lastPosition.x = vehicle.position.x;
+                    vehicle.lastPosition.y = vehicle.position.y;
+                    
+                    this._calcAngleOnRoute( vehicle );
+                
+                    //---
+
+                    const vehiclePreviousOnRouteId = route.newestVehicleId;
+
+                    if ( vehiclePreviousOnRouteId !== null ) {
+
+                        //vehicle bekommt das vehicle vor ihm auf seiner route zugewiesen
+                        vehicle.previousVehicleOnRoute  = this.getVehicleById( vehiclePreviousOnRouteId );
+
+                    }
+
+                    route.newestVehicleId = vehicle.id;
+
+                    //---
 
                     this._vehiclesHolder.push( vehicle );
 
@@ -220,6 +252,8 @@ class Vehicles {
             if ( vehicle.routeIndex === routeIndex ) {
 
                 vehicle.t = 1;
+                
+                this._removeVehicleFromQueue( vehicle );
 
             } else if ( vehicle.routeIndex > routeIndex ) {
 
@@ -235,7 +269,7 @@ class Vehicles {
 
     //---
 
-    getVehicleObject( position, angle = 0, t = 0, route = null, routeIndex = 0, maxSpeed = 2.50, image = null ) {
+    getVehicleObject( position = { x: 0, y: 0 }, angle = 0, t = 0, route = null, routeIndex = 0, maxSpeed = 2.50, image = null ) {
 
         const vehicle = {
 
@@ -256,13 +290,55 @@ class Vehicles {
             drawTempStuff: [],
             distanceToVehicle: 0,
             lastDistanceToVehicle: 0,
+            checkPoint0: null,//nur wenn checkPoint0 und/oder checkPoint1 mit einem anderen vehicle übereinstimmen sollte die collision detection greifen
+            checkPoint1: null,//nur wenn checkPoint0 und/oder checkPoint1 mit einem anderen vehicle übereinstimmen sollte die collision detection greifen
             // collisions: [],
+            queueWaiting: false,
+            queueTimer: 0,
+            queuePoint: null,
+            queueIndex: -1,
+            queuePrevious: false,
+            // only2VehiclesFromSameRoute: false,
+            // queueLength: 0,
+            // queueInIntersection: false,
+            previousVehicleOnRoute: null,//das vorherige fahrzeug auf dieser route,
+            halted: false,
+            testi: 0,
 
         }
 
         return vehicle;
 
     }
+
+    // getVehicleObject( position, angle = 0, t = 0, route = null, routeIndex = 0, maxSpeed = 2.50, image = null ) {
+
+    //     const vehicle = {
+
+    //         id: Tools.getUID(),
+    //         position: { x: position.x, y: position.y },
+    //         lastPosition: { x: position.x, y: position.y },
+    //         angle: angle,
+    //         t: t,
+    //         route: route,
+    //         routeIndex: routeIndex,
+    //         speed: 0,
+    //         minSpeed: 0,
+    //         maxSpeed: maxSpeed,
+    //         image: image,
+    //         context: this._canvasManager.getContextByName( 'main' ),
+    //         collisionDetected: false,
+    //         gridCell: null,
+    //         drawTempStuff: [],
+    //         distanceToVehicle: 0,
+    //         lastDistanceToVehicle: 0,
+    //         // collisions: [],
+
+    //     }
+
+    //     return vehicle;
+
+    // }
 
     getVehicleSpeed( vehicle, speed ) {
 
@@ -275,6 +351,7 @@ class Vehicles {
     simulate() {
 
         this._collisionDetection.clearGridCells();
+        // this._collisionDetection.clearCollisions();
 
         //---
 
@@ -284,16 +361,21 @@ class Vehicles {
 
             if ( this._vehiclesSimulation === true && vehicle.speed > 0 ) { 
 
-                vehicle.lastPosition = vehicle.position;
+                vehicle.lastPosition.x = vehicle.position.x;
+                vehicle.lastPosition.y = vehicle.position.y;
 
                 const route = this._graph.routes[ vehicle.routeIndex ];
-                const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.gridCell.visible, vehicle.t, route, vehicle.lastPosition );
-                //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
-                //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route );
+
+                // const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.gridCell.visible, vehicle.t, route, vehicle.lastPosition );
+                // //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route, vehicle.lastPosition );
+                // //const routePositionObject = this.getPointAndAngleOnRouteByT( vehicle.t, vehicle.route );
                 
-                vehicle.position = routePositionObject.point;
-                vehicle.angle = routePositionObject.angle;
-                
+                // vehicle.position = routePositionObject.point;
+                // vehicle.angle = routePositionObject.angle;
+
+                this._calcVehiclePositionOnRoute( vehicle, route );// vehicle.route könnte auch eine Option sein?!
+                this._calcAngleOnRoute( vehicle );
+
                 //---
 
                 if ( vehicle.route.complete === true && this._vehiclesSimulation === true ) {
@@ -305,6 +387,16 @@ class Vehicles {
                         vehicle.t = 1;
 
                     }
+
+                }
+
+            }
+
+            if ( vehicle.previousVehicleOnRoute !== null ) {
+
+                if ( vehicle.previousVehicleOnRoute.t === 1 ) {
+
+                    vehicle.previousVehicleOnRoute = null;
 
                 }
 
@@ -332,7 +424,8 @@ class Vehicles {
             const radius = Vehicles.VEHICLE_RADIUS;
 
             //only draw vehicles that are visible in the viewport
-            if ( vehicle.position.x + radius > this._border.left && vehicle.position.x - radius < this._border.right && vehicle.position.y + radius > this._border.top && vehicle.position.y - radius < this._border.bottom ) {
+            //if ( vehicle.position.x + radius > this._border.left && vehicle.position.x - radius < this._border.right && vehicle.position.y + radius > this._border.top && vehicle.position.y - radius < this._border.bottom ) {
+            if ( vehicle.gridCell.visible === true ) {//beide if bedingungen funktionieren. performance frage? bisher keinen unterschied festgestellt
 
                 const angleOnRoute = vehicle.angle + this._vehiclesAngle;
                 const imagePosition = -radius / 2;
@@ -365,6 +458,8 @@ class Vehicles {
             const vehicle = this._vehiclesHolder[ i ];
 
             if ( vehicle.t >= 1 ) {
+
+                this._removeVehicleFromQueue( vehicle );
                 
                 this._vehiclesHolder.splice( i, 1 );
 
@@ -376,12 +471,87 @@ class Vehicles {
 
     //---
 
+    _removeVehicleFromQueue( vehicle ) {
+
+        // falls das vehicle in einer warteschlange steht muss das vehicle auch aus dieser entfernt werden
+        if ( vehicle.queuePoint !== null ) {
+
+            if ( vehicle.queuePoint.vehiclesWaiting.length > 0 ) {
+
+                if ( vehicle.queuePoint.vehiclesWaiting.length === 1 ) {
+
+                    vehicle.queuePoint.vehiclesWaiting.shift();
+
+                } else {
+
+                    vehicle.queuePoint.vehiclesWaiting.splice( vehicle.queuePoint.vehiclesWaiting.findIndex( ( vId ) => vId === vehicle.id ), 1 );
+
+                }
+
+            }
+
+        }
+
+    }
+
+    //---
+
+    _calcVehiclePositionOnRoute( vehicle, route ) {
+
+        const routeLength = route.length;
+        const tLength = vehicle.t * routeLength;
+
+        let curLength = 0;
+        let lastLength = 0;
+
+        for ( let i = 0, l = route.graphSegments.length; i < l; i ++ ) {
+
+            const graphSegment = route.graphSegments[ i ];
+
+            curLength += graphSegment.length;
+
+            if ( tLength <= curLength ) {
+
+                const tGraphSegment = ( tLength - lastLength ) / graphSegment.length;
+
+                vehicle.position = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment );
+                vehicle.checkPoint0 = graphSegment.p1;
+                vehicle.checkPoint1 = i < l - 1 ? route.graphSegments[ i + 1 ].p1 : null;
+                // vehicle.checkPoint0 = graphSegment.p0;
+                // vehicle.checkPoint1 = graphSegment.p1;
+
+                break;
+
+            }
+
+            lastLength = curLength;
+
+        }
+
+    }
+
+    _calcAngleOnRoute( vehicle ) {
+
+        //drehung ist nur wichtig wenn das vehicle sichtbar, also auf einer sichtbaren gridCell unterwegs ist <--- das ist so nicht korrekt. denn angle wird permanent für die collision detection benötigt
+        //if ( vehicle.gridCell.visible === true ) {
+
+            // vehicle.angle = Math.atan2( point1.y - point0.y, point1.x - point0.x );
+            vehicle.angle = Math.atan2( vehicle.position.y - vehicle.lastPosition.y, vehicle.position.x - vehicle.lastPosition.x );
+            // vehicle.angle = Tools.getAtan2Normalized( vehicle.position.y - vehicle.lastPosition.y, vehicle.position.x - vehicle.lastPosition.x );
+            
+        //} 
+
+    }
+
+    /*
     getPointAndAngleOnRouteByT( visible, t, route, lastPosition ) {
 
         const output = {
 
             point: null,
-            angle: 0
+            angle: 0,
+            checkPoint0: null,
+            checkPoint1: null,
 
         };
 
@@ -406,6 +576,9 @@ class Vehicles {
                 // const point1 = lastPosition;
 
                 output.point = point0;
+                output.checkPoint0 = graphSegment.p1;
+                output.checkPoint1 = i < l - 1 ? route.graphSegments[ i + 1 ].p1 : null;
+                //output.test = { i: i, l: l - 1 };
 
                 //drehung ist nur wichtig wenn das vehicle sichtbar, also auf einer sichtbaren gridCell unterwegs ist
                 if ( visible === true ) {
@@ -433,6 +606,7 @@ class Vehicles {
         return output;
 
     }
+    */
 
     //---
 
@@ -455,6 +629,28 @@ class Vehicles {
         }
 
         return result;
+
+    }
+
+    getVehicleById( id ) {
+
+        let vehicle = null;
+
+        for ( let i = this._vehiclesHolder.length - 1, l = -1; i > l; i -- ) {
+
+            const v = this._vehiclesHolder[ i ];
+
+            if ( v.id === id ) {
+
+                vehicle = v;
+
+                break;
+
+            }
+
+        }
+
+        return vehicle;
 
     }
 
@@ -495,10 +691,37 @@ class Vehicles {
             const v = this._vehiclesHolder[ i ];
 
             if ( v.id === vehicle.id ) {
+
+                // // falls das vehicle in einer warteschlange steht muss das vehicle auch aus dieser entfernt werden
+                // if ( vehicle.queuePoint !== null ) {
+
+                //     if ( vehicle.queuePoint.vehiclesWaiting.length > 0 ) {
+
+                //         vehicle.queuePoint.vehiclesWaiting.splice( vehicle.queuePoint.vehiclesWaiting.findIndex( ( vId ) => vId === vehicle.id ), 1 );
+
+                //     }
+
+                // }
+
+                this._removeVehicleFromQueue( vehicle );
                 
                 this._vehiclesHolder.splice( i, 1 );
 
             }
+
+        }
+
+    }
+
+    removeAllVehicles() {
+
+        for ( let i = this._vehiclesHolder.length - 1, l = -1; i > l; i -- ) {
+
+            const v = this._vehiclesHolder[ i ];
+
+            this._removeVehicleFromQueue( v );
+            
+            this._vehiclesHolder.splice( i, 1 );
 
         }
 

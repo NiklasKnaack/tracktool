@@ -161,6 +161,31 @@ class Tools {
 
     //---
 
+    //https://stackoverflow.com/questions/13937782/calculating-the-point-of-intersection-of-two-lines
+    static getLinesIntersectionPoint( x1, y1, x2, y2, x3, y3, x4, y4 ) {
+
+        const denominator = ( y4 - y3 ) * ( x2 - x1 ) - ( x4 - x3 ) * ( y2 - y1 );
+        
+        if ( denominator === 0 ) {
+        
+            return null;
+        
+        }
+        
+        const ua = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / denominator;
+        //const ub = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / denominator;
+        
+        return { 
+
+            x: x1 + ua * ( x2 - x1 ),
+            y: y1 + ua * ( y2 - y1 )
+
+        }
+        
+    }
+
+    //---
+
     //https://stackoverflow.com/questions/10343448/javascript-atan2-function-not-giving-expected-results
     static getAtan2Normalized( y, x ) {
 
@@ -192,6 +217,14 @@ class Tools {
 
         return Math.atan2( Math.sin( angle ), Math.cos( angle ) );
         
+    }
+
+    //---
+
+    static comparePoints( p0, p1 ) {
+
+        return p0.x === p1.x && p0.y === p1.y;
+
     }
 
     //---
