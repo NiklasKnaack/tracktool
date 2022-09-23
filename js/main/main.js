@@ -21,6 +21,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         addGraphSegment: 'addGraphSegment',
         removeGraphSegment: 'removeGraphSegment',
         bendGraphSegment: 'bendGraphSegment',
+        bendGraphSegmentBetween: 'bendGraphSegmentBetween',
         autoBendGraphSegment: 'autoBendGraphSegment',
         straightenGraphSegment: 'straightenGraphSegment',
         splitGraphSegment: 'splitGraphSegment',
@@ -144,6 +145,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const _bendGraphSegment = () => {
 
             editorMode = EDITOR_MODE_ENUM.bendGraphSegment;
+
+        }
+        
+        const _bendGraphSegmentBetween = () => {
+
+            editorMode = EDITOR_MODE_ENUM.bendGraphSegmentBetween;
 
         }
 
@@ -448,6 +455,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             // 'Allow Graph Segment Splitting': allowGraphSegmentSplitting,
             'Remove Graph Segment': _removeGraphSegment,
             'Bend Graph Segment': _bendGraphSegment,
+            'Bend Graph Segment Between ': _bendGraphSegmentBetween,
             'Auto Bend Graph Segment': _autoBendGraphSegment,
             'Straighten Graph Segment': _straightenGraphSegment,
             'Split Graph Segment': _splitGraphSegment,
@@ -497,6 +505,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         // folderEdit.add( guiSetting, 'Allow Graph Segment Splitting' ).onChange( () => { allowGraphSegmentSplitting = guiSetting[ 'Allow Graph Segment Splitting' ]; } );
         folderEdit.add( guiSetting, 'Remove Graph Segment' );
         folderEdit.add( guiSetting, 'Bend Graph Segment' );
+        folderEdit.add( guiSetting, 'Bend Graph Segment Between ' );
         folderEdit.add( guiSetting, 'Auto Bend Graph Segment' );
         folderEdit.add( guiSetting, 'Straighten Graph Segment' );
         folderEdit.add( guiSetting, 'Split Graph Segment' );
@@ -1563,6 +1572,184 @@ document.addEventListener( 'DOMContentLoaded', () => {
         tempGraphSegments.push( { type: 'line', p0: { x: graphSegment.p1.x, y: graphSegment.p1.y }, p1: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
         tempGraphSegments.push( { type: 'circfill', position: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
         tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 255, g: 255, b: 255, a: 255 } } );
+
+    }
+
+    function bendGraphSegmentBetween( position ) {
+
+        const graphIndex = 0;
+
+        const graph = graphsManager.graphs[ graphIndex ];
+
+        const graphSegment = getGraphSegmentByPosition( position );
+
+        if ( graphSegment !== null ) {
+
+            if ( selectedGraphSegments.length === 0 ) {
+
+                selectedGraphSegments.push( graphSegment );
+
+                tempGraphSegments = [];
+
+                tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 155, g: 155, b: 155, a: 255 } } );
+        
+            } else if ( selectedGraphSegments.length === 1 ) {
+
+                selectedGraphSegments.push( graphSegment );
+
+                tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegment.controlPoint.x, y: graphSegment.controlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 155, g: 155, b: 155, a: 255 } } );
+        
+                //---
+
+                const neighbourGraphSegment0 = selectedGraphSegments[ 0 ];
+                const neighbourGraphSegment1 = selectedGraphSegments[ 1 ];
+
+                //---
+
+                const centerGraphSegments = [];
+
+                centerGraphSegments.push( ...GraphsManager.getNextGraphSegmentsByPoint( neighbourGraphSegment0.p0, graph.segments ) );
+                centerGraphSegments.push( ...GraphsManager.getNextGraphSegmentsByPoint( neighbourGraphSegment0.p1, graph.segments ) );
+                centerGraphSegments.push( ...GraphsManager.getNextGraphSegmentsByPoint( neighbourGraphSegment1.p0, graph.segments ) );
+                centerGraphSegments.push( ...GraphsManager.getNextGraphSegmentsByPoint( neighbourGraphSegment1.p1, graph.segments ) );
+
+                let centerGraphSegment = null;
+
+                for ( let i = 0, l = centerGraphSegments.length; i < l; i ++ ) {
+
+                    const cGS = centerGraphSegments[ i ];
+
+                    if ( 
+
+                        ( 
+                        Tools.comparePoints( neighbourGraphSegment0.p0, cGS.p0 ) === true ||
+                        Tools.comparePoints( neighbourGraphSegment0.p0, cGS.p1 ) === true ||
+                        Tools.comparePoints( neighbourGraphSegment0.p1, cGS.p0 ) === true ||
+                        Tools.comparePoints( neighbourGraphSegment0.p1, cGS.p1 ) === true 
+                        ) 
+                        &&
+                        ( 
+                        Tools.comparePoints( neighbourGraphSegment1.p0, cGS.p0 ) === true ||
+                        Tools.comparePoints( neighbourGraphSegment1.p0, cGS.p1 ) === true ||
+                        Tools.comparePoints( neighbourGraphSegment1.p1, cGS.p0 ) === true ||
+                        Tools.comparePoints( neighbourGraphSegment1.p1, cGS.p1 ) === true 
+                        ) 
+                        
+                    ) {
+
+                        centerGraphSegment = cGS;
+
+                    }
+
+                }
+
+                if ( centerGraphSegment === null ) {
+
+                    console.log( 'No Graph Segment could be found between the two selected Graph Segments' );
+
+                    selectedGraphSegments = [];
+
+                    tempGraphSegments = [];
+
+                    return;
+
+                }
+
+                const centerGraphSegmentControlPointSave = {
+            
+                    x: centerGraphSegment.controlPoint.x,
+                    y: centerGraphSegment.controlPoint.y,
+        
+                }
+
+                const neighbourGraphSegment0ControlPoint = neighbourGraphSegment0.controlPoint;
+                const neighbourGraphSegment1ControlPoint = neighbourGraphSegment1.controlPoint;
+
+                let angle0 = 0;
+                let angle1 = 0;
+
+                if ( Tools.getDistance( neighbourGraphSegment0ControlPoint, centerGraphSegment.p0 ) <= Tools.getDistance( neighbourGraphSegment0ControlPoint, centerGraphSegment.p1 ) ) {
+
+                    angle0 = Math.atan2( neighbourGraphSegment0ControlPoint.y - centerGraphSegment.p0.y, neighbourGraphSegment0ControlPoint.x - centerGraphSegment.p0.x ) - Settings.MATH_PI_050;
+
+                } else {
+
+                    angle0 = Math.atan2( neighbourGraphSegment1ControlPoint.y - centerGraphSegment.p0.y, neighbourGraphSegment1ControlPoint.x - centerGraphSegment.p0.x ) - Settings.MATH_PI_050;
+
+                }
+                
+                if ( Tools.getDistance( neighbourGraphSegment1ControlPoint, centerGraphSegment.p0 ) <= Tools.getDistance( neighbourGraphSegment1ControlPoint, centerGraphSegment.p1 ) ) {
+
+                    angle1 = Math.atan2( neighbourGraphSegment0ControlPoint.y - centerGraphSegment.p1.y, neighbourGraphSegment0ControlPoint.x - centerGraphSegment.p1.x ) - Settings.MATH_PI_050;
+
+                } else {
+
+                    angle1 = Math.atan2( neighbourGraphSegment1ControlPoint.y - centerGraphSegment.p1.y, neighbourGraphSegment1ControlPoint.x - centerGraphSegment.p1.x ) - Settings.MATH_PI_050;
+
+                }
+
+                const sin0 = Math.sin( angle0 );
+                const cos0 = Math.cos( angle0 );
+                const sin1 = Math.sin( angle1 );
+                const cos1 = Math.cos( angle1 );
+
+                const px0 = sin0 * 1000 + centerGraphSegment.p0.x;
+                const py0 = -cos0 * 1000 + centerGraphSegment.p0.y;
+                const px1 = sin1 * 1000 + centerGraphSegment.p1.x;
+                const py1 = -cos1 * 1000 + centerGraphSegment.p1.y;
+
+                //---
+
+                const centerGraphSegmentControlPoint = Tools.getLinesIntersectionPoint( centerGraphSegment.p0.x, centerGraphSegment.p0.y, px0, py0, centerGraphSegment.p1.x, centerGraphSegment.p1.y, px1, py1 );
+
+                //---
+
+                centerGraphSegment.controlPoint.x = centerGraphSegmentControlPoint.x;
+                centerGraphSegment.controlPoint.y = centerGraphSegmentControlPoint.y;
+
+                centerGraphSegment.centerPoint = Tools.interpolateQuadraticBezier( centerGraphSegment.p0, centerGraphSegment.controlPoint, centerGraphSegment.p1, 0.50 );
+
+                centerGraphSegment.length = getGraphSegmentLength( centerGraphSegment.p0, centerGraphSegment.p1, centerGraphSegment.controlPoint );
+
+                //---
+
+                tempGraphSegments.push( { type: 'bezier', p0: { x: neighbourGraphSegment0.p0.x, y: neighbourGraphSegment0.p0.y }, controlPoint: { x: neighbourGraphSegment0.controlPoint.x, y: neighbourGraphSegment0.controlPoint.y }, p1: { x: neighbourGraphSegment0.p1.x, y: neighbourGraphSegment0.p1.y }, color: { r: 155, g: 155, b: 155, a: 255 } } );
+                tempGraphSegments.push( { type: 'bezier', p0: { x: neighbourGraphSegment1.p0.x, y: neighbourGraphSegment1.p0.y }, controlPoint: { x: neighbourGraphSegment1.controlPoint.x, y: neighbourGraphSegment1.controlPoint.y }, p1: { x: neighbourGraphSegment1.p1.x, y: neighbourGraphSegment1.p1.y }, color: { r: 155, g: 155, b: 155, a: 255 } } );
+
+                tempGraphSegments.push( { type: 'bezier', p0: { x: centerGraphSegment.p0.x, y: centerGraphSegment.p0.y }, controlPoint: { x: centerGraphSegmentControlPointSave.x, y: centerGraphSegmentControlPointSave.y }, p1: { x: centerGraphSegment.p1.x, y: centerGraphSegment.p1.y }, color: { r: 155, g: 0, b: 0, a: 255 } } );
+                tempGraphSegments.push( { type: 'bezier', p0: { x: centerGraphSegment.p0.x, y: centerGraphSegment.p0.y }, controlPoint: { x: centerGraphSegmentControlPoint.x, y: centerGraphSegmentControlPoint.y }, p1: { x: centerGraphSegment.p1.x, y: centerGraphSegment.p1.y }, color: { r: 0, g: 255, b: 0, a: 255 } } );
+
+                if ( Tools.getDistance( neighbourGraphSegment0ControlPoint, centerGraphSegment.p0 ) <= Tools.getDistance( neighbourGraphSegment0ControlPoint, centerGraphSegment.p1 ) ) {
+
+                    tempGraphSegments.push( { type: 'line', p0: { x: centerGraphSegment.p0.x, y: centerGraphSegment.p0.y }, p1: { x: neighbourGraphSegment0ControlPoint.x, y: neighbourGraphSegment0ControlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+
+                } else {
+
+                    tempGraphSegments.push( { type: 'line', p0: { x: centerGraphSegment.p1.x, y: centerGraphSegment.p1.y }, p1: { x: neighbourGraphSegment0ControlPoint.x, y: neighbourGraphSegment0ControlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+
+                }
+                
+                if ( Tools.getDistance( neighbourGraphSegment1ControlPoint, centerGraphSegment.p0 ) <= Tools.getDistance( neighbourGraphSegment1ControlPoint, centerGraphSegment.p1 ) ) {
+
+                    tempGraphSegments.push( { type: 'line', p0: { x: centerGraphSegment.p0.x, y: centerGraphSegment.p0.y }, p1: { x: neighbourGraphSegment1ControlPoint.x, y: neighbourGraphSegment1ControlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+
+                } else {
+
+                    tempGraphSegments.push( { type: 'line', p0: { x: centerGraphSegment.p1.x, y: centerGraphSegment.p1.y }, p1: { x: neighbourGraphSegment1ControlPoint.x, y: neighbourGraphSegment1ControlPoint.y }, color: { r: 230, g: 29, b: 95, a: 255 } } );
+
+                }
+
+                tempGraphSegments.push( { type: 'circfill', position: { x: neighbourGraphSegment0ControlPoint.x, y: neighbourGraphSegment0ControlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
+                tempGraphSegments.push( { type: 'circfill', position: { x: neighbourGraphSegment1ControlPoint.x, y: neighbourGraphSegment1ControlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
+
+                tempGraphSegments.push( { type: 'line', p0: { x: centerGraphSegment.p0.x, y: centerGraphSegment.p0.y }, p1: { x: centerGraphSegmentControlPoint.x, y: centerGraphSegmentControlPoint.y }, color: { r: 230, g: 230, b: 95, a: 255 } } );
+                tempGraphSegments.push( { type: 'line', p0: { x: centerGraphSegment.p1.x, y: centerGraphSegment.p1.y }, p1: { x: centerGraphSegmentControlPoint.x, y: centerGraphSegmentControlPoint.y }, color: { r: 230, g: 230, b: 95, a: 255 } } );
+
+                tempGraphSegments.push( { type: 'circfill', position: { x: centerGraphSegmentControlPoint.x, y: centerGraphSegmentControlPoint.y }, diameter: 3, color: { r: 230, g: 29, b: 95, a: 255 } } );
+
+            } 
+
+        }
 
     }
 
@@ -2824,6 +3011,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 currentGraphSegment = getGraphSegmentByPosition( mouseCursor.position );
 
+            } else if ( editorMode === EDITOR_MODE_ENUM.bendGraphSegmentBetween ) {
+
+                bendGraphSegmentBetween( mouseCursor.position );
+
             } else if ( editorMode === EDITOR_MODE_ENUM.autoBendGraphSegment ) {
 
                 autoBendGraphSegmentByPosition( mouseCursor.position );
@@ -2943,6 +3134,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 ( editorMode === EDITOR_MODE_ENUM.bendGraphSegment && mouseDown === false ) ||
                 ( editorMode === EDITOR_MODE_ENUM.autoBendGraphSegment && mouseDown === false ) ||
                 ( editorMode === EDITOR_MODE_ENUM.straightenGraphSegment && mouseDown === false ) ||
+                // ( editorMode === EDITOR_MODE_ENUM.bendGraphSegmentBetween && mouseDown === false ) ||
                 editorMode === EDITOR_MODE_ENUM.splitGraphSegment ) {
 
                 tempGraphSegments = [];
@@ -2959,6 +3151,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
                     tempGraphSegments.push( { type: 'circ', position: { x: graphSegment.p1.x, y: graphSegment.p1.y }, diameter: 12, color: { r: 0, g: 255, b: 255, a: 255 }  } );
 
                 }
+
+            } else if ( editorMode === EDITOR_MODE_ENUM.bendGraphSegmentBetween && selectedGraphSegments.length === 2 ) {
+
+                tempGraphSegments = [];
+
+                selectedGraphSegments = [];
 
             } else if ( editorMode === EDITOR_MODE_ENUM.splitGraphSegmentAt ) {
 
