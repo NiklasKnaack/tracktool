@@ -404,20 +404,23 @@ class Vehicles {
 
             //---
 
-            //if ( vehicle.gridCell !== null ) { 
+            if ( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) === true ) {
 
-                if ( this._collisionDetection.isPositionInGridCell( vehicle.position, vehicle.gridCell ) === true ) {
+                vehicle.gridCell.vehicles.push( vehicle );
 
-                    vehicle.gridCell.vehicles.push( vehicle );
+            } else {
 
-                } else {
+                vehicle.gridCell = this._collisionDetection.getNeighborGridCellByPosition( vehicle.position, vehicle.gridCell );
 
-                    vehicle.gridCell = this._collisionDetection.getNeighborGridCellByPosition( vehicle.position, vehicle.gridCell );
-                    vehicle.gridCell.vehicles.push( vehicle );
+                if ( vehicle.gridCell === null ) {
+
+                    vehicle.gridCell = this._collisionDetection.getGridCellByPosition( vehicle.position );
 
                 }
 
-            //}
+                vehicle.gridCell.vehicles.push( vehicle );
+
+            }
 
             //---
 
