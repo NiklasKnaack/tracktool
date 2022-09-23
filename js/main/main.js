@@ -1593,12 +1593,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const neighbourGraphSegments0 = GraphsManager.getNextGraphSegmentsByPoint( graphSegment.p0, graph.segments );
-        const neighbourGraphSegments1 = GraphsManager.getNextGraphSegmentsByPoint( graphSegment.p1, graph.segments );
+        const neighbourGraphSegments00 = GraphsManager.getNextGraphSegmentsByPoint( graphSegment.p0, graph.segments );
+        const neighbourGraphSegments01 = GraphsManager.getNextGraphSegmentsByPoint( graphSegment.p1, graph.segments );
 
-        console.log( neighbourGraphSegments0.length, neighbourGraphSegments1.length );
-
-        if ( neighbourGraphSegments0.length !== 2 || neighbourGraphSegments1.length !== 2 ) {
+        if ( neighbourGraphSegments00.length === 1 || neighbourGraphSegments01.length === 1 ) {
 
             console.log( 'Impossible to bend this graph segment automatically' );
 
@@ -1608,27 +1606,28 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const neighbourGraphSegments = [];
+        const neighbourGraphSegments0 = [];
+        const neighbourGraphSegments1 = [];
 
-        for ( let i = 0, l = neighbourGraphSegments0.length; i < l; i ++ ) {
+        for ( let i = 0, l = neighbourGraphSegments00.length; i < l; i ++ ) {
 
-            const neighbourGraphSegment = neighbourGraphSegments0[ i ];
+            const neighbourGraphSegment = neighbourGraphSegments00[ i ];
 
             if ( neighbourGraphSegment.id !== graphSegment.id ) {
 
-                neighbourGraphSegments.push( neighbourGraphSegment );
+                neighbourGraphSegments0.push( neighbourGraphSegment );
 
             }
 
         }
 
-        for ( let i = 0, l = neighbourGraphSegments1.length; i < l; i ++ ) {
+        for ( let i = 0, l = neighbourGraphSegments01.length; i < l; i ++ ) {
 
-            const neighbourGraphSegment = neighbourGraphSegments1[ i ];
+            const neighbourGraphSegment = neighbourGraphSegments01[ i ];
 
             if ( neighbourGraphSegment.id !== graphSegment.id ) {
 
-                neighbourGraphSegments.push( neighbourGraphSegment );
+                neighbourGraphSegments1.push( neighbourGraphSegment );
 
             }
 
@@ -1636,8 +1635,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        const neighbourGraphSegment0 = neighbourGraphSegments[ 0 ];
-        const neighbourGraphSegment1 = neighbourGraphSegments[ 1 ];
+        const neighbourGraphSegment0 = GraphsManager.getClosestGraphSegmentByAngle( graphSegment, neighbourGraphSegments0 );
+        const neighbourGraphSegment1 = GraphsManager.getClosestGraphSegmentByAngle( graphSegment, neighbourGraphSegments1 );
 
         const neighbourGraphSegment0ControlPoint = neighbourGraphSegment0.controlPoint;
         const neighbourGraphSegment1ControlPoint = neighbourGraphSegment1.controlPoint;

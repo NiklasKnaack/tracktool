@@ -479,4 +479,37 @@ class GraphsManager {
 
     }
 
+    static getClosestGraphSegmentByAngle( graphSegment, graphSegments ) {
+
+        const graphSegmentAngle = GraphsManager.getGraphSegmentAngle( graphSegment );
+        
+        let currentGraphSegment = graphSegments[ 0 ];
+        let diff = Math.abs( graphSegmentAngle - GraphsManager.getGraphSegmentAngle( currentGraphSegment ) );
+        
+        for ( let i = 0, l = graphSegments.length; i < l; i++ ) {
+            
+            const gS = graphSegments[ i ];
+            const gSAngle = GraphsManager.getGraphSegmentAngle( gS );
+        
+            const newdiff = Math.abs( graphSegmentAngle - gSAngle );
+            
+            if ( newdiff < diff ) {
+            
+                diff = newdiff;
+                currentGraphSegment = gS;
+                
+            }
+            
+        }
+        
+        return currentGraphSegment
+        
+    }
+        
+    static getGraphSegmentAngle( graphSegment ) {
+        
+            return Math.atan2( graphSegment.p1.y - graphSegment.p0.y, graphSegment.p1.y - graphSegment.p0.x ) - Settings.MATH_PI_050;
+        
+    }
+
 }
