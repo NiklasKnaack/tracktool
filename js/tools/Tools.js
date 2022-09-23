@@ -78,6 +78,14 @@ class Tools {
 
     //---
 
+    static getAngleInDegrees( angle ) {
+
+        return angle * 180 / Math.PI;
+
+    }
+
+    //---
+
     static getFieldLimitationRect( width, height ) {
 
         return { 

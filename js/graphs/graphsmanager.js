@@ -481,34 +481,36 @@ class GraphsManager {
 
     static getClosestGraphSegmentByAngle( graphSegment, graphSegments ) {
 
-        const graphSegmentAngle = GraphsManager.getGraphSegmentAngle( graphSegment );
-        
+        const graphSegmentAngle = Tools.getAngleInDegrees( GraphsManager.getGraphSegmentAngle( graphSegment ) );
+
         let currentGraphSegment = graphSegments[ 0 ];
-        let diff = Math.abs( graphSegmentAngle - GraphsManager.getGraphSegmentAngle( currentGraphSegment ) );
+        let difference = 360;
+
+        const deg = ( graphSegmentAngle / 360 > 1 ? graphSegmentAngle - ( Math.floor( graphSegmentAngle / 360 ) * 360 ) : graphSegmentAngle );
         
-        for ( let i = 0, l = graphSegments.length; i < l; i++ ) {
-            
+        for ( let i = 0; i < graphSegments.length; i++ ) {
+
             const gS = graphSegments[ i ];
-            const gSAngle = GraphsManager.getGraphSegmentAngle( gS );
+            const gSAngle = Tools.getAngleInDegrees( GraphsManager.getGraphSegmentAngle( gS ) );
         
-            const newdiff = Math.abs( graphSegmentAngle - gSAngle );
-            
-            if ( newdiff < diff ) {
-            
-                diff = newdiff;
+            const diff = Math.min( Math.abs( gSAngle - deg ), 360 - Math.abs( gSAngle - deg ) );
+
+            if ( diff <= difference ) {
+
+                difference = diff;
                 currentGraphSegment = gS;
-                
+
             }
-            
+
         }
         
-        return currentGraphSegment
+        return currentGraphSegment;
         
     }
         
     static getGraphSegmentAngle( graphSegment ) {
         
-            return Math.atan2( graphSegment.p1.y - graphSegment.p0.y, graphSegment.p1.y - graphSegment.p0.x ) - Settings.MATH_PI_050;
+        return Math.atan2( graphSegment.p1.y - graphSegment.p0.y, graphSegment.p1.y - graphSegment.p0.x ) - Settings.MATH_PI_050;
         
     }
 

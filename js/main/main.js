@@ -1671,6 +1671,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         tempGraphSegments = [];
 
+        tempGraphSegments.push( { type: 'bezier', p0: { x: neighbourGraphSegment0.p0.x, y: neighbourGraphSegment0.p0.y }, controlPoint: { x: neighbourGraphSegment0.controlPoint.x, y: neighbourGraphSegment0.controlPoint.y }, p1: { x: neighbourGraphSegment0.p1.x, y: neighbourGraphSegment0.p1.y }, color: { r: 155, g: 155, b: 155, a: 255 } } );
+        tempGraphSegments.push( { type: 'bezier', p0: { x: neighbourGraphSegment1.p0.x, y: neighbourGraphSegment1.p0.y }, controlPoint: { x: neighbourGraphSegment1.controlPoint.x, y: neighbourGraphSegment1.controlPoint.y }, p1: { x: neighbourGraphSegment1.p1.x, y: neighbourGraphSegment1.p1.y }, color: { r: 155, g: 155, b: 155, a: 255 } } );
+
         tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegmentControlPointSave.x, y: graphSegmentControlPointSave.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 155, g: 0, b: 0, a: 255 } } );
         tempGraphSegments.push( { type: 'bezier', p0: { x: graphSegment.p0.x, y: graphSegment.p0.y }, controlPoint: { x: graphSegmentControlPoint.x, y: graphSegmentControlPoint.y }, p1: { x: graphSegment.p1.x, y: graphSegment.p1.y }, color: { r: 0, g: 255, b: 0, a: 255 } } );
 
