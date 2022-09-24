@@ -28,7 +28,7 @@ class Statistics {
         this._statisticsElement.style.position = 'absolute';
         this._statisticsElement.style.left = '0px';
         this._statisticsElement.style.bottom = '0px';
-        this._statisticsElement.style.width = '195px';//'115px';
+        this._statisticsElement.style.width = '120px';
         this._statisticsElement.style.height = '104px';
         this._statisticsElement.style.color = '#eee';
         this._statisticsElement.style.font = '11px "Lucida Grande", sans-serif';
