@@ -369,9 +369,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 vehicles.startSimulation();
 
+                stopwatch.start();
+
             } else {
 
                 vehicles.stopSimulation();
+
+                stopwatch.stop();
 
             }
 
@@ -386,6 +390,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const _loadJSON = () => {
 
             fileManager.loadJSON( ( graphs ) => {
+
+                stopwatch.reset();
+                stopwatch.start();
 
                 //---
 
@@ -676,6 +683,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         background.resize();
         background.add();
+
+        //---
+
+        stopwatch.reset();
+        stopwatch.start();
 
     }
 
@@ -4971,10 +4983,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         //---
 
-        stopwatch.step( timestamp );
-
-        //---
-
         //const time = vehicles.vehiclesSimulation === true ? stopwatch.step( timestamp )
 
         statistics.update( {
@@ -4985,7 +4993,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Routes ': graphsManager.graphs[ 0 ].routes.length,
             'Intersections ': graphsManager.graphIntersectionsLength,
             'Gridcells ': collisionDetection.grid.length,
-            //'Timer ': stopwatch.step( timestamp ),
+            'Timer ': stopwatch.time,
             
         } );
 
