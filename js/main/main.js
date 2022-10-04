@@ -58,11 +58,13 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     const border = { left: 1, top: 1, right: width, bottom: height };
 
+    //---
+
     const animationFrameManager = new AnimationFrameManager( [ render ] );
     const debugElements = new DebugElements( document.body );
-    const graphsManager = new GraphsManager();
+    const savegameManager = new SavegameManager( SavegameDefault );
+    const graphsManager = new GraphsManager( savegameManager.savegame.map.graphs );
     const canvasManager = new CanvasManager( width, height );
-    const fileManager = new FileManager();
     const statistics = new Statistics();
     const stopwatch = new Stopwatch();
 
@@ -71,6 +73,8 @@ document.addEventListener( 'DOMContentLoaded', () => {
     let background = null;
     let navigator = null;
     // let menu = null;
+
+    //---
 
     let canvasMainObject = null;
     let canvasMain = null;
@@ -98,7 +102,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     let currentStreetSegment = null;
 
-    //let graphsHolder = graphsManager.graphs;
+    //---
 
     graphsManager.setAllGraphSegmentPointNeighbours( 0 );
 
@@ -121,6 +125,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const _moveMap = () => {
 
             editorMode = EDITOR_MODE_ENUM.moveMap;
+
+        }
+
+        const _moveMapToInitialPosition = () => {
+
+            navigator.navigateToInitialPosition();
 
         }
 
@@ -331,10 +341,11 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        const _logGraph = () => {
+        const _logSavegame = () => {
 
             console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
-            console.log( graphsManager.logGraphs() );
+            // console.log( graphsManager.logGraphs() );
+            console.log( savegameManager.logSavegame() );
             console.log( '-------------------------------------------------------------------------------------------------------------------------------\n' );
 
         }
@@ -381,15 +392,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         }
 
-        const _saveJSON = () => {
+        const _saveSavegame = () => {
 
-            fileManager.saveJSON();
+            savegameManager.saveSavegame();
 
         }
 
-        const _loadJSON = () => {
+        const _loadSavegame = () => {
 
-            fileManager.loadJSON( ( graphs ) => {
+            savegameManager.loadSavegame( ( savegame ) => {
+
+                console.log('loaded savegame: ', savegame );
+
+                graphsManager.graphs = savegame.map.graphs;
+
+                //---
 
                 stopwatch.reset();
                 stopwatch.start();
@@ -418,23 +435,19 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 //---
 
-                graphsManager.graphs = graphs;// graphsManager.graphs;
-
                 graphsManager.setAllGraphSegmentPointNeighbours( 0 );
-
-                //console.log(Object.keys(graphsManager._graphsLookupForPoints).length, ' <---');
-                
-                graphsManager.graphs = graphs;
                 graphsManager.clearLookupForPointsForAllGraphs();
                 graphsManager.buildLookupForPointsForAllGraphs();
 
-                //console.log(Object.keys(graphsManager._graphsLookupForPoints).length, ' <---');
+                //---
 
                 const computeRoutes = true;
                 const computeIntersections = true;
                 const updateLookup = computeIntersections;
 
                 graphsManager.computeGraphRoutesAndIntersections( 0, computeRoutes, computeIntersections, updateLookup );
+
+                //---
 
                 if ( debugMode === true ) {
 
@@ -457,6 +470,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const guiSetting = {
 
             'Move': _moveMap,
+            'Move To Initial Position': _moveMapToInitialPosition,
             'Add Street Segment': _addStreetSegment,
             'Add Graph Segment': _addGraphSegment,
             // 'Allow Graph Segment Splitting': allowGraphSegmentSplitting,
@@ -483,7 +497,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Follow Vehicle': _followVehicle,
             'Remove Vehicle': _removeVehicle,
             'Remove All Vehicles': _removeAllVehicles,
-            'Log Graph': _logGraph,
             'Show Route': _showRoute,
             'Show Point Neighbours': _showPointNeighbours,
             'Show Point Vehicle Queue': _showPointVehicleQueue,
@@ -491,8 +504,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
             'Show Vehicle Grid Cells': _showVehicleGridCells,
             'Toggle Debug Mode': _toggleDebugMode,
             'Play/Pause Simulation': _playPauseSimulation,
-            'Save Map': _saveJSON,
-            'Load Map': _loadJSON,
+            'Log Savegame': _logSavegame,
+            'Save Savegame': _saveSavegame,
+            'Load Savegame': _loadSavegame,
             '@niklaswebdev': _linkTo
 
         }
@@ -503,6 +517,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         folderMap.open();
         folderMap.add( guiSetting, 'Move' );
+        folderMap.add( guiSetting, 'Move To Initial Position' );
 
         const folderEdit = gui.addFolder( 'Edit' );
 
@@ -537,7 +552,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
         folderAnalyze.add( guiSetting, 'Follow Vehicle' );
         folderAnalyze.add( guiSetting, 'Remove Vehicle' );
         folderAnalyze.add( guiSetting, 'Remove All Vehicles' );
-        folderAnalyze.add( guiSetting, 'Log Graph' );
         folderAnalyze.add( guiSetting, 'Show Route' );
         folderAnalyze.add( guiSetting, 'Show Point Neighbours' );
         folderAnalyze.add( guiSetting, 'Show Point Vehicle Queue' );
@@ -553,8 +567,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
         const folderFile = gui.addFolder( 'File' );
 
         folderFile.open();
-        folderFile.add( guiSetting, 'Save Map' );
-        folderFile.add( guiSetting, 'Load Map' );
+        folderFile.add( guiSetting, 'Log Savegame' );
+        folderFile.add( guiSetting, 'Save Savegame' );
+        folderFile.add( guiSetting, 'Load Savegame' );
 
         const folderContact = gui.addFolder( 'Contact' );
 
@@ -609,25 +624,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
         vehicles = new Vehicles( 0, border );
         collisionDetection = new CollisionDetection();
         navigator = new Navigator();
-
-        setTimeout( () => {
-
-            // navigator.setPositionInit( canvasManager.center.x, canvasManager.center.y );
-            // navigator.active = true;
-            // navigator.setPositionTarget( canvasManager.center.x, canvasManager.center.y );
-            
-            // navigator.navigate();
-            // navigator.active = false;
-            //     navigator.stop();
-    
-                //graphsManager.setAllGraphSegmentPointNeighbours( 0 );
-
-        }, 1000)
-
-        
-
-
-        
+        //savegameManager = new SavegameManager();
 
     }
 
@@ -4745,9 +4742,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
         //console.clear();
         //console.log( allVehicles.length );
 
+        // const speedTest = ( vehicle ) => {
+
+        //     // vehicle.speed = vehicles.getVehicleSpeed( vehicle, vehicles.accelerateVehicleSpeed( vehicle, 0, Vehicles.VEHICLE_SPEED, 0 ), Vehicles.VEHICLE_SPEED );
+        //     //vehicle.speed = vehicles.getVehicleSpeed( vehicle, vehicles.accelerateVehicleSpeed( vehicle, 0, vehicle.maxSpeed ), Vehicles.VEHICLE_SPEED );
+        //     //console.log(vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED ));
+        //     // return vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+        //     // return vehicles.getVehicleSpeed( vehicle, vehicles.accelerateVehicleSpeed( vehicle, vehicle.speed, Vehicles.VEHICLE_SPEED ), Vehicles.VEHICLE_SPEED );
+        //     return vehicles.getVehicleSpeed( vehicle, vehicles.accelerateVehicleSpeed( vehicle, 0, Vehicles.VEHICLE_SPEED ) );
+        // };
+
         for ( let i = 0, l = allVehicles.length; i < l; i ++ ) {
 
             const vehicle = allVehicles[ i ];
+
+            let vehicleSpeed = 1;
 
             if ( vehicle.collisionDetected === true ) {
 
@@ -4793,15 +4802,20 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                 //---
 
-                vehicle.speed = 0;
+                //vehicle.speed = 0;
+
+                vehicleSpeed = 0;
 
             } else {
 
                 //if ( vehicle.halted === false ) {
 
-                    vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+                    //vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+                    //vehicle.speed = speedTest( vehicle );
 
                 //}
+
+                vehicleSpeed = 1;
 
             }
 
@@ -4819,7 +4833,9 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 // if ( vehicle.queueWaiting === true && vehicle.queueIndex > 0 ) {
                 // if ( vehicle.queueWaiting === true && vehicle.queueLength > 1 ) {
 
-                    vehicle.speed = 0;
+                    //vehicle.speed = 0;
+
+                    vehicleSpeed = 0;
 
                     // if ( vehicle.queuePoint.vehiclesWaiting.length === 2 && vehicle.only2VehiclesFromSameRoute === true ) {
 
@@ -4836,11 +4852,21 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
                     //if ( vehicle.speed === 0 ) {
                     if ( vehicle.speed === 0 && vehicle.queuePrevious === false ) {
+                    //if ( vehicle.queuePrevious === false ) {
 
                         //if ( vehicle.halted === false ) {
 
-                            vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
-        
+                            //vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+                            //vehicle.speed = speedTest( vehicle );
+
+                            vehicleSpeed = 1;
+
+                            //vehicle.speed = vehicles.getVehicleSpeed( vehicle, vehicles.accelerateVehicleSpeed( vehicle, 0, Vehicles.VEHICLE_SPEED, 0 ), Vehicles.VEHICLE_SPEED );
+                            //vehicle.speed = vehicles.getVehicleSpeed( vehicle, vehicles.accelerateVehicleSpeed( vehicle, 0, vehicle.maxSpeed ), Vehicles.VEHICLE_SPEED );
+                            
+                            // speedTest( vehicle );
+                            
+                            // console.log( vehicle.id, vehicle.speed, vehicle.maxSpeed, Vehicles.VEHICLE_SPEED );
                         //}
 
                     }
@@ -4848,6 +4874,23 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 }
 
             }
+
+            //---
+
+            if ( vehicleSpeed === 0 ) {
+
+                vehicle.speed = 0;
+                //vehicle.speed += ( 0 - vehicle.speed ) / 10;
+
+            } else if ( vehicleSpeed === 1 ) {
+
+                vehicle.speed = vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+                //vehicle.speed = speedTest( vehicle );
+                //vehicle.speed += ( vehicles.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED ) - vehicle.speed ) / 10;
+
+            }
+
+            //---
 
             if ( vehicle.halted === true ) {
 
@@ -4892,16 +4935,16 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
         drawStreetSegments();
 
-        if ( animationFrameManager.iteration % 4 === 1 ) collisionDetection.clearCollisions();//jedes vierte frame
+        if ( animationFrameManager.iteration % 5 === 1 ) collisionDetection.clearCollisions();//jedes vierte frame
         //collisionDetection.clearCollisions();
 
         vehicles.simulate();
 
-        if ( animationFrameManager.iteration % 5 === 1 ) collisionDetection.checkIntersections();//jedes fünfte frame
+        if ( animationFrameManager.iteration % 6 === 1 ) collisionDetection.checkIntersections();//jedes fünfte frame
         // collisionDetection.checkIntersections();
 
         //collisionDetection.check();
-        if ( animationFrameManager.iteration % 4 === 1 ) collisionDetection.checkCollisions();//jedes vierte frame
+        if ( animationFrameManager.iteration % 5 === 1 ) collisionDetection.checkCollisions();//jedes vierte frame
         //collisionDetection.checkCollisions();
 
         //---

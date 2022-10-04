@@ -12,7 +12,8 @@ class FileManager {
 
         //---
 
-        this._graphsManager = new GraphsManager();
+        // this._graphsManager = new GraphsManager();
+        this._savegameManager = new SavegameManager();
 
     }
 
@@ -62,7 +63,7 @@ class FileManager {
 
     _loadJSONCompleteHandler( result, callback = null ) {
 
-        this._graphsManager.graphs = result;
+        // this._graphsManager.graphs = result;
 
         if ( callback !== null ) {
 
@@ -88,9 +89,10 @@ class FileManager {
 
     }
 
-    saveJSON() {
+    saveJSON( fileName = null ) {
 
-        let str = JSON.stringify( this._graphsManager.graphs );
+        //let str = JSON.stringify( this._graphsManager.graphs );
+        let str = JSON.stringify( this._savegameManager.savegame );
 
         //für den fall das die arrays vehiclesWaiting, vehiclesWaitingRouteIndices, neighbourGraphsegments oder neighbourPoints daten enthalten, werden diese entfernt/gelöscht. diese arrays müssen leer sein
         str = str.replace( /"vehiclesWaiting":\["(.*?)"]/gs, '"vehiclesWaiting":[]' );
@@ -114,7 +116,7 @@ class FileManager {
         // const event = document.createEvent( 'MouseEvents' );
 
         link.setAttribute( 'href', url );
-        link.setAttribute( 'download', this._getFileName() );
+        link.setAttribute( 'download', fileName === null ? this._getFileName() : fileName );
 
         // event.initMouseEvent( 'click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null );
         

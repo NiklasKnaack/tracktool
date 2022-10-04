@@ -18,6 +18,7 @@ class CollisionDetection {
         
         //---
 
+        this._savegameManager = new SavegameManager();
         this._canvasManager = new CanvasManager();
         this._graphsManager = new GraphsManager();
         // this._navigator = new Navigator();
@@ -25,7 +26,7 @@ class CollisionDetection {
 
         // this._canvasObject = this._canvasManager.getCanvasObjectByName( 'main' );
         // this._context = this._canvasObject.context;
-        this._gridBorders = Tools.getFieldGridBorders( this._canvasManager.width, this._canvasManager.height );
+        this._gridBorders = Tools.getFieldGridBorders( this._canvasManager.width, this._canvasManager.height, this._savegameManager.savegame.map.position );
 
         this._grid = [];
         this._gridYX = [];
@@ -404,6 +405,22 @@ class CollisionDetection {
 
     }
 
+    checkVehiclesCollisionsAfterMovement() {
+
+        for ( let i = 0, l = this._vehicles.allVehicles.length; i < l; i ++ ) {
+
+            const vehicle = this._vehicles.allVehicles[ i ];
+
+            if ( vehicle.collisionDetected === true ) {
+
+                vehicle.collisionDetected = this.checkCollisionsToVehicle( vehicle );
+
+            }
+
+        }
+
+    }
+
     //---
 
     //check Collision Detection only if there is a match between the next two points on the route.
@@ -483,10 +500,21 @@ class CollisionDetection {
         if ( vehicle.queuePoint === null ) {
 
             //der nächste punkt den das vehicle erreichen wird
-            const vehicleNextPoint = this._graphsManager.getPointInLookupById( 0, GraphsManager.getLookupPointId( vehicle.checkPoint0 ) );
+            //const vehicleNextPoint = this._graphsManager.getPointInLookupById( 0, GraphsManager.getLookupPointId( vehicle.checkPoint0 ) );
 
-            //console.log("SHHH")
-            
+            //der nächste punkt den das vehicle erreichen wird, der wird hier bestimmt. Aber nur dann, wenn vehicle.checkPointsSwitch === true ist, also vehicle.checkPoint0 sich ändert
+            let vehicleNextPoint = undefined;
+
+            if ( vehicle.checkPointsSwitch === true ) {
+
+                vehicle.checkPointsSwitch === false;
+
+                //dank der if-bedingung muss nicht permanent in der lookup nach vehicleNextPoint geschaut werden. das sollte einen performance boost bringen
+                //vehicle.checkPointsSwitch wird in Vehicles.js in der methode _calcVehiclePositionOnRoute auf true gesetzt wenn das vehicle auf der route jeweils ein neuen punkt erreicht
+                vehicleNextPoint = this._graphsManager.getPointInLookupById( 0, GraphsManager.getLookupPointId( vehicle.checkPoint0 ) );
+
+            }
+
             //folgende überprüfungen nur durchführen, wenn ein point in der lookup gefunden werden konnte
             if ( vehicleNextPoint !== undefined ) {
 
@@ -611,7 +639,7 @@ class CollisionDetection {
 
                 
 
-                //wenn das vorherige vehicle sich noch in der intersectio, oder kurz dahinter befindet
+                //wenn das vorherige vehicle sich noch in der intersection, oder kurz dahinter befindet
                 // if ( vehicle.only2VehiclesFromSameRoute === false && Tools.isPositionInCircle( vehicle.queuePoint.x, vehicle.queuePoint.y, vehicle.previousVehicleOnRoute.position.x, vehicle.previousVehicleOnRoute.position.y, Vehicles.VEHICLE_RADIUS * 2 * CollisionDetection.COLLISION_DISTANCE ) === true ) {
                 if ( Tools.isPositionInCircle( vehicle.queuePoint.x, vehicle.queuePoint.y, vehicle.previousVehicleOnRoute.position.x, vehicle.previousVehicleOnRoute.position.y, Vehicles.VEHICLE_RADIUS * 2 * CollisionDetection.COLLISION_DISTANCE ) === true ) {
 

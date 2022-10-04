@@ -86,40 +86,40 @@ class Tools {
 
     //---
 
-    static getFieldLimitationRect( width, height ) {
+    static getFieldLimitationRect( width, height, diff = { x: 0, y: 0 } ) {
 
         return { 
             
-            x: -( Settings.FIELD_SIZE.width - width ) / 2,
-            y: -( Settings.FIELD_SIZE.height - height ) / 2,
-            width: Settings.FIELD_SIZE.width, 
-            height: Settings.FIELD_SIZE.height 
+            x: -( Settings.FIELD_SIZE.width - width ) / 2 + diff.x,
+            y: -( Settings.FIELD_SIZE.height - height ) / 2 + diff.y,
+            width: Settings.FIELD_SIZE.width - diff.x / 2, 
+            height: Settings.FIELD_SIZE.height - diff.y / 2
         
         };
 
     }
 
-    static getFieldGridBorders( width, height ) {
+    static getFieldGridBorders( width, height, diff = { x: 0, y: 0 } ) {
 
         return { 
             
-            left: -( Settings.FIELD_SIZE.width - width ) / 2,
-            top: -( Settings.FIELD_SIZE.height - height ) / 2,
-            right: Settings.FIELD_SIZE.width, 
-            bottom: Settings.FIELD_SIZE.height 
+            left: -( Settings.FIELD_SIZE.width - width ) / 2 + diff.x,
+            top: -( Settings.FIELD_SIZE.height - height ) / 2 + diff.y,
+            right: Settings.FIELD_SIZE.width - diff.x / 2, 
+            bottom: Settings.FIELD_SIZE.height - diff.y / 2
         
         };
 
     }
 
-    static getFieldLimitationBorders( width, height ) {
+    static getFieldLimitationBorders( width, height, diff = { x: 0, y: 0 } ) {
 
         return {
 
-            left: Settings.FIELD_SIZE.width / 2 - width / 2, 
-            top: Settings.FIELD_SIZE.height / 2 - height / 2, 
-            right: -Settings.FIELD_SIZE.width / 2 + width / 2, 
-            bottom: -Settings.FIELD_SIZE.height / 2 + height / 2
+            left: Settings.FIELD_SIZE.width / 2 - width / 2 - diff.x, 
+            top: Settings.FIELD_SIZE.height / 2 - height / 2 - diff.y, 
+            right: -Settings.FIELD_SIZE.width / 2 + width / 2 - diff.x, 
+            bottom: -Settings.FIELD_SIZE.height / 2 + height / 2 - diff.y
 
         };
 

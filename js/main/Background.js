@@ -14,10 +14,11 @@ class Background {
 
         this._backgroundTexture = ImageFactory.getBackgroundGrassTexture();
 
+        this._savegameManager = new SavegameManager();
         this._canvasManager = new CanvasManager();
         this._canvasObject = this._canvasManager.getCanvasObjectByName( 'background' );
         this._context = this._canvasObject.context;
-        this._rect = Tools.getFieldLimitationRect( this._canvasManager.width, this._canvasManager.height );
+        this._rect = Tools.getFieldLimitationRect( this._canvasManager.width, this._canvasManager.height, this._savegameManager.savegame.map.position );
 
         this._x = 0;
         this._y = 0;
@@ -26,7 +27,7 @@ class Background {
 
     resize() {
 
-        this._rect = Tools.getFieldLimitationRect( this._canvasManager.width, this._canvasManager.height );
+        this._rect = Tools.getFieldLimitationRect( this._canvasManager.width, this._canvasManager.height, this._savegameManager.savegame.map.position );
         
     }
 

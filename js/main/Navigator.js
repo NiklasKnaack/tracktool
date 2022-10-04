@@ -12,6 +12,9 @@ class Navigator {
         
         //---
 
+        this._savegameManager = new SavegameManager();
+        this._savegamePosition = this._savegameManager.savegame.map.position;
+
         this._graphsManager = new GraphsManager();
         this._graphs = this._graphsManager.graphs;
 
@@ -31,7 +34,7 @@ class Navigator {
         this._cos = 0;
         this._x = 0;
         this._y = 0;
-        this._borders = Tools.getFieldLimitationBorders( this._canvasManager.width, this._canvasManager.height );
+        this._borders = Tools.getFieldLimitationBorders( this._canvasManager.width, this._canvasManager.height, this._savegamePosition );
 
     }
 
@@ -91,9 +94,22 @@ class Navigator {
 
     }
 
+    get position() {
+
+        return { x: this._x, y: this._y };
+
+    }
+
     updateGraph() {
 
         this._graphs = this._graphsManager.graphs;
+
+    }
+
+    navigateToInitialPosition() {
+
+        this.move( this._savegamePosition.x - this._x, this._savegamePosition.y - this._y );
+        this.stop();
 
     }
 
@@ -125,47 +141,47 @@ class Navigator {
     }
 
     move( dx, dy ) {
+        
+        const distanceX = this._x + dx;
+        const distanceY = this._y + dy;
+
+        if ( distanceX > this._borders.left ) {
+
+            // dx = dx - ( distanceX - this._borders.left );
+            dx = -this._x + this._borders.left;//formel optimiert mit https://www.mathepower.com/freistell.php
+
+        }
+
+        if ( distanceX < this._borders.right ) {
+
+            //dx = dx - ( distanceX - this._borders.right );
+            dx = -this._x + this._borders.right;//formel optimiert mit https://www.mathepower.com/freistell.php
+
+        }
+
+        if ( distanceY > this._borders.top ) {
+
+            //dy = dy - ( distanceY - this._borders.top );
+            dy = -this._y + this._borders.top;//formel optimiert mit https://www.mathepower.com/freistell.php
+
+        }
+
+        if ( distanceY < this._borders.bottom ) {
+
+            //dy = dy - ( distanceY - this._borders.bottom );
+            dy = -this._y + this._borders.bottom;//formel optimiert mit https://www.mathepower.com/freistell.php
+
+        }
+
+        //---
+
+        dx = Tools.unifyNumber( dx );//<---- vielleicht nötig um die bewegung zu präzisieren?! Muss getestet werden. Vielleicht behebt das den bug das nach movement einige vehicles stecken bleiben
+        dy = Tools.unifyNumber( dy );//<---- vielleicht nötig um die bewegung zu präzisieren?! Muss getestet werden. Vielleicht behebt das den bug das nach movement einige vehicles stecken bleiben
+
+        //---
 
         this._x += dx;
         this._y += dy;
-
-        // console.log( dx, dy );
-        // console.log( this._y, this._borders.top, this._borders.bottom );
-        
-        if ( this._x > this._borders.left ) {
-
-            this._x = this._borders.left;
-
-            dx = 0;
-
-        }
-
-        if ( this._x < this._borders.right ) {
-
-            this._x = this._borders.right;
-
-            dx = 0;
-
-        }
-
-        if ( this._y > this._borders.top ) {
-
-            this._y = this._borders.top;
-
-            dy = 0;
-
-        }
-
-        if ( this._y < this._borders.bottom ) {
-
-            this._y = this._borders.bottom;
-
-            dy = 0;
-
-        }
-
-        // console.log( this._x, this._y, dx, dy );
-        // console.log( this._y, this._borders.top, this._borders.bottom );
 
         //---
         
@@ -336,6 +352,15 @@ class Navigator {
         } );
 
         this._graphsManager.buildLookupForPointsForAllGraphs();
+
+        //---
+        //nachdem die bewegung beendet ist gibt es ohne die folgenden aufrufe das problem, dass einige vehicles ab und zu feststecken in einer collision, die es eigentlich nicht mehr gibt
+
+        //this._collisionDetection.clearCollisions();
+        // this._collisionDetection.checkIntersections();
+        //this._collisionDetection.checkCollisions();
+
+        this._collisionDetection.checkVehiclesCollisionsAfterMovement();
 
     }
 

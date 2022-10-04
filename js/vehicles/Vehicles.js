@@ -1,8 +1,10 @@
 class Vehicles {
 
     static INTERVAL = 750;//2250;//750;//250;//500;//250
+    static VEHICLE_IMAGES = 49;
     static VEHICLE_RADIUS = 20;
     static VEHICLE_SPEED = 2.50;//1;//2.50;
+    static VEHICLE_FOLLOW_SPEED = 6.5;
 
     //---
 
@@ -50,7 +52,7 @@ class Vehicles {
 
     init() {
 
-        for ( let i = 0, l = 40; i < l; i ++ ) {
+        for ( let i = 0, l = Vehicles.VEHICLE_IMAGES; i < l; i ++ ) {
 
             let fileIndex = ( i + 1 ).toString();
 
@@ -121,6 +123,9 @@ class Vehicles {
 
         //     vehicle.route = this._graph.routes[ vehicle.routeIndex ]
 
+        //     vehicle.routePositionSegmentsLength = -1;//muss evtl aktualisiert werden wenn sich die route ändert?!
+        //     vehicle.checkPointsSwitch = true;        //muss evtl aktualisiert werden wenn sich die route ändert?!
+
         // }
 
     }
@@ -133,6 +138,8 @@ class Vehicles {
 
             vehicle.position.x += x;
             vehicle.position.y += y;
+            // vehicle.followPosition.x += x;
+            // vehicle.followPosition.y += y;
 
         }
 
@@ -175,7 +182,7 @@ class Vehicles {
 
     addVehicle() {
 
-        // if ( this._vehiclesSimulation === true && this._vehiclesHolder.length < 5 ) {
+        //if ( this._vehiclesSimulation === true && this._vehiclesHolder.length < 1 ) {
         if ( this._vehiclesSimulation === true ) {
 
             for ( let i = 0, l = this._graph.routes.length; i < l; i ++ ) {
@@ -201,7 +208,7 @@ class Vehicles {
                 //const vehicleSpeed = ( 1 / route.length ) * 2.5;
                 const vehicleImage = this._vehiclesImageHolder[ Math.floor( Math.random() * this._vehiclesImageHolder.length ) ];
                 // const vehicle = this.getVehicleObject( routePositionObject.point, routePositionObject.angle, 0, route, routeIndex, Vehicles.VEHICLE_SPEED, vehicleImage );
-                const vehicle = this.getVehicleObject( { x: 0, y: 0 }, 0, 0, route, routeIndex, Vehicles.VEHICLE_SPEED, vehicleImage );
+                const vehicle = this.getVehicleObject( { x: 0, y: 0 }, 0, 0, route, routeIndex, vehicleImage );
 
                 this._calcVehiclePositionOnRoute( vehicle, route );
                 
@@ -212,9 +219,12 @@ class Vehicles {
                 //Fahrzeuge werden nur hinzugefügt wenn sie zu begin keine Kollision aufweisen
                 if ( this._collisionDetection.checkCollisionsToVehicle( vehicle ) === false ) {
 
-                    vehicle.speed = this.getVehicleSpeed( vehicle, vehicle.maxSpeed );
+                    //vehicle.maxSpeed = this.getVehicleSpeed( vehicle, Vehicles.VEHICLE_SPEED );
+                    vehicle.speed = 0;//this.getVehicleSpeed( vehicle, vehicle.maxSpeed );
                     vehicle.lastPosition.x = vehicle.position.x;
                     vehicle.lastPosition.y = vehicle.position.y;
+                    // vehicle.followPosition.x += vehicle.position.x;
+                    // vehicle.followPosition.y += vehicle.position.y;
                     
                     this._calcAngleOnRoute( vehicle );
                 
@@ -269,29 +279,33 @@ class Vehicles {
 
     //---
 
-    getVehicleObject( position = { x: 0, y: 0 }, angle = 0, t = 0, route = null, routeIndex = 0, maxSpeed = 2.50, image = null ) {
+    getVehicleObject( position = { x: 0, y: 0 }, angle = 0, t = 0, route = null, routeIndex = 0, image = null ) {
 
         const vehicle = {
 
             id: Tools.getUID(),
             position: { x: position.x, y: position.y },
             lastPosition: { x: position.x, y: position.y },
+            // followPosition: { x: position.x, y: position.y },
             angle: angle,
             t: t,
             route: route,
             routeIndex: routeIndex,
+            // routeSegmentIndex: 0,//speichert den aktuellen array graph segment index vom vehicle auf seiner route
+            routePositionSegmentsLength: -1,
             speed: 0,
-            minSpeed: 0,
-            maxSpeed: maxSpeed,
+            // minSpeed: 0,
+            // maxSpeed: 0,
             image: image,
             context: this._canvasManager.getContextByName( 'main' ),
             collisionDetected: false,
             gridCell: null,
-            drawTempStuff: [],
-            distanceToVehicle: 0,
-            lastDistanceToVehicle: 0,
+            // drawTempStuff: [],
+            // distanceToVehicle: 0,
+            // lastDistanceToVehicle: 0,
             checkPoint0: null,//nur wenn checkPoint0 und/oder checkPoint1 mit einem anderen vehicle übereinstimmen sollte die collision detection greifen
             checkPoint1: null,//nur wenn checkPoint0 und/oder checkPoint1 mit einem anderen vehicle übereinstimmen sollte die collision detection greifen
+            checkPointsSwitch: false,
             // collisions: [],
             queueWaiting: false,
             queueTimer: 0,
@@ -303,7 +317,9 @@ class Vehicles {
             // queueInIntersection: false,
             previousVehicleOnRoute: null,//das vorherige fahrzeug auf dieser route,
             halted: false,
-            testi: 0,
+            //speedTween: { time: 0, duration: 0, from: 0, to: 0, change: 0, done: true },
+            //speedTweenTime: -1,
+            //s: 0,
 
         }
 
@@ -337,6 +353,95 @@ class Vehicles {
     //     }
 
     //     return vehicle;
+
+    // }
+
+    // accelerateVehicleSpeed( vehicle, from = 0, to = 0 ) {
+
+    //     // if ( vehicle.speed >= vehicle.maxSpeed ) {
+
+    //     //     console.log('TWEEN END');
+
+    //     //     vehicle.speedTween.done = true;
+
+    //     //     return vehicle.maxSpeed;
+
+    //     // }
+
+    //     //speedTween: { time: 0, duration: 0, increment: 0, from: 0, to: 0, change: 0, easing: Easing.outCubic, done: true },
+
+    //     //if ( vehicle.speedTween.done === true && vehicle.speed < vehicle.maxSpeed ) {
+    //     if ( vehicle.speedTween.done === true && vehicle.speed < vehicle.maxSpeed ) {
+
+            
+
+    //         vehicle.speedTween.done = false;
+    //         vehicle.speedTween.duration = 0.5;
+    //         //vehicle.speedTween.increment = vehicle.speedTween.duration / 100;
+    //         vehicle.speedTween.from = from;
+    //         vehicle.speedTween.to = to;
+    //         vehicle.speedTween.change = to - from;
+    //         vehicle.speedTween.time = 0;
+
+    //         //vehicle.speedTweenTime = 0;
+
+    //         //if ( vehicle.id === 1 ) 
+    //         //console.log( 'TWEEN INIT: ', vehicle.speed, vehicle.maxSpeed, ' --- ',vehicle.speedTween.from, vehicle.speedTween.to, vehicle.speedTween.change);
+
+    //     }
+
+    //     /*
+    //     var animationTime = -1;
+    //     var animationTimeSpeed = 0.0166666666666667;
+    //     */
+
+    //     //vehicle.speedTweenTime += 0.0166666666666667;
+
+
+    //     //vehicle.speedTween.time = vehicle.speedTweenTime;
+    //     //vehicle.speedTween.time += vehicle.speedTween.increment;
+    //     //vehicle.speedTween.time += 0.0166666666666667;
+    //     vehicle.speedTween.time += 0.01;
+
+    //     //console.log( vehicle.speedTween.time, vehicle.speedTween.duration );
+
+    //     //if ( vehicle.id === 0 ) console.log('vehicle.speedTween.time: ', vehicle.speedTween.time);
+
+    //     //if ( vehicle.speedTween.from !== vehicle.speedTween.to && vehicle.speedTween.done === false ) {
+    //     if ( vehicle.speedTween.time <= vehicle.speedTween.duration ) {
+    //         //if ( vehicle.id === 0 ) console.log('vehicle.speedTween.time: ', vehicle.speedTween.time);
+
+    //         const s = Easing.inQuad( vehicle.speedTween.time, vehicle.speedTween.from, vehicle.speedTween.change, vehicle.speedTween.duration );
+
+    //         //console.log( vehicle.speedTween.time, vehicle.speedTween.duration, s );
+    //         return s;
+
+    //     } else {
+
+    //         //if ( vehicle.id === 1 ) 
+    //         //console.log( 'END' );
+
+    //         vehicle.speedTween.done = true
+
+    //         //----
+
+    //         return Vehicles.VEHICLE_SPEED;
+
+    //     }
+
+    //     //     vehicle.speedTween.done = true;
+
+    //     //     return vehicle.maxSpeed;
+
+    //     // }
+
+    //     // vehicle.s = Easing.outCubic( vehicle.speedTween.time, vehicle.speedTween.from, vehicle.speedTween.change, vehicle.speedTween.duration );
+
+    // }
+
+    // decelerateVehicleSpeed( vehicle ) {
+
+        
 
     // }
 
@@ -424,22 +529,34 @@ class Vehicles {
 
             //---
 
-            const radius = Vehicles.VEHICLE_RADIUS;
+            // vehicle.followPosition.x += ( vehicle.position.x - vehicle.followPosition.x ) / Vehicles.VEHICLE_FOLLOW_SPEED;
+            // vehicle.followPosition.y += ( vehicle.position.y - vehicle.followPosition.y ) / Vehicles.VEHICLE_FOLLOW_SPEED;
+
+            //---
+
+            //const radius = Vehicles.VEHICLE_RADIUS;
 
             //only draw vehicles that are visible in the viewport
             //if ( vehicle.position.x + radius > this._border.left && vehicle.position.x - radius < this._border.right && vehicle.position.y + radius > this._border.top && vehicle.position.y - radius < this._border.bottom ) {
             if ( vehicle.gridCell.visible === true ) {//beide if bedingungen funktionieren. performance frage? bisher keinen unterschied festgestellt
 
+                const radius = Vehicles.VEHICLE_RADIUS;
+
                 const angleOnRoute = vehicle.angle + this._vehiclesAngle;
+                //const angleOnRoute = Math.atan2( vehicle.followPosition.y - vehicle.position.y, vehicle.followPosition.x - vehicle.position.x ) + Settings.DIR_TOP;
+                //const angleOnRoute = vehicle.speed === 0 ? vehicle.angle + this._vehiclesAngle : Math.atan2( vehicle.followPosition.y - vehicle.position.y, vehicle.followPosition.x - vehicle.position.x ) + Settings.DIR_TOP;
+
                 const imagePosition = -radius / 2;
 
                 //vehicle.context.globalAlpha = 0.15;
                 vehicle.context.save();
                 vehicle.context.translate( vehicle.position.x, vehicle.position.y );
+                // vehicle.context.translate( vehicle.followPosition.x, vehicle.followPosition.y );
                 vehicle.context.rotate( angleOnRoute );
                 vehicle.context.drawImage( vehicle.image, imagePosition, imagePosition, radius, radius );
                 vehicle.context.rotate( -angleOnRoute );
                 vehicle.context.translate( -vehicle.position.x, -vehicle.position.y );
+                // vehicle.context.translate( -vehicle.followPosition.x, -vehicle.followPosition.y );
                 vehicle.context.restore();
 
             }
@@ -507,6 +624,7 @@ class Vehicles {
         let curLength = 0;
         let lastLength = 0;
 
+        // for ( let i = vehicle.routeSegmentIndex, l = route.graphSegments.length; i < l; i ++ ) {
         for ( let i = 0, l = route.graphSegments.length; i < l; i ++ ) {
 
             const graphSegment = route.graphSegments[ i ];
@@ -518,10 +636,24 @@ class Vehicles {
                 const tGraphSegment = ( tLength - lastLength ) / graphSegment.length;
 
                 vehicle.position = Tools.interpolateQuadraticBezier( graphSegment.p0, graphSegment.controlPoint, graphSegment.p1, tGraphSegment );
-                vehicle.checkPoint0 = graphSegment.p1;
-                vehicle.checkPoint1 = i < l - 1 ? route.graphSegments[ i + 1 ].p1 : null;
-                // vehicle.checkPoint0 = graphSegment.p0;
-                // vehicle.checkPoint1 = graphSegment.p1;
+                // vehicle.checkPoint0 = graphSegment.p1;
+                // vehicle.checkPoint1 = i < l - 1 ? route.graphSegments[ i + 1 ].p1 : null;
+                // // vehicle.checkPoint0 = graphSegment.p0;
+                // // vehicle.checkPoint1 = graphSegment.p1;
+
+                if ( lastLength !== vehicle.routePositionSegmentsLength ) {
+
+                    vehicle.routePositionSegmentsLength = lastLength;
+
+                    vehicle.checkPoint0 = graphSegment.p1;
+                    vehicle.checkPoint1 = i < l - 1 ? route.graphSegments[ i + 1 ].p1 : null;
+                    // vehicle.checkPoint0 = graphSegment.p0;
+                    // vehicle.checkPoint1 = graphSegment.p1;
+
+                    vehicle.checkPointsSwitch = true;
+                    // vehicle.routeSegmentIndex = i;
+    
+                }
 
                 break;
 
